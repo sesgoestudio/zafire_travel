@@ -1,87 +1,228 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Administración | ZAFIRE</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>ZAFIRE | Operaciones</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#081523;--navy2:#10243a;--paper:#f8f7f4;--sand:#eae5dc;--gold:#c6a972;--muted:#718096;--line:#d9d7d1;--red:#a33b3b;--green:#276749}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--navy);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1240px;margin:auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0 26px;border-bottom:1px solid var(--line)}.brand{font-weight:700;letter-spacing:.2em}.brand small{display:block;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.18em}.top button,.primary{border:0;background:var(--navy);color:white;padding:11px 16px;border-radius:4px}.muted{color:var(--muted)}.login{max-width:420px;margin:9vh auto;background:white;padding:30px;border:1px solid var(--line);border-radius:8px}.login h1{font-size:28px;margin:0 0 6px}.field{display:grid;gap:6px;margin:14px 0}.field label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--navy)}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}.stat,.panel{background:white;border:1px solid var(--line);border-radius:6px;padding:18px}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:27px;margin-top:5px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}.tabs button{border:1px solid var(--line);background:white;padding:10px 14px;border-radius:4px}.tabs button.active{background:var(--navy);color:white;border-color:var(--navy)}.panel h2{font-size:20px;margin:0 0 16px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}td select{min-width:135px;padding:8px}.grid-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}.notice{padding:12px;background:#f5f1e8;border-left:3px solid var(--gold);font-size:13px;margin-bottom:16px}.status{display:inline-block;padding:4px 8px;border-radius:99px;background:#f1eee8;font-size:11px}.actions{display:flex;gap:8px;align-items:center}.danger{background:#fff;color:var(--red);border:1px solid #e5caca;padding:8px 10px;border-radius:4px}.secondary{background:white;color:var(--navy);border:1px solid var(--line);padding:9px 12px;border-radius:4px}.empty{padding:28px;text-align:center;color:var(--muted)}@media(max-width:760px){.shell{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}.grid-form{grid-template-columns:1fr}.top{align-items:flex-start}.stat strong{font-size:23px}.panel{padding:14px}}
+:root{--navy:#081523;--navy2:#10243a;--paper:#f8f7f4;--white:#fff;--sand:#eae5dc;--gold:#c6a972;--muted:#778392;--line:#dedbd4;--red:#a33b3b;--green:#276749}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--navy);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1440px;margin:auto;padding:22px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0 22px;border-bottom:1px solid var(--line)}.brand{font-weight:800;letter-spacing:.22em;font-size:19px}.brand small{display:block;font-size:9px;color:var(--muted);font-weight:500;letter-spacing:.2em}.top-actions,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn,.primary,.secondary,.danger{border:1px solid transparent;border-radius:4px;padding:10px 13px}.primary,.btn{background:var(--navy);color:white}.secondary{background:white;color:var(--navy);border-color:var(--line)}.danger{background:white;color:var(--red);border-color:#e5caca}.muted{color:var(--muted)}.login{max-width:430px;margin:9vh auto;background:white;padding:30px;border:1px solid var(--line);border-radius:7px}.login h1{font-size:28px;margin:0 0 6px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:10px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:4px;background:white;color:var(--navy);min-width:0}textarea{min-height:190px;font:12px/1.5 ui-monospace,monospace}.hidden{display:none!important}.error{color:var(--red);font-size:13px;white-space:pre-wrap}.notice{padding:12px;background:#f5f1e8;border-left:3px solid var(--gold);font-size:12px;margin:12px 0 18px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:22px 0}.stat,.panel,.card{background:white;border:1px solid var(--line);border-radius:6px;padding:16px}.stat span{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:25px;margin-top:4px;font-weight:650}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:20px 0}.tabs button{border:1px solid var(--line);background:white;color:var(--navy);padding:10px 13px;border-radius:4px}.tabs button.active{background:var(--navy);color:white;border-color:var(--navy)}.panel h2{font-size:20px;margin:0 0 14px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.reservation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.reservation-card{border:1px solid var(--line);border-radius:6px;padding:15px;background:white;min-width:0}.reservation-card h3{margin:0;font-size:16px}.reservation-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}.pill{display:inline-block;border-radius:99px;padding:4px 8px;background:#f2efe8;font-size:10px}.pill.green{background:#e8f3ed;color:var(--green)}.mini{font-size:11px;color:var(--muted)}.reservation-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.reservation-fields .field{margin:5px 0}.reservation-fields input,.reservation-fields select{padding:8px;font-size:12px}.reservation-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.weekday{text-align:center;font-size:10px;color:var(--muted);padding:7px}.day{min-height:84px;border:1px solid var(--line);border-radius:4px;background:#fff;padding:7px;font-size:11px}.day strong{display:block;font-size:13px}.day.busy{background:#f5f1e8}.day.blocked{background:#f9eded;border-color:#e7c9c9}.day.today{outline:2px solid var(--gold)}.day .mini{display:block;margin-top:5px}.empty{padding:26px;text-align:center;color:var(--muted)}.media-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.media-item{border:1px solid var(--line);border-radius:5px;overflow:hidden;background:white}.media-item img{width:100%;height:130px;object-fit:cover;display:block}.media-meta{padding:9px}.report-bars{display:grid;gap:9px}.bar-row{display:grid;grid-template-columns:110px 1fr 100px;align-items:center;gap:10px;font-size:12px}.bar-track{height:10px;background:#eee9e0;border-radius:99px;overflow:hidden}.bar-fill{height:100%;background:var(--navy);border-radius:99px}.small-btn{padding:7px 9px;font-size:11px}.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hint{font-size:11px;color:var(--muted)}@media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.reservation-grid{grid-template-columns:1fr}.media-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:680px){.shell{padding:14px}.stats{grid-template-columns:repeat(2,1fr)}.grid,.grid.two,.field-row{grid-template-columns:1fr}.reservation-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.media-grid{grid-template-columns:repeat(2,1fr)}.stat strong{font-size:22px}.day{min-height:72px;padding:5px}.bar-row{grid-template-columns:75px 1fr 75px;font-size:10px}.login{margin:7vh auto;padding:22px}}
+@media print{body{background:white}.top,.tabs,.stats,.no-print{display:none!important}.shell{max-width:none;padding:0}.panel{border:0}.receipt{display:block!important}}
 </style>
 </head>
-<body>
-<div class="shell">
-<header class="top"><div class="brand">ZAFIRE <small>CONTROL DE OPERACIONES</small></div><button id="logout" class="hidden">Cerrar sesión</button></header>
-<section id="login-view" class="login">
-<h1>Administración</h1><p class="muted">Acceso privado para gestionar solicitudes y disponibilidad.</p>
-<form id="login-form">
-<div class="field"><label for="email">Correo</label><input id="email" type="email" autocomplete="username" required></div>
-<div class="field"><label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" required></div>
-<button class="primary" style="width:100%" type="submit">Entrar al panel</button><p id="login-error" class="error"></p>
-</form></section>
+<body><div class="shell">
+<header class="top"><div class="brand">ZAFIRE<small>TRAVEL · OPERACIONES</small></div><div class="top-actions"><span id="member-label" class="mini"></span><button id="refresh" class="secondary hidden">Actualizar</button><button id="logout" class="secondary hidden">Cerrar sesión</button></div></header>
+<section id="login-view" class="login"><h1>Administración</h1><p class="muted">Ingresa con tu cuenta autorizada de ZAFIRE.</p><form id="login-form"><div class="field"><label>Correo electrónico</label><input id="email" type="email" autocomplete="username" required></div><div class="field"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password" required></div><button class="primary" style="width:100%" type="submit">Entrar al panel</button><p id="login-error" class="error"></p></form></section>
 <main id="app-view" class="hidden">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:24px"><div><h1 style="margin:0;font-size:28px">Panel de control</h1><p class="muted" style="margin:4px 0">Solicitudes, anticipos y fechas no disponibles.</p></div><button class="secondary" id="refresh">Actualizar datos</button></div>
+<div class="panel-head" style="margin-top:22px"><div><h1 style="font-size:27px;margin:0">Centro de operaciones</h1><p class="muted" style="margin:3px 0">Reservaciones, clientes, equipo, anticipos y contenido del sitio.</p></div><span class="pill" id="role-pill">—</span></div>
 <div class="stats">
-<div class="stat"><span>Total de solicitudes</span><strong id="stat-total">0</strong></div>
-<div class="stat"><span>Pendientes</span><strong id="stat-pending">0</strong></div>
-<div class="stat"><span>Confirmadas</span><strong id="stat-confirmed">0</strong></div>
-<div class="stat"><span>Anticipos pagados</span><strong id="stat-deposits">0</strong></div>
+<div class="stat"><span>Solicitudes</span><strong id="stat-total">0</strong></div><div class="stat"><span>Pendientes</span><strong id="stat-pending">0</strong></div><div class="stat"><span>Confirmadas</span><strong id="stat-confirmed">0</strong></div><div class="stat"><span>Ventas confirmadas</span><strong id="stat-sales">$0</strong></div><div class="stat"><span>Anticipos recibidos</span><strong id="stat-deposits">$0</strong></div><div class="stat"><span>Saldo pendiente</span><strong id="stat-balance">$0</strong></div>
 </div>
-<nav class="tabs"><button class="active" data-tab="reservations">Reservaciones</button><button data-tab="availability">Disponibilidad</button></nav>
-<section id="reservations-panel" class="panel"><h2>Solicitudes recibidas</h2><div class="notice">Una solicitud web no confirma por sí sola la salida. Confirma la reservación únicamente después de revisar disponibilidad y validar el anticipo.</div><div class="table-wrap"><table><thead><tr><th>Folio / Fecha</th><th>Cliente</th><th>Salida</th><th>Personas</th><th>Estado</th><th>Anticipo</th><th>Importe</th></tr></thead><tbody id="reservation-rows"><tr><td colspan="7">Cargando…</td></tr></tbody></table></div></section>
-<section id="availability-panel" class="panel hidden"><h2>Fechas bloqueadas</h2><p class="muted">Estas fechas dejarán de aparecer como seleccionables en el calendario público.</p><form id="block-form" class="grid-form"><div class="field"><label for="block-date">Fecha</label><input type="date" id="block-date" required></div><div class="field"><label for="block-reason">Motivo (opcional)</label><input id="block-reason" placeholder="Mantenimiento, evento privado…"></div><button class="primary" type="submit">Bloquear fecha</button></form><div id="blocked-list" style="margin-top:18px"></div></section>
-<p id="app-error" class="error" role="alert"></p>
-</main>
-</div>
+<nav class="tabs" id="tabs"><button class="active" data-tab="reservations">Reservaciones</button><button data-tab="calendar">Calendario</button><button data-tab="customers">Clientes</button><button data-tab="sellers" class="admin-only">Vendedores y equipo</button><button data-tab="commissions" class="admin-only">Comisiones</button><button data-tab="reports">Reportes</button><button data-tab="site" class="admin-only">Sitio y galería</button></nav>
+<section id="panel-reservations" class="panel">
+<div class="panel-head"><div><h2>Reservaciones y solicitudes</h2><p class="hint">Confirma únicamente después de revisar disponibilidad y validar el anticipo.</p></div><div class="inline"><select id="filter-status" style="width:auto"><option value="">Todos los estados</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="rejected">Rechazadas</option><option value="cancelled">Canceladas</option></select><button class="secondary small-btn" id="export-reservations">Exportar CSV</button></div></div>
+<div class="notice">Las solicitudes web generan una retención de 30 minutos. Al vencer, el horario vuelve a estar disponible mientras no exista una reservación confirmada. Confirmar una solicitud comprueba nuevamente la capacidad máxima de 15 pasajeros.</div>
+<div id="reservation-list" class="reservation-grid"><div class="empty">Cargando solicitudes…</div></div>
+</section>
+<section id="panel-calendar" class="panel hidden">
+<div class="panel-head"><div><h2>Calendario operativo</h2><p class="hint">Ocupación y bloqueos por turno.</p></div><div class="inline"><button id="cal-prev" class="secondary">←</button><strong id="cal-label"></strong><button id="cal-next" class="secondary">→</button></div></div>
+<div class="calendar" id="calendar-grid"></div>
+<div class="notice">Un bloqueo puede aplicarse a todo el día o a un turno. Las solicitudes pendientes solo ocupan capacidad durante su retención activa.</div>
+<h3 style="font-size:16px">Bloquear disponibilidad</h3><form id="block-form" class="grid"><div class="field"><label>Fecha</label><input type="date" id="block-date" required></div><div class="field"><label>Turno</label><select id="block-slot"><option value="all_day">Todo el día</option><option value="morning">Turno Matutino</option><option value="sunset">Turno Atardecer</option><option value="fullday">Jornada Personalizada</option></select></div><div class="field"><label>Motivo</label><input id="block-reason" placeholder="Mantenimiento, evento privado…"></div><button class="primary" type="submit">Bloquear fecha / turno</button></form>
+<div id="blocked-list" style="margin-top:14px"></div>
+</section>
+<section id="panel-customers" class="panel hidden">
+<div class="panel-head"><div><h2>Directorio de clientes</h2><p class="hint">Historial consolidado por teléfono.</p></div><button id="export-customers" class="secondary small-btn">Exportar CSV</button></div>
+<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Contacto</th><th>Reservaciones</th><th>Ventas</th><th>Última visita</th></tr></thead><tbody id="customer-rows"></tbody></table></div>
+</section>
+<section id="panel-sellers" class="panel hidden admin-only">
+<h2>Vendedores y equipo</h2><div class="notice">Primero crea la cuenta de acceso en Supabase → Authentication → Users. Después registra aquí su UUID, nombre, rol y porcentaje de comisión. Nunca compartas contraseñas ni claves privadas.</div>
+<form id="team-form" class="grid"><div class="field"><label>UUID del usuario de Auth</label><input id="team-uuid" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div><div class="field"><label>Nombre visible</label><input id="team-name" required placeholder="Nombre del vendedor"></div><div class="field"><label>Rol</label><select id="team-role"><option value="seller">Vendedor</option><option value="manager">Gerente</option></select></div><div class="field"><label>Comisión (%)</label><input id="team-rate" type="number" min="0" max="100" step=".01" value="10" required></div><button class="primary" type="submit">Guardar integrante</button></form>
+<div class="table-wrap" style="margin-top:20px"><table><thead><tr><th>Integrante</th><th>Rol</th><th>Comisión</th><th>Estado</th><th></th></tr></thead><tbody id="team-rows"></tbody></table></div>
+</section>
+<section id="panel-commissions" class="panel hidden admin-only">
+<div class="panel-head"><div><h2>Comisiones</h2><p class="hint">Se calculan sobre el importe total usando la tasa del vendedor asignado.</p></div><button class="secondary small-btn" id="export-commissions">Exportar CSV</button></div>
+<div class="stats" style="grid-template-columns:repeat(3,1fr)"><div class="stat"><span>Comisión generada</span><strong id="commission-total">$0</strong></div><div class="stat"><span>Pendiente de pago</span><strong id="commission-pending">$0</strong></div><div class="stat"><span>Pagada</span><strong id="commission-paid">$0</strong></div></div>
+<div class="table-wrap"><table><thead><tr><th>Folio</th><th>Vendedor</th><th>Venta</th><th>Tasa</th><th>Comisión</th><th>Pago</th><th></th></tr></thead><tbody id="commission-rows"></tbody></table></div>
+</section>
+<section id="panel-reports" class="panel hidden">
+<div class="panel-head"><div><h2>Reportes de operación</h2><p class="hint">Cifras basadas en reservaciones registradas.</p></div><div class="inline"><input id="report-from" type="date"><input id="report-to" type="date"><button id="run-report" class="primary">Aplicar</button></div></div>
+<div class="stats" style="grid-template-columns:repeat(4,1fr)"><div class="stat"><span>Reservaciones confirmadas</span><strong id="report-count">0</strong></div><div class="stat"><span>Ingresos confirmados</span><strong id="report-revenue">$0</strong></div><div class="stat"><span>Anticipos recibidos</span><strong id="report-deposit">$0</strong></div><div class="stat"><span>Saldo por cobrar</span><strong id="report-balance">$0</strong></div></div>
+<h3 style="font-size:15px">Ventas por vendedor</h3><div id="seller-report" class="report-bars"></div><button class="secondary small-btn" id="export-report" style="margin-top:16px">Descargar reporte CSV</button>
+</section>
+<section id="panel-site" class="panel hidden admin-only">
+<h2>Contenido del sitio y tarifas</h2><p class="hint">Edita el contenido público. Los cambios se reflejan en el sitio sin volver a generar archivos ni publicar manualmente.</p>
+<div class="notice">WhatsApp, redes, horarios, descripciones y precios se guardan en Supabase. Los precios no están precargados porque aún no se han confirmado tarifas oficiales.</div>
+<div class="field"><label>Configuración pública (JSON)</label><textarea id="site-json" spellcheck="false"></textarea></div><div class="actions"><button id="save-site" class="primary">Guardar cambios del sitio</button><button id="reload-site" class="secondary">Recargar configuración</button></div><p class="hint">Puedes editar contact.whatsappNumber, contact.instagramUrl, contact.facebookUrl, schedules y experiences. Conserva las claves id de los turnos y experiencias.</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:24px 0">
+<div class="panel-head"><div><h2>Galería y fotografías</h2><p class="hint">Carga imágenes optimizadas de ZAFIRE. Máximo 12 MB por imagen.</p></div></div>
+<form id="media-form" class="grid"><div class="field"><label>Archivo de imagen</label><input id="media-file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required></div><div class="field"><label>Ubicación</label><select id="media-category"><option value="gallery">Galería</option><option value="hero-background">Portada principal</option><option value="vessel-photo-primary">Embarcación · foto 1</option><option value="vessel-photo-secondary">Embarcación · foto 2</option></select></div><div class="field"><label>Descripción / texto alternativo</label><input id="media-alt" placeholder="Velero ZAFIRE navegando en Mazatlán"></div><button class="primary" type="submit">Subir imagen</button></form>
+<div id="media-list" class="media-grid" style="margin-top:18px"></div>
+</section>
+<p id="app-error" class="error" role="alert" style="margin-top:14px"></p>
+</main></div>
 <script>
-(() => {
-const SUPABASE_URL='https://mfgqbljtswvuqwluayfj.supabase.co';
-const SUPABASE_KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);
-let reservations=[];
-function message(el,text){$(el).textContent=text||''}
-function showApp(){ $('login-view').classList.add('hidden');$('app-view').classList.remove('hidden');$('logout').classList.remove('hidden');}
-function showLogin(){ $('login-view').classList.remove('hidden');$('app-view').classList.add('hidden');$('logout').classList.add('hidden');}
-function money(value){return value==null?'—':Number(value).toLocaleString('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0})}
-function readable(date){if(!date)return '—';return new Date(date+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})}
-async function requireAdmin(){
- const {data:{session}}=await db.auth.getSession();
- if(!session){showLogin();return false}
- const {data,isError,error}=await db.rpc('is_admin');
- if(error||data!==true){await db.auth.signOut();showLogin();message('login-error','Esta cuenta no tiene permisos de administrador.');return false}
- showApp();return true;
+(()=>{
+const URL='https://mfgqbljtswvuqwluayfj.supabase.co',KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
+const db=window.supabase.createClient(URL,KEY),$=id=>document.getElementById(id);
+let session=null,role='seller',isAdmin=false,reservations=[],sellers=[],customers=[],blocked=[],media=[],calendarDate=new Date();
+const money=n=>Number(n||0).toLocaleString('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2});
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateText=d=>d?new Date(d+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}):'—';
+const msg=t=>{$('app-error').textContent=t||''};
+function csv(name,rows){if(!rows.length){msg('No hay datos para exportar.');return}const cols=Object.keys(rows[0]);const data=[cols.join(','),...rows.map(r=>cols.map(k=>'"'+String(r[k]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+data],{type:'text/csv;charset=utf-8'}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function setView(id){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));['reservations','calendar','customers','sellers','commissions','reports','site'].forEach(x=>$('panel-'+x).classList.toggle('hidden',x!==id));}
+async function access(){
+ const {data:{session:s}}=await db.auth.getSession();session=s;
+ if(!s){showLogin();return false}
+ const {data:admin,error}=await db.rpc('is_admin');isAdmin=!error&&admin===true;
+ const {data:member}=await db.from('team_members').select('*').eq('user_id',s.user.id).maybeSingle();
+ if(!isAdmin&&(!member||!member.is_active)){await db.auth.signOut();showLogin();$('login-error').textContent='Esta cuenta no tiene acceso al panel.';return false}
+ role=isAdmin?(member?.role||'admin'):'seller';
+ $('member-label').textContent=member?.full_name||s.user.email||'Equipo ZAFIRE';
+ $('role-pill').textContent=role==='admin'?'Administrador':role==='manager'?'Gerencia':'Vendedor';
+ document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden',!isAdmin));
+ $('login-view').classList.add('hidden');$('app-view').classList.remove('hidden');$('logout').classList.remove('hidden');$('refresh').classList.remove('hidden');
+ return true;
 }
-async function loadReservations(){
- const {data,error}=await db.from('reservation_requests').select('*').order('created_at',{ascending:false});
- if(error)throw error;reservations=data||[];
- $('stat-total').textContent=reservations.length;
- $('stat-pending').textContent=reservations.filter(x=>x.status==='pending').length;
- $('stat-confirmed').textContent=reservations.filter(x=>x.status==='confirmed').length;
- $('stat-deposits').textContent=reservations.filter(x=>x.deposit_status==='paid').length;
- const body=$('reservation-rows');
- if(!reservations.length){body.innerHTML='<tr><td colspan="7" class="empty">Aún no hay solicitudes registradas.</td></tr>';return}
- body.innerHTML=reservations.map(r=>'<tr><td><strong>'+escapeHtml(r.folio||'Sin folio')+'</strong><br><span class="muted">'+readable(r.created_at?.slice(0,10))+'</span></td><td><strong>'+escapeHtml(r.customer_name)+'</strong><br>'+escapeHtml(r.phone)+'</td><td>'+readable(r.reservation_date)+'<br><span class="muted">'+escapeHtml(r.time_slot||'')+' · '+escapeHtml(r.experience||'')+'</span></td><td>'+Number(r.guests||0)+'</td><td><select data-id="'+r.id+'" data-field="status"><option value="pending" '+(r.status==='pending'?'selected':'')+'>Pendiente</option><option value="confirmed" '+(r.status==='confirmed'?'selected':'')+'>Confirmada</option><option value="rejected" '+(r.status==='rejected'?'selected':'')+'>Rechazada</option><option value="cancelled" '+(r.status==='cancelled'?'selected':'')+'>Cancelada</option></select></td><td><select data-id="'+r.id+'" data-field="deposit_status"><option value="pending" '+(r.deposit_status==='pending'?'selected':'')+'>Pendiente</option><option value="paid" '+(r.deposit_status==='paid'?'selected':'')+'>Pagado</option><option value="not_required" '+(r.deposit_status==='not_required'?'selected':'')+'>No requerido</option></select><br><small class="muted">Monto: '+money(r.deposit_amount)+'</small></td><td>'+money(r.total_amount)+'</td></tr>').join('');
- body.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',async()=>{try{const {error}=await db.from('reservation_requests').update({[sel.dataset.field]:sel.value,updated_at:new Date().toISOString()}).eq('id',sel.dataset.id);if(error)throw error;await loadReservations();message('app-error','');}catch(e){message('app-error','No se pudo actualizar: '+e.message);await loadReservations();}}));
+function showLogin(){$('login-view').classList.remove('hidden');$('app-view').classList.add('hidden');$('logout').classList.add('hidden');$('refresh').classList.add('hidden')}
+async function loadAll(){
+ msg('');
+ const [r,b]=await Promise.all([
+  db.from('reservation_requests').select('*').order('created_at',{ascending:false}),
+  db.from('blocked_dates').select('*').eq('is_active',true).order('blocked_date')
+ ]);
+ if(r.error)throw r.error;if(b.error)throw b.error;
+ reservations=r.data||[];blocked=b.data||[];
+ if(isAdmin){
+  const [s,c,m]=await Promise.all([
+   db.from('team_members').select('*').order('full_name'),
+   db.from('customers').select('*').order('updated_at',{ascending:false}),
+   db.from('site_media').select('*').order('sort_order')
+  ]);
+  if(s.error)throw s.error;if(c.error)throw c.error;if(m.error)throw m.error;
+  sellers=s.data||[];customers=c.data||[];media=m.data||[];
+ }else{
+  const [c]=await Promise.all([db.from('customers').select('*').order('updated_at',{ascending:false})]);
+  customers=c.data||[];
+ }
+ renderStats();renderReservations();renderCalendar();renderBlocked();renderCustomers();
+ if(isAdmin){renderTeam();renderCommissions();renderReports();renderMedia();}
 }
-function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
-async function loadBlocked(){
- const {data,error}=await db.from('blocked_dates').select('blocked_date,reason').eq('is_active',true).order('blocked_date');
- if(error)throw error;const box=$('blocked-list');
- if(!data?.length){box.innerHTML='<p class="empty">No hay fechas bloqueadas.</p>';return}
- box.innerHTML=data.map(d=>'<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--line);padding:12px 0"><div><strong>'+readable(d.blocked_date)+'</strong><div class="muted">'+escapeHtml(d.reason||'Sin motivo especificado')+'</div></div><button class="danger" data-date="'+d.blocked_date+'">Desbloquear</button></div>').join('');
- box.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',async()=>{try{const {error}=await db.from('blocked_dates').update({is_active:false}).eq('blocked_date',btn.dataset.date);if(error)throw error;await loadBlocked();}catch(e){message('app-error','No se pudo desbloquear la fecha: '+e.message)}}));
+function renderStats(){
+ const confirmed=reservations.filter(r=>r.status==='confirmed');
+ $('stat-total').textContent=reservations.length;$('stat-pending').textContent=reservations.filter(r=>r.status==='pending').length;$('stat-confirmed').textContent=confirmed.length;
+ $('stat-sales').textContent=money(confirmed.reduce((s,r)=>s+Number(r.total_amount||0),0));
+ $('stat-deposits').textContent=money(confirmed.reduce((s,r)=>s+Number(r.deposit_amount||0),0));
+ $('stat-balance').textContent=money(confirmed.reduce((s,r)=>s+Number(r.balance_amount||0),0));
 }
-async function refresh(){message('app-error','');await loadReservations();await loadBlocked()}
-$('login-form').addEventListener('submit',async e=>{e.preventDefault();message('login-error','');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){message('login-error','No se pudo iniciar sesión: '+error.message);return}try{if(await requireAdmin())await refresh()}catch(err){message('app-error',err.message)}});
-$('logout').addEventListener('click',async()=>{await db.auth.signOut();showLogin()});
-$('refresh').addEventListener('click',async()=>{try{await refresh()}catch(e){message('app-error',e.message)}});
-$('block-form').addEventListener('submit',async e=>{e.preventDefault();try{const {error}=await db.from('blocked_dates').insert({blocked_date:$('block-date').value,reason:$('block-reason').value.trim()||null,is_active:true});if(error)throw error;$('block-form').reset();await loadBlocked();message('app-error','')}catch(err){message('app-error','No se pudo bloquear la fecha: '+err.message)}});
-document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));$('reservations-panel').classList.toggle('hidden',btn.dataset.tab!=='reservations');$('availability-panel').classList.toggle('hidden',btn.dataset.tab!=='availability')}));
-requireAdmin().then(ok=>ok&&refresh()).catch(e=>message('app-error',e.message));
+function sellerOptions(selected){return '<option value="">Sin asignar</option>'+sellers.filter(s=>s.is_active).map(s=>'<option value="'+s.user_id+'" '+(s.user_id===selected?'selected':'')+'>'+esc(s.full_name)+'</option>').join('')}
+function renderReservations(){
+ const filter=$('filter-status').value;
+ const rows=reservations.filter(r=>!filter||r.status===filter);
+ if(!rows.length){$('reservation-list').innerHTML='<div class="empty">No hay reservaciones en este filtro.</div>';return}
+ $('reservation-list').innerHTML=rows.map(r=>{
+ const editable=isAdmin;
+ const seller=sellers.find(s=>s.user_id===r.seller_id);
+ const hold=r.status==='pending'&&r.hold_expires_at?new Date(r.hold_expires_at).toLocaleString('es-MX'):'—';
+ return '<article class="reservation-card" data-res="'+r.id+'"><div class="reservation-head"><div><h3>'+esc(r.folio)+'</h3><div class="mini">'+dateText(r.created_at?.slice(0,10))+' · '+esc(r.source||'website')+'</div></div><span class="pill '+(r.status==='confirmed'?'green':'')+'">'+esc(r.status)+'</span></div><div><strong>'+esc(r.customer_name)+'</strong><div class="mini">'+esc(r.phone)+(r.customer_email?' · '+esc(r.customer_email):'')+'</div><div class="mini">'+dateText(r.reservation_date)+' · '+esc(r.time_slot)+' · '+esc(r.experience)+' · '+r.guests+' pasajeros</div><div class="mini">Retención: '+hold+'</div></div><div class="reservation-fields" style="margin-top:10px"><div class="field"><label>Estado</label><select data-field="status" '+(!editable?'disabled':'')+'><option value="pending" '+(r.status==='pending'?'selected':'')+'>Pendiente</option><option value="confirmed" '+(r.status==='confirmed'?'selected':'')+'>Confirmada</option><option value="rejected" '+(r.status==='rejected'?'selected':'')+'>Rechazada</option><option value="cancelled" '+(r.status==='cancelled'?'selected':'')+'>Cancelada</option></select></div><div class="field"><label>Anticipo</label><select data-field="deposit_status" '+(!editable?'disabled':'')+'><option value="pending" '+(r.deposit_status==='pending'?'selected':'')+'>Pendiente</option><option value="paid" '+(r.deposit_status==='paid'?'selected':'')+'>Pagado</option><option value="not_required" '+(r.deposit_status==='not_required'?'selected':'')+'>No requerido</option></select></div><div class="field"><label>Anticipo MXN</label><input data-field="deposit_amount" type="number" min="0" step=".01" value="'+Number(r.deposit_amount||0)+'" '+(!editable?'disabled':'')+'></div><div class="field"><label>Total MXN</label><input data-field="total_amount" type="number" min="0" step=".01" value="'+(r.total_amount??'')+'" '+(!editable?'disabled':'')+'></div><div class="field"><label>Vendedor</label><select data-field="seller_id" '+(!editable?'disabled':'')+'>'+sellerOptions(r.seller_id)+'</select></div><div class="field"><label>Comisión</label><select data-field="commission_status" '+(!editable?'disabled':'')+'><option value="pending" '+(r.commission_status==='pending'?'selected':'')+'>Pendiente</option><option value="approved" '+(r.commission_status==='approved'?'selected':'')+'>Aprobada</option><option value="paid" '+(r.commission_status==='paid'?'selected':'')+'>Pagada</option><option value="void" '+(r.commission_status==='void'?'selected':'')+'>Anulada</option></select></div></div><div class="mini">Saldo: <strong>'+money(r.balance_amount)+'</strong> · Comisión: '+money(r.commission_amount)+' ('+Number(r.commission_rate||0)+'%)</div><div class="reservation-actions">'+(editable?'<button class="primary small-btn" data-action="save">Guardar cambios</button><label class="secondary small-btn">Adjuntar comprobante<input type="file" accept="image/*,application/pdf" data-action="proof" hidden></label>':'')+'<button class="secondary small-btn" data-action="receipt">Comprobante / recibo</button><button class="secondary small-btn" data-action="history">Historial</button>'+(r.deposit_proof_path?'<button class="secondary small-btn" data-action="view-proof">Ver anticipo</button>':'')+'</div><div class="mini" data-history></div></article>';
+ }).join('');
+ $('reservation-list').querySelectorAll('[data-res]').forEach(card=>{
+  card.querySelector('[data-action="save"]')?.addEventListener('click',()=>saveReservation(card));
+  card.querySelector('[data-action="proof"]')?.addEventListener('change',e=>uploadProof(card.dataset.res,e.target.files[0]));
+  card.querySelector('[data-action="receipt"]')?.addEventListener('click',()=>printReceipt(reservations.find(r=>r.id===card.dataset.res)));
+  card.querySelector('[data-action="history"]')?.addEventListener('click',()=>loadHistory(card,card.dataset.res));
+  card.querySelector('[data-action="view-proof"]')?.addEventListener('click',()=>viewProof(reservations.find(r=>r.id===card.dataset.res)));
+ });
+}
+async function saveReservation(card){
+ const id=card.dataset.res,r=reservations.find(x=>x.id===id),v={};
+ card.querySelectorAll('[data-field]').forEach(el=>v[el.dataset.field]=el.value);
+ v.deposit_amount=Number(v.deposit_amount||0);v.total_amount=v.total_amount===''?null:Number(v.total_amount);
+ if(v.deposit_amount<0||v.total_amount<0){msg('Los importes no pueden ser negativos.');return}
+ if(v.deposit_status==='paid'&&v.deposit_amount<=0){msg('Registra el importe recibido para marcar el anticipo como pagado.');return}
+ if(v.status==='confirmed'&&v.deposit_status==='pending'){msg('Valida el anticipo o marca “No requerido” antes de confirmar.');return}
+ if(v.total_amount!==null&&v.deposit_amount>v.total_amount){msg('El anticipo no puede superar el total.');return}
+ if(v.status==='confirmed'&&r.status!=='confirmed'&&v.deposit_status!=='not_required'&&v.deposit_amount<=0){msg('Para confirmar, registra el anticipo recibido.');return}
+ const {error}=await db.from('reservation_requests').update({...v,updated_at:new Date().toISOString()}).eq('id',id);
+ if(error){msg(error.message);return}await loadAll();msg('Reservación actualizada.');
+}
+async function uploadProof(id,file){
+ if(!file)return;if(file.size>10*1024*1024){msg('El archivo supera 10 MB.');return}
+ const path=id+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+ const {error:up}=await db.storage.from('zafire-proofs').upload(path,file,{contentType:file.type,upsert:false});
+ if(up){msg(up.message);return}
+ const {error}=await db.from('reservation_requests').update({deposit_proof_path:path,updated_at:new Date().toISOString()}).eq('id',id);
+ if(error){msg(error.message);return}await loadAll();msg('Comprobante adjuntado de forma privada.');
+}
+async function viewProof(r){const {data,error}=await db.storage.from('zafire-proofs').createSignedUrl(r.deposit_proof_path,300);if(error){msg(error.message);return}window.open(data.signedUrl,'_blank','noopener')}
+function printReceipt(r){
+ if(!r)return;const w=window.open('','_blank','width=720,height=850');if(!w){msg('Permite las ventanas emergentes para imprimir el recibo.');return}
+ w.document.write('<!doctype html><html lang="es"><meta charset="utf-8"><title>Recibo '+esc(r.folio)+'</title><style>body{font:14px/1.6 Arial;padding:42px;color:#081523}h1{letter-spacing:5px}small{color:#777}.line{border-top:1px solid #ddd;margin:18px 0}.row{display:flex;justify-content:space-between;padding:6px 0}</style><h1>ZAFIRE</h1><small>MAZATLÁN · SINALOA · MÉXICO</small><div class="line"></div><h2>Ficha de reservación</h2><p><b>Folio:</b> '+esc(r.folio)+'</p><p><b>Estado:</b> '+esc(r.status)+'</p><div class="line"></div><div class="row"><span>Titular</span><b>'+esc(r.customer_name)+'</b></div><div class="row"><span>Teléfono</span><b>'+esc(r.phone)+'</b></div><div class="row"><span>Fecha</span><b>'+dateText(r.reservation_date)+'</b></div><div class="row"><span>Turno</span><b>'+esc(r.time_slot)+'</b></div><div class="row"><span>Experiencia</span><b>'+esc(r.experience)+'</b></div><div class="row"><span>Pasajeros</span><b>'+r.guests+'</b></div><div class="line"></div><div class="row"><span>Total</span><b>'+money(r.total_amount)+'</b></div><div class="row"><span>Anticipo recibido</span><b>'+money(r.deposit_amount)+'</b></div><div class="row"><span>Saldo</span><b>'+money(r.balance_amount)+'</b></div><p><small>Este documento es un resumen operativo de la solicitud y no sustituye un comprobante fiscal ni confirma el pago si el anticipo no ha sido validado.</small></p><script>window.onload=()=>window.print()<\/script></html>');w.document.close();
+}
+async function loadHistory(card,id){const {data,error}=await db.from('reservation_events').select('event_type,old_values,new_values,created_at,actor_id').eq('reservation_id',id).order('created_at',{ascending:false}).limit(12);if(error){msg(error.message);return}const box=card.querySelector('[data-history]');box.innerHTML=(data||[]).map(x=>dateText(x.created_at.slice(0,10))+' '+new Date(x.created_at).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})+' · '+esc(x.event_type)).join('<br>')||'Sin movimientos.'}
+function renderCalendar(){
+ const y=calendarDate.getFullYear(),m=calendarDate.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+ $('cal-label').textContent=calendarDate.toLocaleDateString('es-MX',{month:'long',year:'numeric'});
+ const heads=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(x=>'<div class="weekday">'+x+'</div>').join('');
+ let cells=Array(first).fill('<div></div>').join('');
+ for(let d=1;d<=days;d++){const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),rs=reservations.filter(r=>r.reservation_date===iso&&(r.status==='confirmed'||(r.status==='pending'&&(!r.hold_expires_at||new Date(r.hold_expires_at)>new Date())))),bs=blocked.filter(b=>b.blocked_date===iso);const pax=rs.reduce((s,r)=>s+Number(r.guests),0);const cl=bs.some(b=>b.time_slot==='all_day'||b.time_slot==='all'||b.time_slot==='all_day')?'blocked':pax?'busy':'';const today=iso===new Date().toISOString().slice(0,10)?'today':'';cells+='<div class="day '+cl+' '+today+'"><strong>'+d+'</strong><span class="mini">'+pax+'/15 pasajeros</span><span class="mini">'+rs.length+' solicitudes activas</span>'+(bs.length?'<span class="mini">Bloqueado: '+bs.map(b=>esc(b.time_slot)).join(', ')+'</span>':'')+'</div>'}
+ $('calendar-grid').innerHTML=heads+cells;
+}
+function renderBlocked(){
+ $('blocked-list').innerHTML=blocked.length?blocked.map(b=>'<div class="inline" style="justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span><b>'+dateText(b.blocked_date)+'</b> · '+esc(b.time_slot)+' · '+esc(b.reason||'Sin motivo')+'</span>'+(isAdmin?'<button class="danger small-btn" data-unblock="'+b.id+'">Desbloquear</button>':'')+'</div>').join(''):'<p class="empty">No hay fechas bloqueadas.</p>';
+ $('blocked-list').querySelectorAll('[data-unblock]').forEach(b=>b.addEventListener('click',async()=>{const {error}=await db.from('blocked_dates').update({is_active:false}).eq('id',b.dataset.unblock);if(error){msg(error.message);return}await loadAll()}));
+}
+function renderCustomers(){
+ const rows=customers.map(c=>{const rs=reservations.filter(r=>r.customer_id===c.id),sales=rs.filter(r=>r.status==='confirmed').reduce((s,r)=>s+Number(r.total_amount||0),0),last=rs.map(r=>r.reservation_date).sort().reverse()[0];return '<tr><td><b>'+esc(c.full_name)+'</b></td><td>'+esc(c.phone)+'<br>'+esc(c.email||'')+'</td><td>'+rs.length+'</td><td>'+money(sales)+'</td><td>'+dateText(last)+'</td></tr>'}).join('');
+ $('customer-rows').innerHTML=rows||'<tr><td colspan="5" class="empty">Aún no hay clientes registrados.</td></tr>';
+}
+function renderTeam(){
+ $('team-rows').innerHTML=sellers.map(s=>'<tr><td><b>'+esc(s.full_name)+'</b><br><span class="mini">'+esc(s.user_id)+'</span></td><td>'+esc(s.role)+'</td><td>'+Number(s.commission_rate)+'%</td><td>'+(s.is_active?'Activo':'Inactivo')+'</td><td><button class="secondary small-btn" data-toggle-member="'+s.user_id+'" data-active="'+s.is_active+'">'+(s.is_active?'Desactivar':'Activar')+'</button></td></tr>').join('')||'<tr><td colspan="5" class="empty">No hay vendedores registrados.</td></tr>';
+ $('team-rows').querySelectorAll('[data-toggle-member]').forEach(b=>b.addEventListener('click',async()=>{const {error}=await db.from('team_members').update({is_active:b.dataset.active!=='true'}).eq('user_id',b.dataset.toggleMember);if(error){msg(error.message);return}await loadAll()}));
+}
+function renderCommissions(){
+ const assigned=reservations.filter(r=>r.seller_id);
+ $('commission-total').textContent=money(assigned.reduce((s,r)=>s+Number(r.commission_amount||0),0));
+ $('commission-pending').textContent=money(assigned.filter(r=>r.commission_status==='pending'||r.commission_status==='approved').reduce((s,r)=>s+Number(r.commission_amount||0),0));
+ $('commission-paid').textContent=money(assigned.filter(r=>r.commission_status==='paid').reduce((s,r)=>s+Number(r.commission_amount||0),0));
+ $('commission-rows').innerHTML=assigned.map(r=>'<tr><td>'+esc(r.folio)+'</td><td>'+esc(sellers.find(s=>s.user_id===r.seller_id)?.full_name||'Vendedor')+'</td><td>'+money(r.total_amount)+'</td><td>'+Number(r.commission_rate)+'%</td><td>'+money(r.commission_amount)+'</td><td><select data-commission="'+r.id+'"><option value="pending" '+(r.commission_status==='pending'?'selected':'')+'>Pendiente</option><option value="approved" '+(r.commission_status==='approved'?'selected':'')+'>Aprobada</option><option value="paid" '+(r.commission_status==='paid'?'selected':'')+'>Pagada</option><option value="void" '+(r.commission_status==='void'?'selected':'')+'>Anulada</option></select></td><td><button class="secondary small-btn" data-save-commission="'+r.id+'">Guardar</button></td></tr>').join('')||'<tr><td colspan="7" class="empty">Aún no hay comisiones asignadas.</td></tr>';
+ $('commission-rows').querySelectorAll('[data-save-commission]').forEach(b=>b.addEventListener('click',async()=>{const val=$('commission-rows').querySelector('[data-commission="'+b.dataset.saveCommission+'"]').value;const {error}=await db.from('reservation_requests').update({commission_status:val}).eq('id',b.dataset.saveCommission);if(error){msg(error.message);return}await loadAll()}));
+}
+function renderReports(){
+ const from=$('report-from').value,to=$('report-to').value;
+ const rows=reservations.filter(r=>r.status==='confirmed'&&(!from||r.reservation_date>=from)&&(!to||r.reservation_date<=to));
+ $('report-count').textContent=rows.length;$('report-revenue').textContent=money(rows.reduce((s,r)=>s+Number(r.total_amount||0),0));$('report-deposit').textContent=money(rows.reduce((s,r)=>s+Number(r.deposit_amount||0),0));$('report-balance').textContent=money(rows.reduce((s,r)=>s+Number(r.balance_amount||0),0));
+ const totals=sellers.map(s=>({name:s.full_name,total:rows.filter(r=>r.seller_id===s.user_id).reduce((a,r)=>a+Number(r.total_amount||0),0)})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total),max=Math.max(1,...totals.map(x=>x.total));
+ $('seller-report').innerHTML=totals.map(x=>'<div class="bar-row"><span>'+esc(x.name)+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(x.total/max*100)+'%"></div></div><b>'+money(x.total)+'</b></div>').join('')||'<p class="empty">Sin ventas confirmadas en el periodo.</p>';
+}
+async function loadSiteSettings(){
+ const {data,error}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();if(error)throw error;
+ $('site-json').value=JSON.stringify(data?.setting_value||{},null,2);
+}
+async function renderMedia(){
+ $('media-list').innerHTML=media.map(x=>'<div class="media-item"><img src="'+esc(x.public_url)+'" alt="'+esc(x.alt_text||'')+'"><div class="media-meta"><b>'+esc(x.category)+'</b><div class="mini">'+esc(x.alt_text||'')+'</div><button class="danger small-btn" style="margin-top:8px" data-delete-media="'+x.id+'">Eliminar</button></div></div>').join('')||'<p class="empty">No hay imágenes cargadas.</p>';
+ $('media-list').querySelectorAll('[data-delete-media]').forEach(b=>b.addEventListener('click',async()=>{const item=media.find(x=>x.id===b.dataset.deleteMedia);if(!item)return;const {error:se}=await db.storage.from('zafire-media').remove([item.storage_path]);if(se){msg(se.message);return}const {error}=await db.from('site_media').delete().eq('id',item.id);if(error){msg(error.message);return}await loadAll()}));
+}
+function renderMedia(){ $('media-list').innerHTML=media.map(x=>'<div class="media-item"><img src="'+esc(x.public_url)+'" alt="'+esc(x.alt_text||'')+'"><div class="media-meta"><b>'+esc(x.category)+'</b><div class="mini">'+esc(x.alt_text||'')+'</div><button class="danger small-btn" style="margin-top:8px" data-delete-media="'+x.id+'">Eliminar</button></div></div>').join('')||'<p class="empty">No hay imágenes cargadas.</p>'; $('media-list').querySelectorAll('[data-delete-media]').forEach(b=>b.addEventListener('click',async()=>{const item=media.find(x=>x.id===b.dataset.deleteMedia);if(!item)return;const {error:se}=await db.storage.from('zafire-media').remove([item.storage_path]);if(se){msg(se.message);return}const {error}=await db.from('site_media').delete().eq('id',item.id);if(error){msg(error.message);return}await loadAll()}));}
+function exportReservations(){csv('zafire-reservaciones.csv',reservations.map(r=>({folio:r.folio,cliente:r.customer_name,telefono:r.phone,fecha:r.reservation_date,turno:r.time_slot,experiencia:r.experience,personas:r.guests,estado:r.status,total:r.total_amount,anticipo:r.deposit_amount,saldo:r.balance_amount,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name||'',comision:r.commission_amount,comision_estado:r.commission_status})))}
+$('login-form').addEventListener('submit',async e=>{e.preventDefault();$('login-error').textContent='';const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('login-error').textContent=error.message;return}try{if(await access())await loadAll()}catch(err){msg(err.message)}});
+$('logout').addEventListener('click',async()=>{await db.auth.signOut();session=null;showLogin()});
+$('refresh').addEventListener('click',()=>loadAll().catch(e=>msg(e.message)));
+$('filter-status').addEventListener('change',renderReservations);
+$('tabs').addEventListener('click',async e=>{const b=e.target.closest('[data-tab]');if(!b)return;setView(b.dataset.tab);if(b.dataset.tab==='site'&&isAdmin)try{await loadSiteSettings()}catch(err){msg(err.message)}});
+$('block-form').addEventListener('submit',async e=>{e.preventDefault();const row={blocked_date:$('block-date').value,time_slot:$('block-slot').value,reason:$('block-reason').value.trim()||null,is_active:true};const {error}=await db.from('blocked_dates').insert(row);if(error){msg(error.message);return}$('block-form').reset();await loadAll();msg('Bloqueo registrado.')});
+$('cal-prev').addEventListener('click',()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()});$('cal-next').addEventListener('click',()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()});
+$('team-form').addEventListener('submit',async e=>{e.preventDefault();const row={user_id:$('team-uuid').value.trim(),full_name:$('team-name').value.trim(),role:$('team-role').value,commission_rate:Number($('team-rate').value),is_active:true};const {error}=await db.from('team_members').upsert(row);if(error){msg(error.message);return}$('team-form').reset();await loadAll();msg('Integrante guardado.')});
+$('run-report').addEventListener('click',renderReports);
+$('save-site').addEventListener('click',async()=>{try{const value=JSON.parse($('site-json').value);const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:value,is_public:true,updated_by:session.user.id,updated_at:new Date().toISOString()});if(error)throw error;msg('Contenido guardado. El sitio público leerá la nueva configuración desde Supabase.')}catch(e){msg('No se pudo guardar: '+e.message)}});
+$('reload-site').addEventListener('click',()=>loadSiteSettings().catch(e=>msg(e.message)));
+$('media-form').addEventListener('submit',async e=>{e.preventDefault();const file=$('media-file').files[0];if(!file)return;if(file.size>12*1024*1024){msg('La imagen supera 12 MB.');return}const path=$('media-category').value+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error:up}=await db.storage.from('zafire-media').upload(path,file,{contentType:file.type,upsert:false});if(up){msg(up.message);return}const {data}=db.storage.from('zafire-media').getPublicUrl(path);const {error}=await db.from('site_media').insert({storage_path:path,public_url:data.publicUrl,category:$('media-category').value,alt_text:$('media-alt').value.trim()||null,sort_order:media.length,is_active:true});if(error){msg(error.message);return}$('media-form').reset();await loadAll();msg('Imagen publicada en la galería del sitio.')});
+$('export-reservations').addEventListener('click',exportReservations);
+$('export-customers').addEventListener('click',()=>csv('zafire-clientes.csv',customers.map(c=>({nombre:c.full_name,telefono:c.phone,correo:c.email,notas:c.notes}))));
+$('export-commissions').addEventListener('click',()=>csv('zafire-comisiones.csv',reservations.filter(r=>r.seller_id).map(r=>({folio:r.folio,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name,venta:r.total_amount,porcentaje:r.commission_rate,comision:r.commission_amount,estado:r.commission_status}))));
+$('export-report').addEventListener('click',()=>csv('zafire-reporte.csv',reservations.filter(r=>r.status==='confirmed'&&(!$('report-from').value||r.reservation_date>=$('report-from').value)&&(!$('report-to').value||r.reservation_date<=$('report-to').value)).map(r=>({folio:r.folio,fecha:r.reservation_date,cliente:r.customer_name,total:r.total_amount,anticipo:r.deposit_amount,saldo:r.balance_amount,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name||''}))));
+$('commission-rows').addEventListener('change',()=>{});
+access().then(ok=>ok&&loadAll()).catch(e=>msg(e.message));
 })();
-</script>
-</body>
-</html>
+</script></body></html>
