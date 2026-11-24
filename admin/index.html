@@ -25,7 +25,7 @@
 <div id="reservation-list" class="reservation-grid"><div class="empty">Cargando solicitudes…</div></div>
 </section>
 <section id="panel-calendar" class="panel hidden">
-<div class="panel-head"><div><h2>Calendario operativo</h2><p class="hint">Ocupación y bloqueos por turno.</p></div><div class="inline"><button id="cal-prev" class="secondary">←</button><strong id="cal-label"></strong><button id="cal-next" class="secondary">→</button></div></div>
+<div class="panel-head"><div><h2>Calendario operativo</h2><p class="hint">Ocupación y bloqueos por turno.</p></div><div class="inline"><button id="cal-prev" class="secondary">←</button><strong id="cal-label"></strong><button id="cal-next" class="secondary">→</button><button class="secondary small-btn" data-calendar-mode="month">Mes</button><button class="secondary small-btn" data-calendar-mode="week">Semana</button><button class="secondary small-btn" data-calendar-mode="day">Día</button></div></div>
 <div class="calendar" id="calendar-grid"></div>
 <div class="notice">Un bloqueo puede aplicarse a todo el día o a un turno. Las solicitudes pendientes solo ocupan capacidad durante su retención activa.</div>
 <h3 style="font-size:16px">Bloquear disponibilidad</h3><form id="block-form" class="grid"><div class="field"><label>Fecha</label><input type="date" id="block-date" required></div><div class="field"><label>Turno</label><select id="block-slot"><option value="all_day">Todo el día</option><option value="morning">Turno Matutino</option><option value="sunset">Turno Atardecer</option><option value="fullday">Jornada Personalizada</option></select></div><div class="field"><label>Motivo</label><input id="block-reason" placeholder="Mantenimiento, evento privado…"></div><button class="primary" type="submit">Bloquear fecha / turno</button></form>
@@ -65,7 +65,7 @@
 (()=>{
 const SUPABASE_URL='https://mfgqbljtswvuqwluayfj.supabase.co',KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
 const db=window.supabase.createClient(SUPABASE_URL,KEY),$=id=>document.getElementById(id);
-let session=null,role='seller',isAdmin=false,reservations=[],sellers=[],customers=[],blocked=[],media=[],calendarDate=new Date();
+let session=null,role='seller',isAdmin=false,reservations=[],sellers=[],customers=[],blocked=[],media=[],calendarDate=new Date(),calendarMode='month';
 const money=n=>Number(n||0).toLocaleString('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const dateText=d=>d?new Date(d+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}):'—';
@@ -95,6 +95,7 @@ async function loadAll(){
  if(r.error)throw r.error;if(b.error)throw b.error;
  reservations=r.data||[];blocked=b.data||[];
  if(isAdmin){
+  $('block-form').classList.remove('hidden');
   const [s,c,m]=await Promise.all([
    db.from('team_members').select('*').order('full_name'),
    db.from('customers').select('*').order('updated_at',{ascending:false}),
@@ -103,6 +104,7 @@ async function loadAll(){
   if(s.error)throw s.error;if(c.error)throw c.error;if(m.error)throw m.error;
   sellers=s.data||[];customers=c.data||[];media=m.data||[];
  }else{
+  $('block-form').classList.add('hidden');
   const [c]=await Promise.all([db.from('customers').select('*').order('updated_at',{ascending:false})]);
   customers=c.data||[];
  }
@@ -138,7 +140,7 @@ function renderReservations(){
 async function saveReservation(card){
  const id=card.dataset.res,r=reservations.find(x=>x.id===id),v={};
  card.querySelectorAll('[data-field]').forEach(el=>v[el.dataset.field]=el.value);
- v.deposit_amount=Number(v.deposit_amount||0);v.total_amount=v.total_amount===''?null:Number(v.total_amount);
+ v.deposit_amount=Number(v.deposit_amount||0);v.total_amount=v.total_amount===''?null:Number(v.total_amount);v.seller_id=v.seller_id||null;
  if(v.deposit_amount<0||v.total_amount<0){msg('Los importes no pueden ser negativos.');return}
  if(v.deposit_status==='paid'&&v.deposit_amount<=0){msg('Registra el importe recibido para marcar el anticipo como pagado.');return}
  if(v.status==='confirmed'&&v.deposit_status==='pending'){msg('Valida el anticipo o marca “No requerido” antes de confirmar.');return}
@@ -162,13 +164,26 @@ function printReceipt(r){
 }
 async function loadHistory(card,id){const {data,error}=await db.from('reservation_events').select('event_type,old_values,new_values,created_at,actor_id').eq('reservation_id',id).order('created_at',{ascending:false}).limit(12);if(error){msg(error.message);return}const box=card.querySelector('[data-history]');box.innerHTML=(data||[]).map(x=>dateText(x.created_at.slice(0,10))+' '+new Date(x.created_at).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})+' · '+esc(x.event_type)).join('<br>')||'Sin movimientos.'}
 function renderCalendar(){
- const y=calendarDate.getFullYear(),m=calendarDate.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
- $('cal-label').textContent=calendarDate.toLocaleDateString('es-MX',{month:'long',year:'numeric'});
- const heads=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(x=>'<div class="weekday">'+x+'</div>').join('');
- let cells=Array(first).fill('<div></div>').join('');
- for(let d=1;d<=days;d++){const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),rs=reservations.filter(r=>r.reservation_date===iso&&(r.status==='confirmed'||(r.status==='pending'&&(!r.hold_expires_at||new Date(r.hold_expires_at)>new Date())))),bs=blocked.filter(b=>b.blocked_date===iso);const pax=rs.reduce((s,r)=>s+Number(r.guests),0);const cl=bs.some(b=>b.time_slot==='all_day'||b.time_slot==='all'||b.time_slot==='all_day')?'blocked':pax?'busy':'';const today=iso===new Date().toISOString().slice(0,10)?'today':'';cells+='<div class="day '+cl+' '+today+'"><strong>'+d+'</strong><span class="mini">'+pax+'/15 pasajeros</span><span class="mini">'+rs.length+' solicitudes activas</span>'+(bs.length?'<span class="mini">Bloqueado: '+bs.map(b=>esc(b.time_slot)).join(', ')+'</span>':'')+'</div>'}
- $('calendar-grid').innerHTML=heads+cells;
+ const y=calendarDate.getFullYear(),m=calendarDate.getMonth();
+ const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const dayEvents=d=>{const key=iso(d),rs=reservations.filter(r=>r.reservation_date===key&&(r.status==='confirmed'||(r.status==='pending'&&(!r.hold_expires_at||new Date(r.hold_expires_at)>new Date())))),bs=blocked.filter(b=>b.blocked_date===key);return {key,rs,bs,pax:rs.reduce((n,r)=>n+Number(r.guests),0)}};
+ $('cal-label').textContent=calendarDate.toLocaleDateString('es-MX',{month:calendarMode==='day'?'long':'long',year:'numeric'})+(calendarMode==='day'?' · '+calendarDate.getDate():'');
+ if(calendarMode==='month'){
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+  const heads=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(x=>'<div class="weekday">'+x+'</div>').join('');
+  let cells=Array(first).fill('<div></div>').join('');
+  for(let d=1;d<=days;d++){const date=new Date(y,m,d),ev=dayEvents(date),cl=ev.bs.some(b=>['all_day','all'].includes(b.time_slot))?'blocked':ev.pax?'busy':'',today=ev.key===iso(new Date())?'today':'';cells+='<button type="button" data-focus-date="'+ev.key+'" class="day '+cl+' '+today+'"><strong>'+d+'</strong><span class="mini">'+ev.pax+'/15 pasajeros</span><span class="mini">'+ev.rs.length+' activas</span>'+(ev.bs.length?'<span class="mini">Bloqueado</span>':'')+'</button>'}
+  $('calendar-grid').innerHTML=heads+cells;
+  $('calendar-grid').querySelectorAll('[data-focus-date]').forEach(b=>b.addEventListener('click',()=>{calendarDate=new Date(b.dataset.focusDate+'T12:00:00');calendarMode='day';renderCalendar();}));
+ }else{
+  let dates=[];
+  if(calendarMode==='week'){const startDay=new Date(calendarDate);startDay.setDate(startDay.getDate()-startDay.getDay());dates=Array.from({length:7},(_,i)=>{const d=new Date(startDay);d.setDate(startDay.getDate()+i);return d;});}
+  else dates=[new Date(calendarDate)];
+  $('calendar-grid').innerHTML=dates.map(d=>{const ev=dayEvents(d);return '<article class="card" style="grid-column:1/-1"><div class="panel-head"><div><h3 style="margin:0">'+dateText(ev.key)+'</h3><span class="mini">'+ev.pax+'/15 pasajeros ocupados</span></div><span class="pill">'+ev.rs.length+' reservaciones activas</span></div>'+(ev.bs.length?'<p class="mini">Bloqueos: '+ev.bs.map(b=>esc(b.time_slot)+' · '+esc(b.reason||'')).join(' / ')+'</p>':'')+(ev.rs.length?ev.rs.map(r=>'<div class="inline" style="justify-content:space-between;border-top:1px solid var(--line);padding:8px 0"><span><b>'+esc(r.folio)+'</b> · '+esc(r.customer_name)+' · '+r.guests+' pax</span><span>'+esc(r.time_slot)+' · '+esc(r.status)+'</span></div>').join(''):'<p class="empty">Sin reservaciones activas.</p>')+'</article>';}).join('');
+ }
+ document.querySelectorAll('[data-calendar-mode]').forEach(b=>b.classList.toggle('active',b.dataset.calendarMode===calendarMode));
 }
+
 function renderBlocked(){
  $('blocked-list').innerHTML=blocked.length?blocked.map(b=>'<div class="inline" style="justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)"><span><b>'+dateText(b.blocked_date)+'</b> · '+esc(b.time_slot)+' · '+esc(b.reason||'Sin motivo')+'</span>'+(isAdmin?'<button class="danger small-btn" data-unblock="'+b.id+'">Desbloquear</button>':'')+'</div>').join(''):'<p class="empty">No hay fechas bloqueadas.</p>';
  $('blocked-list').querySelectorAll('[data-unblock]').forEach(b=>b.addEventListener('click',async()=>{const {error}=await db.from('blocked_dates').update({is_active:false}).eq('id',b.dataset.unblock);if(error){msg(error.message);return}await loadAll()}));
@@ -211,7 +226,7 @@ $('refresh').addEventListener('click',()=>loadAll().catch(e=>msg(e.message)));
 $('filter-status').addEventListener('change',renderReservations);
 $('tabs').addEventListener('click',async e=>{const b=e.target.closest('[data-tab]');if(!b)return;setView(b.dataset.tab);if(b.dataset.tab==='site'&&isAdmin)try{await loadSiteSettings()}catch(err){msg(err.message)}});
 $('block-form').addEventListener('submit',async e=>{e.preventDefault();const row={blocked_date:$('block-date').value,time_slot:$('block-slot').value,reason:$('block-reason').value.trim()||null,is_active:true};const {error}=await db.from('blocked_dates').insert(row);if(error){msg(error.message);return}$('block-form').reset();await loadAll();msg('Bloqueo registrado.')});
-$('cal-prev').addEventListener('click',()=>{calendarDate.setMonth(calendarDate.getMonth()-1);renderCalendar()});$('cal-next').addEventListener('click',()=>{calendarDate.setMonth(calendarDate.getMonth()+1);renderCalendar()});
+$('cal-prev').addEventListener('click',()=>{if(calendarMode==='month')calendarDate.setMonth(calendarDate.getMonth()-1);else calendarDate.setDate(calendarDate.getDate()-(calendarMode==='week'?7:1));renderCalendar()});$('cal-next').addEventListener('click',()=>{if(calendarMode==='month')calendarDate.setMonth(calendarDate.getMonth()+1);else calendarDate.setDate(calendarDate.getDate()+(calendarMode==='week'?7:1));renderCalendar()});document.querySelectorAll('[data-calendar-mode]').forEach(b=>b.addEventListener('click',()=>{calendarMode=b.dataset.calendarMode;renderCalendar()}));
 $('team-form').addEventListener('submit',async e=>{e.preventDefault();const row={user_id:$('team-uuid').value.trim(),full_name:$('team-name').value.trim(),role:$('team-role').value,commission_rate:Number($('team-rate').value),is_active:true};const {error}=await db.from('team_members').upsert(row);if(error){msg(error.message);return}$('team-form').reset();await loadAll();msg('Integrante guardado.')});
 $('run-report').addEventListener('click',renderReports);
 $('save-site').addEventListener('click',async()=>{try{const value=JSON.parse($('site-json').value);const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:value,is_public:true,updated_by:session.user.id,updated_at:new Date().toISOString()});if(error)throw error;msg('Contenido guardado. El sitio público leerá la nueva configuración desde Supabase.')}catch(e){msg('No se pudo guardar: '+e.message)}});
