@@ -1269,7 +1269,7 @@
                 const notes = document.getElementById('client-notes').value.trim();
                 if (!this.state.selectedDate) return this.showFeedback('Por favor selecciona una fecha disponible.');
                 if (!name) { this.showFeedback('Por favor ingresa tu nombre completo.'); document.getElementById('client-name').focus(); return; }
-                if (!phone || phone.replace(/\\D/g, '').length < 8) { this.showFeedback('Ingresa un teléfono o WhatsApp válido.'); document.getElementById('client-phone').focus(); return; }
+                if (!phone || phone.replace(/\D/g, '').length < 8) { this.showFeedback('Ingresa un teléfono o WhatsApp válido.'); document.getElementById('client-phone').focus(); return; }
                 const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
                 const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
                 const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
