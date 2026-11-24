@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Imágenes | ZAFIRE</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#07111d;--panel:#0c1b2a;--line:#263b4e;--text:#f5f2eb;--muted:#9aa8b5;--gold:#c6a972}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,sans-serif}button,input{font:inherit}.hidden{display:none!important}
+.login{min-height:100svh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 10%,#18334a,transparent 48%),var(--bg)}
+.login-card{width:min(420px,100%);padding:30px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.brand{font-size:23px;font-weight:800;letter-spacing:.22em}.eyebrow{color:var(--gold);font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+h1{font-size:25px;margin:10px 0 6px}h2{font-size:17px;margin:0}p{margin:0}.muted{color:var(--muted)}
+label{display:block;color:#c1cbd4;font-size:11px;margin:12px 0 7px}
+input[type=email],input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:7px;background:#071522;color:var(--text)}
+.btn{border:1px solid var(--line);background:#142a3d;color:var(--text);padding:10px 14px;border-radius:7px;font-weight:650;cursor:pointer}
+.btn.primary{background:var(--gold);color:#101a24;border-color:var(--gold)}.btn:disabled{opacity:.55;cursor:wait}
+#login-error{color:#ffb5a9;min-height:22px;margin-top:10px}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px max(18px,calc((100% - 1100px)/2));background:#091725ed;border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}
+.header-actions{display:flex;gap:8px;align-items:center}.status{font-size:11px;color:var(--muted)}.status.ok{color:#8ed4b1}.status.bad{color:#ffb5a9}
+main{width:min(900px,100%);margin:0 auto;padding:30px 18px 70px}.intro{margin-bottom:22px}.intro p{margin-top:7px}
+details{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:13px 0;overflow:hidden}
+summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px;cursor:pointer;font-weight:700}
+summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-size:19px;color:var(--gold)}details[open] summary:after{content:"−"}
+.section-content{padding:0 16px 16px;border-top:1px solid var(--line)}
+.image-card{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;padding:16px 0;border-bottom:1px solid #263b4e}
+.image-card:last-child{border-bottom:0}.preview{width:100%;height:116px;object-fit:cover;border-radius:7px;background:#172b3d;border:1px solid var(--line)}
+.image-title{font-weight:700;margin:1px 0 4px}.image-note{font-size:11px;color:var(--muted)}
+.file-button{display:inline-flex;margin-top:12px;align-items:center;gap:8px;padding:9px 12px;border:1px solid #536477;border-radius:7px;cursor:pointer;font-size:12px}
+.file-button input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.help{margin-top:18px;padding:13px 15px;border:1px solid #31485b;background:#102438;border-radius:8px;color:#c0ccd6;font-size:12px}
+@media(max-width:600px){header{align-items:flex-start;flex-direction:column;padding:13px 16px}.header-actions{width:100%;flex-wrap:wrap}.header-actions .status{width:100%}.image-card{grid-template-columns:1fr}.preview{height:190px}.login-card{padding:24px}}
+</style>
+</head>
+<body>
+<section id="login-screen" class="login">
+ <form class="login-card" id="login-form">
+  <div class="eyebrow">Panel de control</div><div class="brand">ZAFIRE</div>
+  <h1>Administrar imágenes</h1><p class="muted">Acceso privado para actualizar las fotografías del sitio.</p>
+  <label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required>
+  <label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" required>
+  <button class="btn primary" id="login-btn" style="width:100%;margin-top:18px">Entrar</button><div id="login-error"></div>
+ </form>
+</section>
+<section id="admin-screen" class="hidden">
+ <header>
+  <div><div class="brand">ZAFIRE <span style="font-size:10px;color:var(--gold);letter-spacing:.12em">/ IMÁGENES</span></div><div class="muted" style="font-size:11px">Editor de fotografías</div></div>
+  <div class="header-actions"><span id="status" class="status">Cargando…</span><button id="publish" class="btn primary">Publicar imágenes</button><button id="logout" class="btn">Salir</button></div>
+ </header>
+ <main>
+  <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Fotografías del sitio</h1><p class="muted">Abre cada sección para reemplazar sus imágenes. Los cambios se guardan como borrador y se reflejan en la página al publicarlos.</p></div>
+  <div id="sections"></div>
+  <div class="help">Al reemplazar una fotografía, primero se sube el archivo nuevo. La imagen anterior se conserva hasta que la publicación termine correctamente; después se elimina de Supabase Storage para no acumular archivos.</div>
+ </main>
+</section>
+<script>
+(function(){
+ const URL='https://mfgqbljtswvuqwluayfj.supabase.co';
+ const KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
+ const BUCKET='zafire-media';
+ const db=window.supabase.createClient(URL,KEY,{global:{fetch:(input,init={})=>fetch(input,{...init,cache:'no-store'})}});
+ const $=id=>document.getElementById(id);
+ let user=null,draft=null,published=null,busy=false;
+ const fallback=[
+  {id:'seed-hero',category:'hero-background',public_url:'https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=2000&q=85',storage_path:'external:',alt_text:'ZAFIRE navegando en el Pacífico',sort_order:0,is_active:true},
+  {id:'seed-vessel-1',category:'vessel-photo-primary',public_url:'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80',storage_path:'external:',alt_text:'Embarcación y navegación',sort_order:1,is_active:true},
+  {id:'seed-vessel-2',category:'vessel-photo-detail',public_url:'https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&w=800&q=80',storage_path:'external:',alt_text:'Detalle náutico',sort_order:2,is_active:true},
+  {id:'seed-gallery-1',category:'gallery',public_url:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=80',storage_path:'external:',alt_text:'Navegación costera',sort_order:3,is_active:true},
+  {id:'seed-gallery-2',category:'gallery',public_url:'https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=1200&q=80',storage_path:'external:',alt_text:'Horizonte desde cubierta',sort_order:4,is_active:true},
+  {id:'seed-gallery-3',category:'gallery',public_url:'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=1200&q=80',storage_path:'external:',alt_text:'Atardecer en Mazatlán',sort_order:5,is_active:true},
+  {id:'seed-gallery-4',category:'gallery',public_url:'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80',storage_path:'external:',alt_text:'Experiencias en el Pacífico',sort_order:6,is_active:true}
+ ];
+ const groups=[
+  {id:'portada',title:'Portada',description:'Imagen principal que aparece al entrar al sitio.',categories:['hero-background']},
+  {id:'embarcacion',title:'Embarcación',description:'Fotografías de la sección que presenta la embarcación.',categories:['vessel-photo-primary','vessel-photo-detail']},
+  {id:'galeria',title:'Galería',description:'Fotografías que aparecen en la galería visual.',categories:['gallery']}
+ ];
+ const labels={'hero-background':'Imagen principal de portada','vessel-photo-primary':'Fotografía principal','vessel-photo-detail':'Fotografía de detalle','gallery':'Fotografía de galería'};
+ function setStatus(message,kind){$('status').textContent=message;$('status').className='status '+(kind||'');}
+ function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ async function isAdmin(u){const {data,error}=await db.from('admin_users').select('user_id').eq('user_id',u.id).maybeSingle();if(error)throw error;return !!data;}
+ async function load(){
+  const {data:{session}}=await db.auth.getSession();
+  if(!session||!(await isAdmin(session.user))){$('login-screen').classList.remove('hidden');$('admin-screen').classList.add('hidden');return;}
+  user=session.user;
+  const {data,error}=await db.from('site_settings').select('setting_key,setting_value').in('setting_key',['public','draft']);
+  if(error)throw error;
+  const rows=data||[];
+  published=rows.find(x=>x.setting_key==='public')?.setting_value||{};
+  const saved=rows.find(x=>x.setting_key==='draft')?.setting_value;
+  draft=JSON.parse(JSON.stringify(saved||published||{}));
+  if(!Array.isArray(draft.media)||!draft.media.length)draft.media=Array.isArray(published.media)&&published.media.length?JSON.parse(JSON.stringify(published.media)):JSON.parse(JSON.stringify(fallback));
+  $('login-screen').classList.add('hidden');$('admin-screen').classList.remove('hidden');
+  render();setStatus('Borrador listo','ok');
+ }
+ function imageCard(item,index){
+  return '<article class="image-card"><img class="preview" src="'+escapeHtml(item.public_url)+'" alt="'+escapeHtml(item.alt_text||'')+'" loading="lazy"><div><div class="image-title">'+escapeHtml(labels[item.category]||'Fotografía')+'</div><div class="image-note">Selecciona una imagen nueva para reemplazar esta fotografía.</div><label class="file-button">Cambiar imagen<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-upload="'+index+'"></label></div></article>';
+ }
+ function render(){
+  $('sections').innerHTML=groups.map((g,i)=>{
+   const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
+   return '<details '+(i===0?'open':'')+'><summary><span>'+g.title+'</span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+'</div></details>';
+  }).join('');
+  $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const index=Number(el.dataset.upload);el.disabled=true;
+   try{await replaceImage(index,file);}catch(e){setStatus('Error: '+e.message,'bad');alert('No se pudo reemplazar la imagen: '+e.message);}finally{el.disabled=false;}
+  }));
+ }
+ async function saveDraft(){
+  const {error}=await db.from('site_settings').upsert({setting_key:'draft',setting_value:draft,is_public:false,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+  if(error)throw error;
+ }
+ async function replaceImage(index,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Subiendo imagen…');
+  let uploadedPath=null;
+  try{
+   const item=draft.media[index];
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+item.category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const previous={...item};
+   item.public_url=data.publicUrl;item.storage_path=uploadedPath;item.id='upload-'+Date.now();item.alt_text=item.alt_text||file.name.replace(/\.[^.]+$/,'');
+   try{await saveDraft();}catch(e){Object.assign(item,previous);await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Imagen subida y borrador guardado','ok');
+  }finally{busy=false;}
+ }
+ async function publish(){
+  if(busy)return;busy=true;$('publish').disabled=true;setStatus('Publicando imágenes…');
+  try{
+   await saveDraft();
+   const {data:oldRow,error:readError}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();
+   if(readError)throw readError;
+   const oldMedia=oldRow?.setting_value?.media||[];
+   const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:draft,is_public:true,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+   if(error)throw error;
+   const keep=new Set((draft.media||[]).map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')));
+   const obsolete=[...new Set(oldMedia.map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')&&!keep.has(p)))];
+   if(obsolete.length){
+    const {error:removeError}=await db.storage.from(BUCKET).remove(obsolete);
+    if(removeError)setStatus('Publicado; no se pudieron borrar todos los archivos anteriores','bad');
+    else setStatus('Publicado. Imágenes anteriores eliminadas','ok');
+   }else setStatus('Imágenes publicadas correctamente','ok');
+   published=JSON.parse(JSON.stringify(draft));
+  }catch(e){setStatus('No se pudo publicar: '+e.message,'bad');}
+  finally{busy=false;$('publish').disabled=false;}
+ }
+ $('login-form').addEventListener('submit',async e=>{
+  e.preventDefault();$('login-btn').disabled=true;$('login-error').textContent='';
+  try{const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;if(!(await isAdmin(data.user))){await db.auth.signOut();throw new Error('Esta cuenta no está autorizada como administradora.');}await load();}
+  catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
+  finally{$('login-btn').disabled=false;}
+ });
+ $('publish').addEventListener('click',publish);
+ $('logout').addEventListener('click',async()=>{await db.auth.signOut();user=null;$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');});
+ db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');}});
+ load().catch(e=>{$('login-error').textContent=e.message;});
+})();
+</script>
+</body>
+</html>
