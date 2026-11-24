@@ -36,6 +36,27 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
 .crop-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px}
 .crop-reset{background:none;border:0;color:var(--gold);font-size:11px;cursor:pointer;padding:4px 0}
 .crop-tip{font-size:10px;color:var(--muted)}
+
+ .reservations-panel{margin:0 0 30px;padding:22px;background:#0b1c2a;border:1px solid var(--line);border-radius:12px}
+ .reservations-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+ .reservations-head h2{font:500 25px Georgia,serif;margin:5px 0}
+ .eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+ .reservation-filters{display:flex;align-items:center;gap:10px;margin:20px 0 12px;color:var(--muted);font-size:12px}
+ .reservation-filters select{background:#10283b;border:1px solid var(--line);border-radius:6px;color:#f4f1e9;padding:8px 12px}
+ .reservation-list{display:grid;gap:10px}
+ .reservation-card{border:1px solid var(--line);background:#102538;border-radius:9px;padding:15px;display:grid;gap:10px}
+ .reservation-card-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+ .reservation-folio{font-size:11px;letter-spacing:.08em;color:var(--gold)}
+ .reservation-status{font-size:10px;text-transform:uppercase;letter-spacing:.1em;padding:5px 8px;border-radius:99px;background:#263747;color:#d8e1e8}
+ .reservation-status.pending{background:#49391f;color:#f2d49b}.reservation-status.confirmed{background:#173e36;color:#a8e0cb}.reservation-status.cancelled{background:#472a2a;color:#f0b3b3}
+ .reservation-data{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 16px;font-size:12px}
+ .reservation-data strong{display:block;color:#f4f1e9;font-weight:500;margin-top:2px;overflow-wrap:anywhere}
+ .reservation-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+ .reservation-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:12px}
+ .reservation-actions input{width:150px;max-width:100%;background:#071522;border:1px solid var(--line);border-radius:6px;padding:9px;color:#fff}
+ .reservation-actions .btn-confirm{background:#c5aa78;color:#101b24;border:0}.reservation-actions .btn-cancel{background:transparent;border:1px solid #754747;color:#efb6b6}
+ .reservation-actions a{font-size:11px;color:var(--gold);text-decoration:underline}
+ @media(max-width:600px){.reservations-panel{padding:15px}.reservation-data{grid-template-columns:1fr 1fr}.reservation-actions input{width:100%}}
 .add-photo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0 3px}
 .add-photo{background:#1a3449;border-color:var(--gold);color:var(--gold)}
 
@@ -59,11 +80,16 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
 </section>
 <section id="admin-screen" class="hidden">
  <header>
-  <div><div class="brand">ZAFIRE <span style="font-size:10px;color:var(--gold);letter-spacing:.12em">/ IMÁGENES</span></div><div class="muted" style="font-size:11px">Editor de fotografías</div></div>
+  <div><div class="brand">ZAFIRE <span style="font-size:10px;color:var(--gold);letter-spacing:.12em">/ ADMIN</span></div><div class="muted" style="font-size:11px">Reservaciones y fotografías</div></div>
   <div class="header-actions"><span id="status" class="status">Cargando…</span><button id="publish" class="btn primary">Publicar imágenes</button><button id="logout" class="btn">Salir</button></div>
  </header>
  <main>
   <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Fotografías del sitio</h1><p class="muted">Abre cada sección para cambiar la foto y ajustar su encuadre: mueve horizontal/vertical y acerca o aleja con el control de zoom. Los ajustes se guardan automáticamente.</p></div>
+  <section class="reservations-panel">
+   <div class="reservations-head"><div><div class="eyebrow">Operación diaria</div><h2>Reservaciones</h2><p class="muted">Solicitudes del sitio, anticipos y confirmación de horarios.</p></div><button id="refresh-reservations" class="btn">Actualizar</button></div>
+   <div class="reservation-filters"><label for="reservation-filter">Mostrar</label><select id="reservation-filter"><option value="all">Todas</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></div>
+   <div id="reservation-list" class="reservation-list"><p class="muted">Cargando solicitudes…</p></div>
+  </section>
   <div id="sections"></div>
   <div class="help">Al reemplazar una fotografía, primero se sube el archivo nuevo. La imagen anterior se conserva hasta que la publicación termine correctamente; después se elimina de Supabase Storage para no acumular archivos.</div>
  </main>
@@ -106,7 +132,289 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   draft=JSON.parse(JSON.stringify(saved||published||{}));
   if(!Array.isArray(draft.media)||!draft.media.length)draft.media=Array.isArray(published.media)&&published.media.length?JSON.parse(JSON.stringify(published.media)):JSON.parse(JSON.stringify(fallback));
   $('login-screen').classList.add('hidden');$('admin-screen').classList.remove('hidden');
-  render();setStatus('Borrador listo','ok');
+  render();await loadReservations();setStatus('Administrador listo','ok');
+ }
+ let reservations=[];
+ async function loadReservations(){
+  const list=$('reservation-list');list.innerHTML='<p class="muted">Cargando solicitudes…</p>';
+  const {data,error}=await db.from('reservation_requests').select('*').order('created_at',{ascending:false}).limit(100);
+  if(error)throw error;reservations=Array.isArray(data)?data:[];renderReservations();
+ }
+ function renderReservations(){
+  const filter=$('reservation-filter')?.value||'all';
+  const rows=reservations.filter(r=>filter==='all'||r.status===filter);
+  if(!rows.length){$('reservation-list').innerHTML='<p class="muted">No hay reservaciones en esta categoría.</p>';return;}
+  $('reservation-list').innerHTML=rows.map(r=>{
+   const slot=r.time_slot==='morning'?'Mañana':r.time_slot==='afternoon'?'Tarde':'Sin horario';
+   const date=r.reservation_date?new Date(r.reservation_date+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'}):'—';
+   const statusLabel={pending:'Pendiente',confirmed:'Confirmada',cancelled:'Cancelada',rejected:'Rechazada',completed:'Completada'}[r.status]||r.status;
+   const phone=String(r.phone||'').replace(/[^0-9]/g,'');
+   const actions=r.status==='pending'?'<div class="reservation-actions"><input type="number" min="1" step="0.01" placeholder="Anticipo recibido ($)" data-deposit="'+r.id+'"><button class="btn btn-confirm" data-confirm="'+r.id+'">Confirmar y bloquear</button><button class="btn btn-cancel" data-cancel="'+r.id+'">Cancelar</button>'+(phone?'<a target="_blank" rel="noopener" href="https://wa.me/'+phone+'">WhatsApp cliente</a>':'')+'</div>':r.status==='confirmed'?'<div class="reservation-actions"><span class="muted">Horario bloqueado · Anticipo: 
+  const x=Number(item.crop_x??50),y=Number(item.crop_y??50),z=Number(item.crop_zoom??100);
+  return `<article class="image-card">
+   <div style="overflow:hidden;border-radius:7px;height:116px;background:#172b3d">
+    <img class="preview" data-preview="${index}" src="${escapeHtml(item.public_url)}" alt="${escapeHtml(item.alt_text||'')}" loading="lazy" style="height:100%;object-position:${x}% ${y}%;transform:scale(${z/100});transform-origin:center">
+   </div>
+   <div>
+    <div class="image-title">${escapeHtml(labels[item.category]||'Fotografía')}</div>
+    <div class="image-note">Ajusta el encuadre con los controles. Puedes mover la foto y acercarla.</div>
+    <div class="crop-tools">
+     <label class="crop-control">Horizontal <span class="crop-value" data-value="x-${index}">${x}%</span><input type="range" min="0" max="100" value="${x}" data-crop="x" data-index="${index}"></label>
+     <label class="crop-control">Vertical <span class="crop-value" data-value="y-${index}">${y}%</span><input type="range" min="0" max="100" value="${y}" data-crop="y" data-index="${index}"></label>
+     <label class="crop-control" style="grid-column:1/-1">Tamaño / Zoom <span class="crop-value" data-value="z-${index}">${z}%</span><input type="range" min="100" max="180" step="1" value="${z}" data-crop="zoom" data-index="${index}"></label>
+    </div>
+    <div class="crop-actions"><span class="crop-tip">100% = tamaño original</span><button type="button" class="crop-reset" data-reset="${index}">Restablecer encuadre</button></div>
+    <label class="file-button">Cambiar imagen<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-upload="${index}"></label>
+   </div>
+  </article>`;
+ }
+ function render(){
+  $('sections').innerHTML=groups.map((g,i)=>{
+   const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
+   const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
+   return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
+  }).join('');
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
+   const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
+   item[key==='zoom'?'crop_zoom':key==='x'?'crop_x':'crop_y']=value;
+   const img=$('sections').querySelector('[data-preview="'+index+'"]');
+   if(img){img.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';img.style.transform='scale('+(item.crop_zoom??100)/100+')';}
+   const valueEl=$('sections').querySelector('[data-value="'+(key==='zoom'?'z':key)+'-'+index+'"]');if(valueEl)valueEl.textContent=value+'%';
+  }));
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('change',async()=>{
+   try{await saveDraft();setStatus('Ajuste guardado','ok');}catch(e){setStatus('No se pudo guardar el ajuste: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-reset]').forEach(el=>el.addEventListener('click',async()=>{
+   const index=Number(el.dataset.reset),item=draft.media[index];item.crop_x=50;item.crop_y=50;item.crop_zoom=100;
+   try{await saveDraft();render();setStatus('Encuadre restablecido','ok');}catch(e){setStatus('No se pudo guardar: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-add-file]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const category=el.dataset.addFile;el.disabled=true;
+   try{await addImage(category,file);}catch(e){setStatus('No se pudo agregar la foto: '+e.message,'bad');alert('No se pudo agregar la foto: '+e.message);}finally{el.disabled=false;}
+  }));
+  $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const index=Number(el.dataset.upload);el.disabled=true;
+   try{await replaceImage(index,file);}catch(e){setStatus('Error: '+e.message,'bad');alert('No se pudo reemplazar la imagen: '+e.message);}finally{el.disabled=false;}
+  }));
+ }
+ async function saveDraft(){
+  const {error}=await db.from('site_settings').upsert({setting_key:'draft',setting_value:draft,is_public:false,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+  if(error)throw error;
+ }
+ async function replaceImage(index,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Subiendo imagen…');
+  let uploadedPath=null;
+  try{
+   const item=draft.media[index];
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+item.category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const previous={...item};
+   item.public_url=data.publicUrl;item.storage_path=uploadedPath;item.id='upload-'+Date.now();item.alt_text=item.alt_text||file.name.replace(/\.[^.]+$/,'');
+   try{await saveDraft();}catch(e){Object.assign(item,previous);await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Imagen subida y borrador guardado','ok');
+  }finally{busy=false;}
+ }
+ async function addImage(category,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Agregando fotografía…');
+  let uploadedPath=null;
+  try{
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const item={id:'upload-'+Date.now(),category,public_url:data.publicUrl,storage_path:uploadedPath,alt_text:file.name.replace(/\.[^.]+$/,''),sort_order:draft.media.length,is_active:true,crop_x:50,crop_y:50,crop_zoom:100};
+   draft.media.push(item);
+   try{await saveDraft();}catch(e){draft.media.pop();await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Fotografía agregada al borrador','ok');
+  }finally{busy=false;}
+ }
+ async function publish(){
+  if(busy)return;busy=true;$('publish').disabled=true;setStatus('Publicando imágenes…');
+  try{
+   await saveDraft();
+   const {data:oldRow,error:readError}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();
+   if(readError)throw readError;
+   const oldMedia=oldRow?.setting_value?.media||[];
+   const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:draft,is_public:true,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+   if(error)throw error;
+   const keep=new Set((draft.media||[]).map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')));
+   const obsolete=[...new Set(oldMedia.map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')&&!keep.has(p)))];
+   if(obsolete.length){
+    const {error:removeError}=await db.storage.from(BUCKET).remove(obsolete);
+    if(removeError)setStatus('Publicado; no se pudieron borrar todos los archivos anteriores','bad');
+    else setStatus('Publicado. Imágenes anteriores eliminadas','ok');
+   }else setStatus('Imágenes publicadas correctamente','ok');
+   published=JSON.parse(JSON.stringify(draft));
+  }catch(e){setStatus('No se pudo publicar: '+e.message,'bad');}
+  finally{busy=false;$('publish').disabled=false;}
+ }
+ $('login-form').addEventListener('submit',async e=>{
+  e.preventDefault();$('login-btn').disabled=true;$('login-error').textContent='';
+  try{const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;if(!(await isAdmin(data.user))){await db.auth.signOut();throw new Error('Esta cuenta no está autorizada como administradora.');}await load();}
+  catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
+  finally{$('login-btn').disabled=false;}
+ });
+ $('refresh-reservations').addEventListener('click',()=>loadReservations().catch(e=>alert(e.message)));
+ $('reservation-filter').addEventListener('change',renderReservations);
+ $('publish').addEventListener('click',publish);
+ $('logout').addEventListener('click',async()=>{await db.auth.signOut();user=null;$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');});
+ db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');}});
+ load().catch(e=>{$('login-error').textContent=e.message;});
+})();
+</script>
+</body>
+</html>+Number(r.deposit_amount||0).toLocaleString('es-MX')+'</span><button class="btn btn-cancel" data-cancel="'+r.id+'">Cancelar reservación</button>'+(phone?'<a target="_blank" rel="noopener" href="https://wa.me/'+phone+'">WhatsApp cliente</a>':'')+'</div>':'';
+   return '<article class="reservation-card"><div class="reservation-card-top"><div><div class="reservation-folio">'+escapeHtml(r.folio)+'</div><strong>'+escapeHtml(r.customer_name)+'</strong></div><span class="reservation-status '+escapeHtml(r.status)+'">'+escapeHtml(statusLabel)+'</span></div><div class="reservation-data"><div><span class="reservation-label">Fecha y horario</span><strong>'+escapeHtml(date)+' · '+slot+'</strong></div><div><span class="reservation-label">Experiencia</span><strong>'+escapeHtml(r.experience)+'</strong></div><div><span class="reservation-label">Pasajeros</span><strong>'+Number(r.guests||0)+'</strong></div><div><span class="reservation-label">Contacto</span><strong>'+escapeHtml(r.phone)+(r.customer_email?'<br>'+escapeHtml(r.customer_email):'')+'</strong></div><div><span class="reservation-label">Total estimado</span><strong>'+(r.total_amount===null?'Por definir':'
+  const x=Number(item.crop_x??50),y=Number(item.crop_y??50),z=Number(item.crop_zoom??100);
+  return `<article class="image-card">
+   <div style="overflow:hidden;border-radius:7px;height:116px;background:#172b3d">
+    <img class="preview" data-preview="${index}" src="${escapeHtml(item.public_url)}" alt="${escapeHtml(item.alt_text||'')}" loading="lazy" style="height:100%;object-position:${x}% ${y}%;transform:scale(${z/100});transform-origin:center">
+   </div>
+   <div>
+    <div class="image-title">${escapeHtml(labels[item.category]||'Fotografía')}</div>
+    <div class="image-note">Ajusta el encuadre con los controles. Puedes mover la foto y acercarla.</div>
+    <div class="crop-tools">
+     <label class="crop-control">Horizontal <span class="crop-value" data-value="x-${index}">${x}%</span><input type="range" min="0" max="100" value="${x}" data-crop="x" data-index="${index}"></label>
+     <label class="crop-control">Vertical <span class="crop-value" data-value="y-${index}">${y}%</span><input type="range" min="0" max="100" value="${y}" data-crop="y" data-index="${index}"></label>
+     <label class="crop-control" style="grid-column:1/-1">Tamaño / Zoom <span class="crop-value" data-value="z-${index}">${z}%</span><input type="range" min="100" max="180" step="1" value="${z}" data-crop="zoom" data-index="${index}"></label>
+    </div>
+    <div class="crop-actions"><span class="crop-tip">100% = tamaño original</span><button type="button" class="crop-reset" data-reset="${index}">Restablecer encuadre</button></div>
+    <label class="file-button">Cambiar imagen<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-upload="${index}"></label>
+   </div>
+  </article>`;
+ }
+ function render(){
+  $('sections').innerHTML=groups.map((g,i)=>{
+   const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
+   const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
+   return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
+  }).join('');
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
+   const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
+   item[key==='zoom'?'crop_zoom':key==='x'?'crop_x':'crop_y']=value;
+   const img=$('sections').querySelector('[data-preview="'+index+'"]');
+   if(img){img.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';img.style.transform='scale('+(item.crop_zoom??100)/100+')';}
+   const valueEl=$('sections').querySelector('[data-value="'+(key==='zoom'?'z':key)+'-'+index+'"]');if(valueEl)valueEl.textContent=value+'%';
+  }));
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('change',async()=>{
+   try{await saveDraft();setStatus('Ajuste guardado','ok');}catch(e){setStatus('No se pudo guardar el ajuste: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-reset]').forEach(el=>el.addEventListener('click',async()=>{
+   const index=Number(el.dataset.reset),item=draft.media[index];item.crop_x=50;item.crop_y=50;item.crop_zoom=100;
+   try{await saveDraft();render();setStatus('Encuadre restablecido','ok');}catch(e){setStatus('No se pudo guardar: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-add-file]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const category=el.dataset.addFile;el.disabled=true;
+   try{await addImage(category,file);}catch(e){setStatus('No se pudo agregar la foto: '+e.message,'bad');alert('No se pudo agregar la foto: '+e.message);}finally{el.disabled=false;}
+  }));
+  $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const index=Number(el.dataset.upload);el.disabled=true;
+   try{await replaceImage(index,file);}catch(e){setStatus('Error: '+e.message,'bad');alert('No se pudo reemplazar la imagen: '+e.message);}finally{el.disabled=false;}
+  }));
+ }
+ async function saveDraft(){
+  const {error}=await db.from('site_settings').upsert({setting_key:'draft',setting_value:draft,is_public:false,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+  if(error)throw error;
+ }
+ async function replaceImage(index,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Subiendo imagen…');
+  let uploadedPath=null;
+  try{
+   const item=draft.media[index];
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+item.category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const previous={...item};
+   item.public_url=data.publicUrl;item.storage_path=uploadedPath;item.id='upload-'+Date.now();item.alt_text=item.alt_text||file.name.replace(/\.[^.]+$/,'');
+   try{await saveDraft();}catch(e){Object.assign(item,previous);await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Imagen subida y borrador guardado','ok');
+  }finally{busy=false;}
+ }
+ async function addImage(category,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Agregando fotografía…');
+  let uploadedPath=null;
+  try{
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const item={id:'upload-'+Date.now(),category,public_url:data.publicUrl,storage_path:uploadedPath,alt_text:file.name.replace(/\.[^.]+$/,''),sort_order:draft.media.length,is_active:true,crop_x:50,crop_y:50,crop_zoom:100};
+   draft.media.push(item);
+   try{await saveDraft();}catch(e){draft.media.pop();await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Fotografía agregada al borrador','ok');
+  }finally{busy=false;}
+ }
+ async function publish(){
+  if(busy)return;busy=true;$('publish').disabled=true;setStatus('Publicando imágenes…');
+  try{
+   await saveDraft();
+   const {data:oldRow,error:readError}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();
+   if(readError)throw readError;
+   const oldMedia=oldRow?.setting_value?.media||[];
+   const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:draft,is_public:true,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+   if(error)throw error;
+   const keep=new Set((draft.media||[]).map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')));
+   const obsolete=[...new Set(oldMedia.map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')&&!keep.has(p)))];
+   if(obsolete.length){
+    const {error:removeError}=await db.storage.from(BUCKET).remove(obsolete);
+    if(removeError)setStatus('Publicado; no se pudieron borrar todos los archivos anteriores','bad');
+    else setStatus('Publicado. Imágenes anteriores eliminadas','ok');
+   }else setStatus('Imágenes publicadas correctamente','ok');
+   published=JSON.parse(JSON.stringify(draft));
+  }catch(e){setStatus('No se pudo publicar: '+e.message,'bad');}
+  finally{busy=false;$('publish').disabled=false;}
+ }
+ $('login-form').addEventListener('submit',async e=>{
+  e.preventDefault();$('login-btn').disabled=true;$('login-error').textContent='';
+  try{const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;if(!(await isAdmin(data.user))){await db.auth.signOut();throw new Error('Esta cuenta no está autorizada como administradora.');}await load();}
+  catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
+  finally{$('login-btn').disabled=false;}
+ });
+ $('publish').addEventListener('click',publish);
+ $('logout').addEventListener('click',async()=>{await db.auth.signOut();user=null;$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');});
+ db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');}});
+ load().catch(e=>{$('login-error').textContent=e.message;});
+})();
+</script>
+</body>
+</html>+Number(r.total_amount).toLocaleString('es-MX'))+'</strong></div><div><span class="reservation-label">Notas</span><strong>'+escapeHtml(r.notes||'—')+'</strong></div></div>'+actions+'</article>';
+  }).join('');
+  $('reservation-list').querySelectorAll('[data-confirm]').forEach(btn=>btn.addEventListener('click',async()=>{
+   const id=btn.dataset.confirm,field=$('reservation-list').querySelector('[data-deposit="'+id+'"]'),amount=Number(field?.value);
+   if(!Number.isFinite(amount)||amount<=0){alert('Ingresa el monto del anticipo recibido para confirmar.');field?.focus();return;}
+   btn.disabled=true;btn.textContent='Confirmando…';
+   try{const {error}=await db.rpc('zafire_admin_confirm_reservation',{p_reservation_id:id,p_deposit_amount:amount});if(error)throw error;await loadReservations();setStatus('Reservación confirmada y horario bloqueado','ok');}
+   catch(e){alert('No se pudo confirmar: '+e.message);btn.disabled=false;btn.textContent='Confirmar y bloquear';}
+  }));
+  $('reservation-list').querySelectorAll('[data-cancel]').forEach(btn=>btn.addEventListener('click',async()=>{
+   if(!confirm('¿Cancelar esta reservación y liberar el horario?'))return;
+   btn.disabled=true;
+   try{const {error}=await db.from('reservation_requests').update({status:'cancelled',cancelled_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',btn.dataset.cancel);if(error)throw error;await loadReservations();setStatus('Reservación cancelada; horario liberado','ok');}
+   catch(e){alert('No se pudo cancelar: '+e.message);btn.disabled=false;}
+  }));
  }
  function imageCard(item,index){
   const x=Number(item.crop_x??50),y=Number(item.crop_y??50),z=Number(item.crop_zoom??100);
