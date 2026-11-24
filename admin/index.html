@@ -22,7 +22,7 @@
 <section id="panel-reservations" class="panel">
 <div class="panel-head"><div><h2>Reservaciones y solicitudes</h2><p class="hint">Confirma únicamente después de revisar disponibilidad y validar el anticipo.</p></div><div class="inline"><select id="filter-status" style="width:auto"><option value="">Todos los estados</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="rejected">Rechazadas</option><option value="cancelled">Canceladas</option><option value="completed">Finalizadas</option></select><button class="secondary small-btn" id="export-reservations">Exportar CSV</button></div></div>
 <div class="notice">Las solicitudes web generan una retención de 30 minutos. Al vencer, el horario vuelve a estar disponible mientras no exista una reservación confirmada. Confirmar una solicitud comprueba nuevamente la capacidad máxima de 15 pasajeros.</div>
-<details class="card" style="margin-bottom:16px"><summary style="font-weight:700;cursor:pointer">＋ Registrar reservación manual (WhatsApp / teléfono)</summary>
+<details class="card admin-only hidden" style="margin-bottom:16px"><summary style="font-weight:700;cursor:pointer">＋ Registrar reservación manual (WhatsApp / teléfono)</summary>
 <form id="manual-booking-form" class="grid" style="margin-top:14px">
 <div class="field"><label>Nombre del cliente</label><input id="manual-name" required></div>
 <div class="field"><label>Teléfono / WhatsApp</label><input id="manual-phone" required></div>
@@ -128,7 +128,7 @@ async function loadAll(){
  renderCommissions();renderReports();if(isAdmin){renderTeam();renderMedia();}
 }
 function renderStats(){
- const confirmed=reservations.filter(r=>r.status==='confirmed');
+ const confirmed=reservations.filter(r=>r.status==='confirmed'||r.status==='completed');
  $('stat-total').textContent=reservations.length;$('stat-pending').textContent=reservations.filter(r=>r.status==='pending').length;$('stat-confirmed').textContent=confirmed.length;
  $('stat-sales').textContent=money(confirmed.reduce((s,r)=>s+Number(r.total_amount||0),0));
  $('stat-deposits').textContent=money(confirmed.reduce((s,r)=>s+Number(r.deposit_amount||0),0));
@@ -182,7 +182,7 @@ async function loadHistory(card,id){const {data,error}=await db.from('reservatio
 function renderCalendar(){
  const y=calendarDate.getFullYear(),m=calendarDate.getMonth();
  const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
- const dayEvents=d=>{const key=iso(d),rs=reservations.filter(r=>r.reservation_date===key&&(r.status==='confirmed'||(r.status==='pending'&&(!r.hold_expires_at||new Date(r.hold_expires_at)>new Date())))),bs=blocked.filter(b=>b.blocked_date===key);return {key,rs,bs,pax:rs.reduce((n,r)=>n+Number(r.guests),0)}};
+ const dayEvents=d=>{const key=iso(d),rs=reservations.filter(r=>r.reservation_date===key&&(r.status==='confirmed'||r.status==='completed'||(r.status==='pending'&&(!r.hold_expires_at||new Date(r.hold_expires_at)>new Date())))),bs=blocked.filter(b=>b.blocked_date===key);return {key,rs,bs,pax:rs.reduce((n,r)=>n+Number(r.guests),0)}};
  $('cal-label').textContent=calendarDate.toLocaleDateString('es-MX',{month:calendarMode==='day'?'long':'long',year:'numeric'})+(calendarMode==='day'?' · '+calendarDate.getDate():'');
  if(calendarMode==='month'){
   const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
@@ -205,7 +205,7 @@ function renderBlocked(){
  $('blocked-list').querySelectorAll('[data-unblock]').forEach(b=>b.addEventListener('click',async()=>{const {error}=await db.from('blocked_dates').update({is_active:false}).eq('id',b.dataset.unblock);if(error){msg(error.message);return}await loadAll()}));
 }
 function renderCustomers(){
- const rows=customers.map(c=>{const rs=reservations.filter(r=>r.customer_id===c.id),sales=rs.filter(r=>r.status==='confirmed').reduce((s,r)=>s+Number(r.total_amount||0),0),last=rs.map(r=>r.reservation_date).sort().reverse()[0];return '<tr><td><b>'+esc(c.full_name)+'</b></td><td>'+esc(c.phone)+'<br>'+esc(c.email||'')+'</td><td>'+rs.length+'</td><td>'+money(sales)+'</td><td>'+dateText(last)+'</td></tr>'}).join('');
+ const rows=customers.map(c=>{const rs=reservations.filter(r=>r.customer_id===c.id),sales=rs.filter(r=>(r.status==='confirmed'||r.status==='completed')).reduce((s,r)=>s+Number(r.total_amount||0),0),last=rs.map(r=>r.reservation_date).sort().reverse()[0];return '<tr><td><b>'+esc(c.full_name)+'</b></td><td>'+esc(c.phone)+'<br>'+esc(c.email||'')+'</td><td>'+rs.length+'</td><td>'+money(sales)+'</td><td>'+dateText(last)+'</td></tr>'}).join('');
  $('customer-rows').innerHTML=rows||'<tr><td colspan="5" class="empty">Aún no hay clientes registrados.</td></tr>';
 }
 function renderTeam(){
@@ -214,7 +214,7 @@ function renderTeam(){
  $('team-rows').querySelectorAll('[data-toggle-member]').forEach(b=>b.addEventListener('click',async()=>{const {error}=await db.from('team_members').update({is_active:b.dataset.active!=='true'}).eq('user_id',b.dataset.toggleMember);if(error){msg(error.message);return}await loadAll()}));
 }
 function renderCommissions(){
- const assigned=reservations.filter(r=>r.seller_id);
+ const assigned=reservations.filter(r=>r.seller_id&&(r.status==='confirmed'||r.status==='completed'));
  $('commission-total').textContent=money(assigned.reduce((s,r)=>s+Number(r.commission_amount||0),0));
  $('commission-pending').textContent=money(assigned.filter(r=>r.commission_status==='pending'||r.commission_status==='approved').reduce((s,r)=>s+Number(r.commission_amount||0),0));
  $('commission-paid').textContent=money(assigned.filter(r=>r.commission_status==='paid').reduce((s,r)=>s+Number(r.commission_amount||0),0));
@@ -223,7 +223,7 @@ function renderCommissions(){
 }
 function renderReports(){
  const from=$('report-from').value,to=$('report-to').value;
- const rows=reservations.filter(r=>r.status==='confirmed'&&(!from||r.reservation_date>=from)&&(!to||r.reservation_date<=to));
+ const rows=reservations.filter(r=>(r.status==='confirmed'||r.status==='completed')&&(!from||r.reservation_date>=from)&&(!to||r.reservation_date<=to));
  $('report-count').textContent=rows.length;$('report-revenue').textContent=money(rows.reduce((s,r)=>s+Number(r.total_amount||0),0));$('report-deposit').textContent=money(rows.reduce((s,r)=>s+Number(r.deposit_amount||0),0));$('report-balance').textContent=money(rows.reduce((s,r)=>s+Number(r.balance_amount||0),0));
  const reportTeam=isAdmin?sellers:[{user_id:session.user.id,full_name:currentMember?.full_name||'Mis ventas'}];const totals=reportTeam.map(s=>({name:s.full_name,total:rows.filter(r=>r.seller_id===s.user_id).reduce((a,r)=>a+Number(r.total_amount||0),0)})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total),max=Math.max(1,...totals.map(x=>x.total));
  $('seller-report').innerHTML=totals.map(x=>'<div class="bar-row"><span>'+esc(x.name)+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(x.total/max*100)+'%"></div></div><b>'+money(x.total)+'</b></div>').join('')||'<p class="empty">Sin ventas confirmadas en el periodo.</p>';
@@ -264,7 +264,7 @@ $('media-form').addEventListener('submit',async e=>{e.preventDefault();const fil
 $('export-reservations').addEventListener('click',exportReservations);
 $('export-customers').addEventListener('click',()=>csv('zafire-clientes.csv',customers.map(c=>({nombre:c.full_name,telefono:c.phone,correo:c.email,notas:c.notes}))));
 $('export-commissions').addEventListener('click',()=>csv('zafire-comisiones.csv',reservations.filter(r=>r.seller_id).map(r=>({folio:r.folio,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name,venta:r.total_amount,porcentaje:r.commission_rate,comision:r.commission_amount,estado:r.commission_status}))));
-$('export-report').addEventListener('click',()=>csv('zafire-reporte.csv',reservations.filter(r=>r.status==='confirmed'&&(!$('report-from').value||r.reservation_date>=$('report-from').value)&&(!$('report-to').value||r.reservation_date<=$('report-to').value)).map(r=>({folio:r.folio,fecha:r.reservation_date,cliente:r.customer_name,total:r.total_amount,anticipo:r.deposit_amount,saldo:r.balance_amount,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name||''}))));
+$('export-report').addEventListener('click',()=>csv('zafire-reporte.csv',reservations.filter(r=>(r.status==='confirmed'||r.status==='completed')&&(!$('report-from').value||r.reservation_date>=$('report-from').value)&&(!$('report-to').value||r.reservation_date<=$('report-to').value)).map(r=>({folio:r.folio,fecha:r.reservation_date,cliente:r.customer_name,total:r.total_amount,anticipo:r.deposit_amount,saldo:r.balance_amount,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name||''}))));
 $('commission-rows').addEventListener('change',()=>{});
 access().then(ok=>ok&&loadAll()).catch(e=>msg(e.message));
 })();
