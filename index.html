@@ -1031,7 +1031,771 @@
                             </p>
                             <div class="pt-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-silver tabular-data">
                                 <span>${escapeHTML(exp.durationLabel)}</span>
-                                <span>${exp.price !== null ? 'Desde </span>
+                                <span>${exp.price !== null ? 'Desde 
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3 flex lg:justify-end">
+                            <button type="button" data-select-exp="${escapeHTML(exp.id)}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
+                                Seleccionar salida
+                            </button>
+                        </div>
+                    </article>
+                `).join('');
+
+                // Vincular botones para preseleccionar experiencia y hacer scroll suave a reservaciones
+                document.querySelectorAll('.select-exp-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const expId = e.currentTarget.getAttribute('data-select-exp');
+                        this.state.selectedExperienceId = expId;
+                        const selectEl = document.getElementById('booking-experience');
+                        if (selectEl) selectEl.value = expId;
+                        this.updateBookingSummary();
+                        document.getElementById('reservaciones').scrollIntoView({ behavior: 'smooth' });
+                    });
+                });
+            },
+
+            /* --- Renderizado de Galería Curada --- */
+            renderGallery() {
+                const grid = document.getElementById('gallery-grid');
+                grid.innerHTML = SITE_CONFIG.gallery.map((item, idx) => `
+                    <figure 
+                        data-gallery-idx="${idx}"
+                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${escapeHTML(item.spanClass)}"
+                    >
+                        <img 
+                            src="${escapeHTML(item.src)}" 
+                            alt="${escapeHTML(item.caption)}" 
+                            loading="lazy"
+                            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                            onerror="this.src='https://placehold.co/1200x800/081523/EAE5DC?text=ZAFIRE+GALERIA'"
+                        >
+                        <figcaption class="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-between p-6">
+                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${escapeHTML(item.caption)}</span>
+                            <span class="type-tech-label text-[10px] text-champagne border border-champagne/50 px-2.5 py-1 rounded-sm">Ampliar</span>
+                        </figcaption>
+                    </figure>
+                `).join('');
+
+                document.querySelectorAll('.gallery-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const idx = Number(el.getAttribute('data-gallery-idx'));
+                        this.openLightbox(idx);
+                    });
+                });
+            },
+
+            /* --- Lightbox Fullscreen --- */
+            setupLightbox() {
+                const modal = document.getElementById('lightbox-modal');
+                const closeBtn = document.getElementById('lightbox-close');
+                const prevBtn = document.getElementById('lightbox-prev');
+                const nextBtn = document.getElementById('lightbox-next');
+
+                closeBtn.addEventListener('click', () => this.closeLightbox());
+                prevBtn.addEventListener('click', () => this.navigateLightbox(-1));
+                nextBtn.addEventListener('click', () => this.navigateLightbox(1));
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) this.closeLightbox();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (modal.classList.contains('hidden')) return;
+                    if (e.key === 'Escape') this.closeLightbox();
+                    if (e.key === 'ArrowLeft') this.navigateLightbox(-1);
+                    if (e.key === 'ArrowRight') this.navigateLightbox(1);
+                });
+            },
+
+            openLightbox(index) {
+                this.state.lightboxIndex = index;
+                this.updateLightboxView();
+                const modal = document.getElementById('lightbox-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            },
+
+            closeLightbox() {
+                const modal = document.getElementById('lightbox-modal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            },
+
+            navigateLightbox(dir) {
+                const total = SITE_CONFIG.gallery.length;
+                this.state.lightboxIndex = (this.state.lightboxIndex + dir + total) % total;
+                this.updateLightboxView();
+            },
+
+            updateLightboxView() {
+                const item = SITE_CONFIG.gallery[this.state.lightboxIndex];
+                document.getElementById('lightbox-img').src = item.src;
+                document.getElementById('lightbox-img').alt = item.caption;
+                document.getElementById('lightbox-caption').textContent = item.caption;
+                document.getElementById('lightbox-counter').textContent = `${this.state.lightboxIndex + 1} / ${SITE_CONFIG.gallery.length}`;
+            },
+
+            /* --- Módulo Interactivo de Reservaciones --- */
+            setupBookingModule() {
+                // Poblar selector de experiencias
+                const expSelect = document.getElementById('booking-experience');
+                expSelect.innerHTML = SITE_CONFIG.experiences.map(exp => `
+                    <option value="${escapeHTML(exp.id)}">${escapeHTML(exp.title)}</option>
+                `).join('');
+                expSelect.addEventListener('change', (e) => {
+                    this.state.selectedExperienceId = e.target.value;
+                    this.updateBookingSummary();
+                });
+
+                // Controles de pasajeros (1 a 15)
+                const btnDec = document.getElementById('pax-decrease');
+                const btnInc = document.getElementById('pax-increase');
+                const paxLabel = document.getElementById('pax-count');
+
+                const updatePax = (delta) => {
+                    const next = this.state.pax + delta;
+                    if (next >= SITE_CONFIG.brand.minCapacity && next <= SITE_CONFIG.brand.maxCapacity) {
+                        this.state.pax = next;
+                        paxLabel.textContent = next;
+                        this.updateBookingSummary();
+                    }
+                };
+                btnDec.addEventListener('click', () => updatePax(-1));
+                btnInc.addEventListener('click', () => updatePax(1));
+
+                // Navegación del calendario
+                document.getElementById('cal-prev-month').addEventListener('click', async () => {
+                    if (this.state.currentMonth === 0) {
+                        this.state.currentMonth = 11;
+                        this.state.currentYear--;
+                    } else {
+                        this.state.currentMonth--;
+                    }
+                    await this.loadAvailabilityForCurrentMonth();
+                    this.renderCalendar();
+                });
+
+                document.getElementById('cal-next-month').addEventListener('click', async () => {
+                    if (this.state.currentMonth === 11) {
+                        this.state.currentMonth = 0;
+                        this.state.currentYear++;
+                    } else {
+                        this.state.currentMonth++;
+                    }
+                    await this.loadAvailabilityForCurrentMonth();
+                    this.renderCalendar();
+                });
+
+                this.renderCalendar();
+                this.updateBookingSummary();
+
+                // Manejo del envío del formulario
+                const form = document.getElementById('reservation-form');
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleReservationSubmit();
+                });
+
+                // Botón reiniciar solicitud
+                document.getElementById('reset-booking-btn').addEventListener('click', () => {
+                    document.getElementById('reservation-submitted-panel').classList.add('hidden');
+                    form.classList.remove('hidden');
+                    form.reset();
+                    this.hideFeedback();
+                });
+
+
+            },
+
+            async loadAvailabilityForCurrentMonth() {
+                const first=new Date(this.state.currentYear,this.state.currentMonth,1);
+                const last=new Date(this.state.currentYear,this.state.currentMonth+1,0);
+                const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+                this.state.availability=await SUPABASE_SCHEMA_SERVICE.getAvailability(iso(first),iso(last));
+                this.state.blockedDates=this.state.availability.filter(x=>!x.is_available).map(x=>x.reservation_date);
+            },
+
+            renderCalendar() {
+                const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                const label = document.getElementById('cal-month-label');
+                const grid = document.getElementById('calendar-days-grid');
+
+                const year = this.state.currentYear;
+                const month = this.state.currentMonth;
+                label.textContent = `${monthNames[month]} ${year}`;
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let html = '';
+
+                // Espacios vacíos antes del primer día del mes
+                for (let i = 0; i < firstDay; i++) {
+                    html += `<div class="h-11"></div>`;
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateObj = new Date(year, month, day);
+                    const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const isPast = dateObj < today;
+                    const daySlots = this.state.availability.filter(x => x.reservation_date === isoDate);
+                    const isBlocked = daySlots.some(x => !x.is_available);
+                    const isSelected = this.state.selectedDate === isoDate;
+
+                    if (isPast || isBlocked) {
+                        html += `
+                            <button type="button" disabled class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed">
+                                ${day}
+                            </button>
+                        `;
+                    } else if (isSelected) {
+                        html += `
+                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-semibold bg-navy-900 text-warmwhite shadow-sm transition-all">
+                                ${day}
+                            </button>
+                        `;
+                    } else {
+                        html += `
+                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-medium text-navy-900 bg-sand/50 hover:bg-champagne/40 border border-transparent hover:border-navy-900/20 transition-all">
+                                ${day}
+                            </button>
+                        `;
+                    }
+                }
+
+                grid.innerHTML = html;
+
+                document.querySelectorAll('.cal-day-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.state.selectedDate = btn.getAttribute('data-date');
+                        this.renderCalendar();
+                        this.updateBookingSummary();
+                        this.hideFeedback();
+                    });
+                });
+            },
+
+            updateBookingSummary() {
+                const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
+
+                document.getElementById('summary-date').textContent = this.state.selectedDate 
+                    ? this.formatReadableDate(this.state.selectedDate) 
+                    : 'Selecciona en el calendario';
+                document.getElementById('summary-experience').textContent = exp ? exp.title : '—';
+                document.getElementById('summary-pax').textContent = `${this.state.pax} ${this.state.pax === 1 ? 'persona' : 'personas'}`;
+
+                // Cálculo dinámico solo si se configuró precio en SITE_CONFIG
+                const activePrice = (exp && exp.price !== null) ? exp.price : null;
+                document.getElementById('summary-price').textContent = activePrice !== null
+                    ? `$${Number(activePrice).toLocaleString('es-MX')} MXN`
+                    : 'A definir según configuración';
+            },
+
+            formatReadableDate(isoStr) {
+                const [y, m, d] = isoStr.split('-').map(Number);
+                const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                return `${d} de ${months[m - 1]}, ${y}`;
+            },
+
+            showFeedback(message, isError = true) {
+                const box = document.getElementById('form-feedback');
+                box.textContent = message;
+                box.classList.remove('hidden', 'border-red-400/50', 'bg-red-950/40', 'text-red-200', 'border-champagne', 'bg-champagne/10', 'text-warmwhite');
+                if (isError) {
+                    box.classList.add('border-red-400/50', 'bg-red-950/40', 'text-red-200');
+                } else {
+                    box.classList.add('border-champagne', 'bg-champagne/10', 'text-warmwhite');
+                }
+            },
+
+            hideFeedback() {
+                document.getElementById('form-feedback').classList.add('hidden');
+            },
+
+            async handleReservationSubmit() {
+                const name=document.getElementById('client-name').value.trim();
+                const phone=document.getElementById('client-phone').value.trim();
+                const email=document.getElementById('client-email')?.value.trim()||'';
+                const notes=document.getElementById('client-notes').value.trim();
+                if(!this.state.selectedDate)return this.showFeedback('Por favor selecciona una fecha disponible.');
+                if(!name)return this.showFeedback('Por favor ingresa tu nombre completo.');
+                if(!phone||phone.replace(/\D/g,'').length<8)return this.showFeedback('Ingresa un teléfono o WhatsApp válido.');
+                const exp=SITE_CONFIG.experiences.find(e=>e.id===this.state.selectedExperienceId);
+                const activePrice=(exp&&exp.price!==null)?exp.price:null;
+                const submit=document.querySelector('#reservation-form button[type="submit"]');
+                submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
+                try{
+                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:'all',experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
+                    document.getElementById('reservation-form').classList.add('hidden');
+                    document.getElementById('reservation-submitted-panel').classList.remove('hidden');
+                    document.getElementById('generated-folio').textContent=result.record.folio;
+                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
+                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
+                    document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
+                    await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
+                }catch(error){console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
+                finally{submit.disabled=false;submit.textContent='SOLICITAR RESERVACIÓN';}
+            },
+
+            setupContactAndFooter() {
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+
+                const directMsg = encodeURIComponent('Hola equipo ZAFIRE, me gustaría recibir información sobre disponibilidad para navegar en Mazatlán.');
+                document.getElementById('direct-whatsapp-btn').href = `https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${directMsg}`;
+
+                const socialContainer = document.getElementById('social-links-container');
+                socialContainer.innerHTML = `
+                    <a href="${SITE_CONFIG.contact.instagramUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">Instagram</a>
+                    <a href="${SITE_CONFIG.contact.facebookUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">Facebook</a>
+                    <a href="https://wa.me/${SITE_CONFIG.contact.whatsappNumber}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">WhatsApp</a>
+                `;
+            },
+
+            setupScrollReveal() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            }
+        };
+
+        // Vista previa del administrador: solo acepta mensajes de la misma página.
+        window.addEventListener('message', event => {
+            if (event.source !== window.parent || event.origin !== window.location.origin) return;
+            const payload = event.data || {};
+            if (payload.type !== 'zafire-admin-preview') return;
+            if (payload.content) {
+                Object.assign(SITE_CONFIG.content, payload.content);
+                applySiteContent(SITE_CONFIG.content);
+            }
+            if (Array.isArray(payload.experiences)) {
+                SITE_CONFIG.experiences = payload.experiences;
+                if (typeof UI_CONTROLLER !== 'undefined') {
+                    UI_CONTROLLER.renderExperiences();
+                    const select = document.getElementById('booking-experience');
+                    if (select) {
+                        const previous = select.value;
+                        select.innerHTML = SITE_CONFIG.experiences.map(exp => '<option value="' + escapeHTML(exp.id) + '">' + escapeHTML(exp.title) + '</option>').join('');
+                        select.value = SITE_CONFIG.experiences.some(x=>x.id===previous) ? previous : SITE_CONFIG.experiences[0]?.id || '';
+                        UI_CONTROLLER.state.selectedExperienceId = select.value;
+                        UI_CONTROLLER.updateBookingSummary();
+                    }
+                }
+            }
+            if (Array.isArray(payload.media)) {
+                SITE_CONFIG.media = payload.media;
+                applySiteMedia(payload.media);
+                if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.renderGallery();
+            }
+            if (payload.contact) {
+                Object.assign(SITE_CONFIG.contact, payload.contact);
+                if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.setupContactAndFooter();
+            }
+        });
+
+        // Inicialización al cargar el DOM
+        document.addEventListener('DOMContentLoaded', async () => {
+            try { await UI_CONTROLLER.init(); }
+            catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
+        });
+    </script>
+</body>
+</html>
+ + escapeHTML(exp.price) + ' MXN' : escapeHTML(exp.priceLabel)}</span>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3 flex lg:justify-end">
+                            <button type="button" data-select-exp="${escapeHTML(exp.id)}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
+                                Seleccionar salida
+                            </button>
+                        </div>
+                    </article>
+                `).join('');
+
+                // Vincular botones para preseleccionar experiencia y hacer scroll suave a reservaciones
+                document.querySelectorAll('.select-exp-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const expId = e.currentTarget.getAttribute('data-select-exp');
+                        this.state.selectedExperienceId = expId;
+                        const selectEl = document.getElementById('booking-experience');
+                        if (selectEl) selectEl.value = expId;
+                        this.updateBookingSummary();
+                        document.getElementById('reservaciones').scrollIntoView({ behavior: 'smooth' });
+                    });
+                });
+            },
+
+            /* --- Renderizado de Galería Curada --- */
+            renderGallery() {
+                const grid = document.getElementById('gallery-grid');
+                grid.innerHTML = SITE_CONFIG.gallery.map((item, idx) => `
+                    <figure 
+                        data-gallery-idx="${idx}"
+                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${escapeHTML(item.spanClass)}"
+                    >
+                        <img 
+                            src="${escapeHTML(item.src)}" 
+                            alt="${escapeHTML(item.caption)}" 
+                            loading="lazy"
+                            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                            onerror="this.src='https://placehold.co/1200x800/081523/EAE5DC?text=ZAFIRE+GALERIA'"
+                        >
+                        <figcaption class="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-between p-6">
+                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${escapeHTML(item.caption)}</span>
+                            <span class="type-tech-label text-[10px] text-champagne border border-champagne/50 px-2.5 py-1 rounded-sm">Ampliar</span>
+                        </figcaption>
+                    </figure>
+                `).join('');
+
+                document.querySelectorAll('.gallery-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const idx = Number(el.getAttribute('data-gallery-idx'));
+                        this.openLightbox(idx);
+                    });
+                });
+            },
+
+            /* --- Lightbox Fullscreen --- */
+            setupLightbox() {
+                const modal = document.getElementById('lightbox-modal');
+                const closeBtn = document.getElementById('lightbox-close');
+                const prevBtn = document.getElementById('lightbox-prev');
+                const nextBtn = document.getElementById('lightbox-next');
+
+                closeBtn.addEventListener('click', () => this.closeLightbox());
+                prevBtn.addEventListener('click', () => this.navigateLightbox(-1));
+                nextBtn.addEventListener('click', () => this.navigateLightbox(1));
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) this.closeLightbox();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (modal.classList.contains('hidden')) return;
+                    if (e.key === 'Escape') this.closeLightbox();
+                    if (e.key === 'ArrowLeft') this.navigateLightbox(-1);
+                    if (e.key === 'ArrowRight') this.navigateLightbox(1);
+                });
+            },
+
+            openLightbox(index) {
+                this.state.lightboxIndex = index;
+                this.updateLightboxView();
+                const modal = document.getElementById('lightbox-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            },
+
+            closeLightbox() {
+                const modal = document.getElementById('lightbox-modal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            },
+
+            navigateLightbox(dir) {
+                const total = SITE_CONFIG.gallery.length;
+                this.state.lightboxIndex = (this.state.lightboxIndex + dir + total) % total;
+                this.updateLightboxView();
+            },
+
+            updateLightboxView() {
+                const item = SITE_CONFIG.gallery[this.state.lightboxIndex];
+                document.getElementById('lightbox-img').src = item.src;
+                document.getElementById('lightbox-img').alt = item.caption;
+                document.getElementById('lightbox-caption').textContent = item.caption;
+                document.getElementById('lightbox-counter').textContent = `${this.state.lightboxIndex + 1} / ${SITE_CONFIG.gallery.length}`;
+            },
+
+            /* --- Módulo Interactivo de Reservaciones --- */
+            setupBookingModule() {
+                // Poblar selector de experiencias
+                const expSelect = document.getElementById('booking-experience');
+                expSelect.innerHTML = SITE_CONFIG.experiences.map(exp => `
+                    <option value="${exp.id}">${escapeHTML(exp.title)}</option>
+                `).join('');
+                expSelect.addEventListener('change', (e) => {
+                    this.state.selectedExperienceId = e.target.value;
+                    this.updateBookingSummary();
+                });
+
+                // Controles de pasajeros (1 a 15)
+                const btnDec = document.getElementById('pax-decrease');
+                const btnInc = document.getElementById('pax-increase');
+                const paxLabel = document.getElementById('pax-count');
+
+                const updatePax = (delta) => {
+                    const next = this.state.pax + delta;
+                    if (next >= SITE_CONFIG.brand.minCapacity && next <= SITE_CONFIG.brand.maxCapacity) {
+                        this.state.pax = next;
+                        paxLabel.textContent = next;
+                        this.updateBookingSummary();
+                    }
+                };
+                btnDec.addEventListener('click', () => updatePax(-1));
+                btnInc.addEventListener('click', () => updatePax(1));
+
+                // Navegación del calendario
+                document.getElementById('cal-prev-month').addEventListener('click', async () => {
+                    if (this.state.currentMonth === 0) {
+                        this.state.currentMonth = 11;
+                        this.state.currentYear--;
+                    } else {
+                        this.state.currentMonth--;
+                    }
+                    await this.loadAvailabilityForCurrentMonth();
+                    this.renderCalendar();
+                });
+
+                document.getElementById('cal-next-month').addEventListener('click', async () => {
+                    if (this.state.currentMonth === 11) {
+                        this.state.currentMonth = 0;
+                        this.state.currentYear++;
+                    } else {
+                        this.state.currentMonth++;
+                    }
+                    await this.loadAvailabilityForCurrentMonth();
+                    this.renderCalendar();
+                });
+
+                this.renderCalendar();
+                this.updateBookingSummary();
+
+                // Manejo del envío del formulario
+                const form = document.getElementById('reservation-form');
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleReservationSubmit();
+                });
+
+                // Botón reiniciar solicitud
+                document.getElementById('reset-booking-btn').addEventListener('click', () => {
+                    document.getElementById('reservation-submitted-panel').classList.add('hidden');
+                    form.classList.remove('hidden');
+                    form.reset();
+                    this.hideFeedback();
+                });
+
+
+            },
+
+            async loadAvailabilityForCurrentMonth() {
+                const first=new Date(this.state.currentYear,this.state.currentMonth,1);
+                const last=new Date(this.state.currentYear,this.state.currentMonth+1,0);
+                const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+                this.state.availability=await SUPABASE_SCHEMA_SERVICE.getAvailability(iso(first),iso(last));
+                this.state.blockedDates=this.state.availability.filter(x=>!x.is_available).map(x=>x.reservation_date);
+            },
+
+            renderCalendar() {
+                const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                const label = document.getElementById('cal-month-label');
+                const grid = document.getElementById('calendar-days-grid');
+
+                const year = this.state.currentYear;
+                const month = this.state.currentMonth;
+                label.textContent = `${monthNames[month]} ${year}`;
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let html = '';
+
+                // Espacios vacíos antes del primer día del mes
+                for (let i = 0; i < firstDay; i++) {
+                    html += `<div class="h-11"></div>`;
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateObj = new Date(year, month, day);
+                    const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const isPast = dateObj < today;
+                    const daySlots = this.state.availability.filter(x => x.reservation_date === isoDate);
+                    const isBlocked = daySlots.some(x => !x.is_available);
+                    const isSelected = this.state.selectedDate === isoDate;
+
+                    if (isPast || isBlocked) {
+                        html += `
+                            <button type="button" disabled class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed">
+                                ${day}
+                            </button>
+                        `;
+                    } else if (isSelected) {
+                        html += `
+                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-semibold bg-navy-900 text-warmwhite shadow-sm transition-all">
+                                ${day}
+                            </button>
+                        `;
+                    } else {
+                        html += `
+                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-medium text-navy-900 bg-sand/50 hover:bg-champagne/40 border border-transparent hover:border-navy-900/20 transition-all">
+                                ${day}
+                            </button>
+                        `;
+                    }
+                }
+
+                grid.innerHTML = html;
+
+                document.querySelectorAll('.cal-day-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.state.selectedDate = btn.getAttribute('data-date');
+                        this.renderCalendar();
+                        this.updateBookingSummary();
+                        this.hideFeedback();
+                    });
+                });
+            },
+
+            updateBookingSummary() {
+                const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
+
+                document.getElementById('summary-date').textContent = this.state.selectedDate 
+                    ? this.formatReadableDate(this.state.selectedDate) 
+                    : 'Selecciona en el calendario';
+                document.getElementById('summary-experience').textContent = exp ? exp.title : '—';
+                document.getElementById('summary-pax').textContent = `${this.state.pax} ${this.state.pax === 1 ? 'persona' : 'personas'}`;
+
+                // Cálculo dinámico solo si se configuró precio en SITE_CONFIG
+                const activePrice = (exp && exp.price !== null) ? exp.price : null;
+                document.getElementById('summary-price').textContent = activePrice !== null
+                    ? `$${Number(activePrice).toLocaleString('es-MX')} MXN`
+                    : 'A definir según configuración';
+            },
+
+            formatReadableDate(isoStr) {
+                const [y, m, d] = isoStr.split('-').map(Number);
+                const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                return `${d} de ${months[m - 1]}, ${y}`;
+            },
+
+            showFeedback(message, isError = true) {
+                const box = document.getElementById('form-feedback');
+                box.textContent = message;
+                box.classList.remove('hidden', 'border-red-400/50', 'bg-red-950/40', 'text-red-200', 'border-champagne', 'bg-champagne/10', 'text-warmwhite');
+                if (isError) {
+                    box.classList.add('border-red-400/50', 'bg-red-950/40', 'text-red-200');
+                } else {
+                    box.classList.add('border-champagne', 'bg-champagne/10', 'text-warmwhite');
+                }
+            },
+
+            hideFeedback() {
+                document.getElementById('form-feedback').classList.add('hidden');
+            },
+
+            async handleReservationSubmit() {
+                const name=document.getElementById('client-name').value.trim();
+                const phone=document.getElementById('client-phone').value.trim();
+                const email=document.getElementById('client-email')?.value.trim()||'';
+                const notes=document.getElementById('client-notes').value.trim();
+                if(!this.state.selectedDate)return this.showFeedback('Por favor selecciona una fecha disponible.');
+                if(!name)return this.showFeedback('Por favor ingresa tu nombre completo.');
+                if(!phone||phone.replace(/\D/g,'').length<8)return this.showFeedback('Ingresa un teléfono o WhatsApp válido.');
+                const exp=SITE_CONFIG.experiences.find(e=>e.id===this.state.selectedExperienceId);
+                const activePrice=(exp&&exp.price!==null)?exp.price:null;
+                const submit=document.querySelector('#reservation-form button[type="submit"]');
+                submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
+                try{
+                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:'all',experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
+                    document.getElementById('reservation-form').classList.add('hidden');
+                    document.getElementById('reservation-submitted-panel').classList.remove('hidden');
+                    document.getElementById('generated-folio').textContent=result.record.folio;
+                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
+                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
+                    document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
+                    await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
+                }catch(error){console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
+                finally{submit.disabled=false;submit.textContent='SOLICITAR RESERVACIÓN';}
+            },
+
+            setupContactAndFooter() {
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+
+                const directMsg = encodeURIComponent('Hola equipo ZAFIRE, me gustaría recibir información sobre disponibilidad para navegar en Mazatlán.');
+                document.getElementById('direct-whatsapp-btn').href = `https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${directMsg}`;
+
+                const socialContainer = document.getElementById('social-links-container');
+                socialContainer.innerHTML = `
+                    <a href="${SITE_CONFIG.contact.instagramUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">Instagram</a>
+                    <a href="${SITE_CONFIG.contact.facebookUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">Facebook</a>
+                    <a href="https://wa.me/${SITE_CONFIG.contact.whatsappNumber}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">WhatsApp</a>
+                `;
+            },
+
+            setupScrollReveal() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            }
+        };
+
+        // Vista previa del administrador: solo acepta mensajes de la misma página.
+        window.addEventListener('message', event => {
+            if (event.source !== window.parent || event.origin !== window.location.origin) return;
+            const payload = event.data || {};
+            if (payload.type !== 'zafire-admin-preview') return;
+            if (payload.content) {
+                Object.assign(SITE_CONFIG.content, payload.content);
+                applySiteContent(SITE_CONFIG.content);
+            }
+            if (Array.isArray(payload.experiences)) {
+                SITE_CONFIG.experiences = payload.experiences;
+                if (typeof UI_CONTROLLER !== 'undefined') {
+                    UI_CONTROLLER.renderExperiences();
+                    const select = document.getElementById('booking-experience');
+                    if (select) {
+                        const previous = select.value;
+                        select.innerHTML = SITE_CONFIG.experiences.map(exp => '<option value="' + escapeHTML(exp.id) + '">' + escapeHTML(exp.title) + '</option>').join('');
+                        select.value = SITE_CONFIG.experiences.some(x=>x.id===previous) ? previous : SITE_CONFIG.experiences[0]?.id || '';
+                        UI_CONTROLLER.state.selectedExperienceId = select.value;
+                        UI_CONTROLLER.updateBookingSummary();
+                    }
+                }
+            }
+            if (Array.isArray(payload.media)) {
+                SITE_CONFIG.media = payload.media;
+                applySiteMedia(payload.media);
+                if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.renderGallery();
+            }
+            if (payload.contact) {
+                Object.assign(SITE_CONFIG.contact, payload.contact);
+                if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.setupContactAndFooter();
+            }
+        });
+
+        // Inicialización al cargar el DOM
+        document.addEventListener('DOMContentLoaded', async () => {
+            try { await UI_CONTROLLER.init(); }
+            catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
+        });
+    </script>
+</body>
+</html>
+ + escapeHTML(exp.price) + ' MXN' : escapeHTML(exp.priceLabel)}</span>
                             </div>
                         </div>
                         <div class="lg:col-span-3 flex lg:justify-end">
