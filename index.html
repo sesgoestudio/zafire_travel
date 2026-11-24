@@ -559,6 +559,11 @@
                             </div>
 
                             <div>
+                                <label for="client-email" class="block type-tech-label text-[10px] text-silver mb-2">Correo electrónico (Opcional)</label>
+                                <input type="email" id="client-email" placeholder="tu@correo.com" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
+                            </div>
+
+                            <div>
                                 <label for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
                                 <input type="tel" id="client-phone" required placeholder="Ej. +52 669 000 0000" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors tabular-data">
                             </div>
@@ -838,7 +843,8 @@
                     spanClass: 'md:col-span-7 h-[360px] md:h-[420px]'
                 }
             ],
-            // Fechas bloqueadas de ejemplo (YYYY-MM-DD) — en producción se leen desde Supabase `blocked_dates`
+            bookingHoldMinutes: 30,
+            // Fechas y disponibilidad se consultan en Supabase
             initialBlockedDates: []
         };
 
@@ -852,12 +858,47 @@
          * - Tabla `site_media` (gestión de fotografías y tarifas)
          */
         const SUPABASE_SCHEMA_SERVICE = {
-            config: { supabaseUrl: 'https://mfgqbljtswvuqwluayfj.supabase.co', supabaseAnonKey: 'sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr', isConnected: true },
+            config: { supabaseUrl: 'https://mfgqbljtswvuqwluayfj.supabase.co', supabaseAnonKey: 'sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr' },
             client: null,
-            init() { if (!window.supabase || !window.supabase.createClient) throw new Error('No se pudo cargar Supabase.'); this.client = window.supabase.createClient(this.config.supabaseUrl, this.config.supabaseAnonKey); },
-            async getBlockedDates() { const { data, error } = await this.client.from('blocked_dates').select('blocked_date').eq('is_active', true); if (error) throw error; return (data || []).map(row => row.blocked_date); },
-            buildReservationPayload(formData) { return { folio: 'ZFR-' + Date.now().toString(36).toUpperCase().slice(-6), customer_name: formData.name.trim(), phone: formData.phone.trim(), guests: Number(formData.pax), experience: formData.experienceId, reservation_date: formData.date, time_slot: formData.slotId, notes: formData.notes.trim() || null, status: 'pending', deposit_status: 'pending', deposit_amount: 0, total_amount: formData.quotedPrice, source: 'website' }; },
-            async createReservationRequest(payload) { const { data, error } = await this.client.from('reservation_requests').insert(payload).select().single(); if (error) throw error; return { ok: true, record: data }; }
+            async init() {
+                if (!window.supabase?.createClient) throw new Error('No se pudo cargar Supabase.');
+                this.client = window.supabase.createClient(this.config.supabaseUrl,this.config.supabaseAnonKey);
+                await this.loadPublicSettings();
+                await this.loadSiteMedia();
+            },
+            async loadPublicSettings() {
+                const {data,error}=await this.client.from('site_settings').select('setting_value').eq('setting_key','public').eq('is_public',true).maybeSingle();
+                if(error) throw error;
+                const value=data?.setting_value||{};
+                SITE_CONFIG.bookingHoldMinutes=Number(value.bookingHoldMinutes)||30;
+                if(value.contact) Object.assign(SITE_CONFIG.contact,value.contact);
+                if(Array.isArray(value.schedules)) SITE_CONFIG.schedules=SITE_CONFIG.schedules.map(base=>({...base,...(value.schedules.find(x=>x.id===base.id)||{})}));
+                if(Array.isArray(value.experiences)) SITE_CONFIG.experiences=SITE_CONFIG.experiences.map(base=>({...base,...(value.experiences.find(x=>x.id===base.id)||{})}));
+            },
+            async loadSiteMedia() {
+                const {data,error}=await this.client.from('site_media').select('*').eq('is_active',true).order('sort_order');
+                if(error) throw error;
+                (data||[]).forEach(item=>{
+                    if(item.category==='hero-background'){const el=document.getElementById('hero-bg-img');if(el)el.src=item.public_url;}
+                    else if(item.category==='vessel-photo-primary'||item.category==='vessel-photo-secondary'){const el=document.querySelector('[data-editable="'+item.category+'"]');if(el)el.src=item.public_url;}
+                });
+                const gallery=(data||[]).filter(x=>x.category==='gallery');
+                if(gallery.length) SITE_CONFIG.gallery=gallery.map((x,i)=>({src:x.public_url,caption:x.alt_text||'ZAFIRE · Mazatlán',spanClass:i%2?'md:col-span-7 h-[360px] md:h-[420px]':'md:col-span-5 h-[360px] md:h-[420px]'}));
+            },
+            async getAvailability(start,end) {
+                const {data,error}=await this.client.rpc('zafire_get_slot_availability',{p_start:start,p_end:end});
+                if(error) throw error;
+                return data||[];
+            },
+            async createReservationRequest(formData) {
+                const {data,error}=await this.client.rpc('zafire_create_public_reservation',{
+                    p_customer_name:formData.name,p_phone:formData.phone,p_guests:Number(formData.pax),
+                    p_experience:formData.experienceId,p_reservation_date:formData.date,p_time_slot:formData.slotId,
+                    p_notes:formData.notes||null,p_total_amount:formData.quotedPrice,p_customer_email:formData.email||null
+                });
+                if(error) throw error;
+                return {ok:true,record:data};
+            }
         };
 
         /**
@@ -874,11 +915,13 @@
                 selectedExperienceId: SITE_CONFIG.experiences[0].id,
                 pax: 6,
                 blockedDates: [],
+                availability: [],
                 lightboxIndex: 0
             },
 
             async init() {
-                this.state.blockedDates = await SUPABASE_SCHEMA_SERVICE.getBlockedDates();
+                await SUPABASE_SCHEMA_SERVICE.init();
+                await this.loadAvailabilityForCurrentMonth();
                 this.setupNavbar();
                 this.setupMobileMenu();
                 this.renderExperiences();
@@ -1090,6 +1133,7 @@
                     if (next >= SITE_CONFIG.brand.minCapacity && next <= SITE_CONFIG.brand.maxCapacity) {
                         this.state.pax = next;
                         paxLabel.textContent = next;
+                        this.renderTimeSlots();
                         this.updateBookingSummary();
                     }
                 };
@@ -1097,23 +1141,25 @@
                 btnInc.addEventListener('click', () => updatePax(1));
 
                 // Navegación del calendario
-                document.getElementById('cal-prev-month').addEventListener('click', () => {
+                document.getElementById('cal-prev-month').addEventListener('click', async () => {
                     if (this.state.currentMonth === 0) {
                         this.state.currentMonth = 11;
                         this.state.currentYear--;
                     } else {
                         this.state.currentMonth--;
                     }
+                    await this.loadAvailabilityForCurrentMonth();
                     this.renderCalendar();
                 });
 
-                document.getElementById('cal-next-month').addEventListener('click', () => {
+                document.getElementById('cal-next-month').addEventListener('click', async () => {
                     if (this.state.currentMonth === 11) {
                         this.state.currentMonth = 0;
                         this.state.currentYear++;
                     } else {
                         this.state.currentMonth++;
                     }
+                    await this.loadAvailabilityForCurrentMonth();
                     this.renderCalendar();
                 });
 
@@ -1136,6 +1182,15 @@
                 });
 
 
+            },
+
+            async loadAvailabilityForCurrentMonth() {
+                const first=new Date(this.state.currentYear,this.state.currentMonth,1);
+                const last=new Date(this.state.currentYear,this.state.currentMonth+1,0);
+                const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+                this.state.availability=await SUPABASE_SCHEMA_SERVICE.getAvailability(iso(first),iso(last));
+                this.state.blockedDates=[...new Set(this.state.availability.filter(x=>!x.is_available).map(x=>x.reservation_date))]
+                    .filter(date=>this.state.availability.filter(x=>x.reservation_date===date).every(x=>!x.is_available));
             },
 
             renderCalendar() {
@@ -1164,7 +1219,8 @@
                     const dateObj = new Date(year, month, day);
                     const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const isPast = dateObj < today;
-                    const isBlocked = this.state.blockedDates.includes(isoDate);
+                    const daySlots = this.state.availability.filter(x => x.reservation_date === isoDate);
+                    const isBlocked = daySlots.length === 3 && daySlots.every(x => !x.is_available);
                     const isSelected = this.state.selectedDate === isoDate;
 
                     if (isPast || isBlocked) {
@@ -1194,6 +1250,7 @@
                     btn.addEventListener('click', () => {
                         this.state.selectedDate = btn.getAttribute('data-date');
                         this.renderCalendar();
+                        this.renderTimeSlots();
                         this.updateBookingSummary();
                         this.hideFeedback();
                     });
@@ -1203,26 +1260,17 @@
             renderTimeSlots() {
                 const container = document.getElementById('time-slots-container');
                 container.innerHTML = SITE_CONFIG.schedules.map(slot => {
-                    const isSelected = this.state.selectedSlotId === slot.id;
-                    return `
-                        <button type="button" data-slot-id="${slot.id}" class="slot-btn text-left p-3.5 rounded-sm border transition-all ${
-                            isSelected 
-                            ? 'bg-navy-900 text-warmwhite border-navy-900' 
-                            : 'bg-warmwhite text-navy-900 border-navy-900/20 hover:border-navy-900'
-                        }">
-                            <span class="block text-xs font-medium tracking-wide">${slot.label}</span>
-                            <span class="block text-[11px] mt-1 ${isSelected ? 'text-champagne' : 'text-silver'}">${slot.detail}</span>
-                        </button>
-                    `;
+                    const availability=this.state.availability.find(x=>x.reservation_date===this.state.selectedDate&&x.time_slot===slot.id);
+                    const remaining=availability?Math.max(0,15-Number(availability.booked_guests||0)):15;
+                    const unavailable=!!(this.state.selectedDate&&availability&&(!availability.is_available||remaining<this.state.pax));
+                    const isSelected=this.state.selectedSlotId===slot.id;
+                    return `<button type="button" data-slot-id="${slot.id}" ${unavailable?'disabled':''} class="slot-btn text-left p-3.5 rounded-sm border transition-all ${unavailable?'opacity-40 cursor-not-allowed bg-gray-100 text-silver border-gray-200':(isSelected?'bg-navy-900 text-warmwhite border-navy-900':'bg-warmwhite text-navy-900 border-navy-900/20 hover:border-navy-900')}">
+                        <span class="block text-xs font-medium tracking-wide">${slot.label}</span>
+                        <span class="block text-[11px] mt-1 ${isSelected&&!unavailable?'text-champagne':'text-silver'}">${unavailable?'Sin disponibilidad':(this.state.selectedDate?remaining+' lugares disponibles':slot.detail)}</span></button>`;
                 }).join('');
-
-                document.querySelectorAll('.slot-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        this.state.selectedSlotId = btn.getAttribute('data-slot-id');
-                        this.renderTimeSlots();
-                        this.updateBookingSummary();
-                    });
-                });
+                container.querySelectorAll('.slot-btn:not(:disabled)').forEach(btn=>btn.addEventListener('click',()=>{
+                    this.state.selectedSlotId=btn.getAttribute('data-slot-id');this.renderTimeSlots();this.updateBookingSummary();
+                }));
             },
 
             updateBookingSummary() {
@@ -1264,31 +1312,31 @@
             },
 
             async handleReservationSubmit() {
-                const name = document.getElementById('client-name').value.trim();
-                const phone = document.getElementById('client-phone').value.trim();
-                const notes = document.getElementById('client-notes').value.trim();
-                if (!this.state.selectedDate) return this.showFeedback('Por favor selecciona una fecha disponible.');
-                if (!name) { this.showFeedback('Por favor ingresa tu nombre completo.'); document.getElementById('client-name').focus(); return; }
-                if (!phone || phone.replace(/\D/g, '').length < 8) { this.showFeedback('Ingresa un teléfono o WhatsApp válido.'); document.getElementById('client-phone').focus(); return; }
-                const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
-                const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
-                const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
-                const payload = SUPABASE_SCHEMA_SERVICE.buildReservationPayload({ date: this.state.selectedDate, slotId: this.state.selectedSlotId, experienceId: this.state.selectedExperienceId, pax: this.state.pax, name, phone, notes, quotedPrice: activePrice });
-                const submit = document.querySelector('#reservation-form button[type="submit"]');
-                submit.disabled = true; submit.textContent = 'ENVIANDO SOLICITUD…';
-                try {
-                    const result = await SUPABASE_SCHEMA_SERVICE.createReservationRequest(payload);
+                const name=document.getElementById('client-name').value.trim();
+                const phone=document.getElementById('client-phone').value.trim();
+                const email=document.getElementById('client-email')?.value.trim()||'';
+                const notes=document.getElementById('client-notes').value.trim();
+                if(!this.state.selectedDate)return this.showFeedback('Por favor selecciona una fecha disponible.');
+                if(!name)return this.showFeedback('Por favor ingresa tu nombre completo.');
+                if(!phone||phone.replace(/\D/g,'').length<8)return this.showFeedback('Ingresa un teléfono o WhatsApp válido.');
+                const slot=SITE_CONFIG.schedules.find(s=>s.id===this.state.selectedSlotId);
+                const exp=SITE_CONFIG.experiences.find(e=>e.id===this.state.selectedExperienceId);
+                const activePrice=(slot&&slot.price!==null)?slot.price:(exp&&exp.price!==null?exp.price:null);
+                const submit=document.querySelector('#reservation-form button[type="submit"]');
+                submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
+                try{
+                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:this.state.selectedSlotId,experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
                     document.getElementById('reservation-form').classList.add('hidden');
                     document.getElementById('reservation-submitted-panel').classList.remove('hidden');
-                    document.getElementById('generated-folio').textContent = result.record.folio || payload.folio;
-                    document.getElementById('submitted-details').textContent = 'Titular: ' + name + '\\nFecha: ' + this.formatReadableDate(this.state.selectedDate) + '\\nTurno: ' + (slot ? slot.label : this.state.selectedSlotId) + '\\nExperiencia: ' + (exp ? exp.title : this.state.selectedExperienceId) + '\\nPasajeros: ' + this.state.pax + '\\nEstatus: Pendiente de confirmación y validación de anticipo.';
-                    const waText = encodeURIComponent('Hola equipo ZAFIRE, solicito disponibilidad para navegar en Mazatlán:\\n\\n' + '• Folio: ' + (result.record.folio || payload.folio) + '\\n' + '• Nombre: ' + name + '\\n' + '• Fecha: ' + this.formatReadableDate(this.state.selectedDate) + '\\n' + '• Turno: ' + (slot ? slot.label : this.state.selectedSlotId) + '\\n' + '• Experiencia: ' + (exp ? exp.title : this.state.selectedExperienceId) + '\\n' + '• Pasajeros: ' + this.state.pax + '\\n' + (notes ? '• Notas: ' + notes + '\\n' : '') + '\\nQuedo atento a la validación de disponibilidad y anticipo.');
-                    document.getElementById('whatsapp-confirm-link').href = 'https://wa.me/' + SITE_CONFIG.contact.whatsappNumber + '?text=' + waText;
-                } catch (error) {
-                    console.error('Error al registrar solicitud:', error);
-                    this.showFeedback('No pudimos registrar tu solicitud. Verifica tus datos o contáctanos por WhatsApp. ' + (error.message || ''));
-                } finally { submit.disabled = false; submit.textContent = 'SOLICITAR RESERVACIÓN'; }
+                    document.getElementById('generated-folio').textContent=result.record.folio;
+                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nTurno: '+(slot?slot.label:this.state.selectedSlotId)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
+                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nTurno: '+(slot?slot.label:this.state.selectedSlotId)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
+                    document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
+                    await this.loadAvailabilityForCurrentMonth();this.renderCalendar();this.renderTimeSlots();
+                }catch(error){console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
+                finally{submit.disabled=false;submit.textContent='SOLICITAR RESERVACIÓN';}
             },
+
             setupContactAndFooter() {
                 document.getElementById('current-year').textContent = new Date().getFullYear();
 
