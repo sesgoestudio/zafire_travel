@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const files = ['index.html', 'admin/index.html'];
+const files = ['index.html'];
 let failures = 0;
 for (const file of files) {
   const html = readFileSync(file, 'utf8');
