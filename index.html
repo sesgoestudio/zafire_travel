@@ -474,7 +474,7 @@
                         </div>
 
                         <div>
-                            <span class="type-tech-label text-[10px] text-champagne font-semibold block">Capacidad Máx. 15</span>
+                            <span id="booking-capacity-label" class="type-tech-label text-[10px] text-champagne font-semibold block">Capacidad Máx. 15</span>
                             <span data-cms-key="booking_pax_label" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Pasajeros</span>
                             <div class="flex items-center justify-between h-12 border border-navy-900/20 rounded-sm px-2 bg-warmwhite tabular-data">
                                 <button type="button" id="pax-decrease" aria-label="Disminuir pasajeros" class="w-10 h-10 flex items-center justify-center text-navy-900 hover:bg-sand/60 rounded-sm transition-colors text-lg">
@@ -924,6 +924,9 @@
                 const value=data?.setting_value||{};
                 SITE_CONFIG.bookingHoldMinutes=Number(value.bookingHoldMinutes)||30;
                 if(value.contact) Object.assign(SITE_CONFIG.contact,value.contact);
+                if(value.brand) Object.assign(SITE_CONFIG.brand,value.brand);
+                const capacityLabel=document.getElementById('booking-capacity-label');
+                if(capacityLabel) capacityLabel.textContent='Capacidad Máx. '+SITE_CONFIG.brand.maxCapacity;
                 if(value.content) Object.assign(SITE_CONFIG.content,value.content);
                 if(Array.isArray(value.experiences) && value.experiences.length) SITE_CONFIG.experiences=value.experiences;
                 if(Array.isArray(value.media)) SITE_CONFIG.media=value.media;
@@ -1420,6 +1423,11 @@
                 SITE_CONFIG.media = payload.media;
                 applySiteMedia(payload.media);
                 if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.renderGallery();
+            }
+            if (payload.brand) {
+                Object.assign(SITE_CONFIG.brand, payload.brand);
+                const capacityLabel=document.getElementById('booking-capacity-label');
+                if(capacityLabel) capacityLabel.textContent='Capacidad Máx. '+SITE_CONFIG.brand.maxCapacity;
             }
             if (payload.contact) {
                 Object.assign(SITE_CONFIG.contact, payload.contact);
