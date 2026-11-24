@@ -575,7 +575,7 @@
 
                         <!-- Botón Principal -->
                         <button data-cms-key="booking_form_submit" type="submit" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm cursor-pointer">
-                            SOLICITAR RESERVACIÓN
+                            ENVIAR SOLICITUD POR WHATSAPP
                         </button>
                     </form>
 
@@ -1374,6 +1374,8 @@
                 const exp=SITE_CONFIG.experiences.find(e=>e.id===this.state.selectedExperienceId);
                 const activePrice=(exp&&exp.price!==null)?exp.price:null;
                 const submit=document.querySelector('#reservation-form button[type="submit"]');
+                // Abrir la ventana de WhatsApp durante el clic del usuario para evitar bloqueadores emergentes.
+                const whatsappWindow=window.open('about:blank','_blank');
                 submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
                 try{
                     const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:this.state.selectedSlot,experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
@@ -1382,10 +1384,13 @@
                     document.getElementById('generated-folio').textContent=result.record.folio;
                     document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nEstado: solicitud pendiente de confirmación.';
                     const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
-                    document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
+                    const whatsappUrl='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
+                    document.getElementById('whatsapp-confirm-link').href=whatsappUrl;
+                    if(whatsappWindow&&!whatsappWindow.closed){whatsappWindow.location.href=whatsappUrl;}
+                    else{this.showFeedback('La solicitud se registró. Tu navegador bloqueó la apertura automática de WhatsApp; usa el botón Continuar en WhatsApp.');}
                     await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
-                }catch(error){console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
-                finally{submit.disabled=false;submit.textContent='SOLICITAR RESERVACIÓN';}
+                }catch(error){if(whatsappWindow&&!whatsappWindow.closed)whatsappWindow.close();console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
+                finally{submit.disabled=false;submit.textContent='ENVIAR SOLICITUD POR WHATSAPP';}
             },
 
             setupContactAndFooter() {
