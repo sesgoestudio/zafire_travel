@@ -558,11 +558,6 @@
                             </div>
 
                             <div>
-                                <label data-cms-key="booking_email_label" for="client-email" class="block type-tech-label text-[10px] text-silver mb-2">Correo electrónico (Opcional)</label>
-                                <input type="email" id="client-email" placeholder="tu@correo.com" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
-                            </div>
-
-                            <div>
                                 <label data-cms-key="booking_phone_label" for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
                                 <input type="tel" id="client-phone" required placeholder="Ej. +52 669 000 0000" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors tabular-data">
                             </div>
@@ -1370,7 +1365,7 @@
             async handleReservationSubmit() {
                 const name=document.getElementById('client-name').value.trim();
                 const phone=document.getElementById('client-phone').value.trim();
-                const email=document.getElementById('client-email')?.value.trim()||'';
+                const email='';
                 const notes=document.getElementById('client-notes').value.trim();
                 if(!this.state.selectedDate)return this.showFeedback('Por favor selecciona una fecha disponible.');
                 if(!this.state.selectedSlot)return this.showFeedback('Selecciona el horario de mañana o tarde.');
