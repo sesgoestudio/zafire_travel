@@ -162,7 +162,7 @@ async function saveReservation(card){
  if(error){msg(error.message);return}await loadAll();msg('Reservación actualizada.');
 }
 async function uploadProof(id,file){
- if(!file)return;if(file.size>10*1024*1024){msg('El archivo supera 10 MB.');return}
+ if(!file)return;if(file.size>12*1024*1024){msg('El archivo supera 12 MB.');return}
  const path=id+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
  const {error:up}=await db.storage.from('zafire-proofs').upload(path,file,{contentType:file.type,upsert:false});
  if(up){msg(up.message);return}
@@ -256,7 +256,7 @@ $('team-form').addEventListener('submit',async e=>{e.preventDefault();const row=
 $('run-report').addEventListener('click',renderReports);
 $('save-site').addEventListener('click',async()=>{try{const value=JSON.parse($('site-json').value);const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:value,is_public:true,updated_by:null,updated_at:new Date().toISOString()});if(error)throw error;msg('Contenido guardado. El sitio público leerá la nueva configuración desde Supabase.')}catch(e){msg('No se pudo guardar: '+e.message)}});
 $('reload-site').addEventListener('click',()=>loadSiteSettings().catch(e=>msg(e.message)));
-$('media-form').addEventListener('submit',async e=>{e.preventDefault();const file=$('media-file').files[0];if(!file)return;if(file.size>12*1024*1024){msg('La imagen supera 12 MB.');return}const path=$('media-category').value+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error:up}=await db.storage.from('zafire-media').upload(path,file,{contentType:file.type,upsert:false});if(up){msg(up.message);return}const {data}=db.storage.from('zafire-media').getPublicUrl(path);const {error}=await db.from('site_media').insert({storage_path:path,public_url:data.publicUrl,category:$('media-category').value,alt_text:$('media-alt').value.trim()||null,sort_order:media.length,is_active:true});if(error){msg(error.message);return}$('media-form').reset();await loadAll();msg('Imagen publicada en la galería del sitio.')});
+$('media-form').addEventListener('submit',async e=>{e.preventDefault();const file=$('media-file').files[0];if(!file)return;if(file.size>12*1024*1024){msg('La imagen original supera 12 MB.');return}const path=$('media-category').value+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error:up}=await db.storage.from('zafire-media').upload(path,file,{contentType:file.type,upsert:false});if(up){msg(up.message);return}const {data}=db.storage.from('zafire-media').getPublicUrl(path);const {error}=await db.from('site_media').insert({storage_path:path,public_url:data.publicUrl,category:$('media-category').value,alt_text:$('media-alt').value.trim()||null,sort_order:media.length,is_active:true});if(error){msg(error.message);return}$('media-form').reset();await loadAll();msg('Imagen publicada en la galería del sitio.')});
 $('export-reservations').addEventListener('click',exportReservations);
 $('export-customers').addEventListener('click',()=>csv('zafire-clientes.csv',customers.map(c=>({nombre:c.full_name,telefono:c.phone,correo:c.email,notas:c.notes}))));
 $('export-commissions').addEventListener('click',()=>csv('zafire-comisiones.csv',reservations.filter(r=>r.seller_id).map(r=>({folio:r.folio,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name,venta:r.total_amount,porcentaje:r.commission_rate,comision:r.commission_amount,estado:r.commission_status}))));
