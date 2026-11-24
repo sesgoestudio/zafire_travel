@@ -88,7 +88,7 @@ const SUPABASE_KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
 const BUCKET='zafire-media';
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
-let currentUser=null,draft=null,activeTab='portada',saveTimer=null,saving=false;
+let currentUser=null,draft=null,activeTab='portada',saveTimer=null,saveInFlight=null,lastSavedSnapshot='';
 const contentFields=[
 {section:'portada',key:'hero_kicker',label:'Ubicación sobre la portada'},
 {section:'portada',key:'hero_title',label:'Título principal'},
@@ -146,19 +146,26 @@ clearTimeout(saveTimer);
 saveTimer=setTimeout(()=>saveDraft(false),800);
 }
 async function saveDraft(showMessage){
-if(saving)return;
-saving=true;
-try{
-const payload={...draft,updatedAt:new Date().toISOString()};
+if(saveInFlight){
+await saveInFlight;
+if(JSON.stringify(draft)!==lastSavedSnapshot)return saveDraft(showMessage);
+return;
+}
+const payload=JSON.parse(JSON.stringify(draft));
+payload.updatedAt=new Date().toISOString();
+saveInFlight=(async()=>{
 const {error}=await supabase.from('site_settings').upsert({setting_key:'draft',setting_value:payload,is_public:false,updated_by:currentUser.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
 if(error)throw error;
-draft=payload;status('Borrador guardado','ok');
+draft.updatedAt=payload.updatedAt;
+lastSavedSnapshot=JSON.stringify(payload);
+status('Borrador guardado','ok');
+})();
+try{await saveInFlight;}catch(e){status('No se pudo guardar: '+e.message,'bad');throw e;}finally{saveInFlight=null;}
+if(JSON.stringify(draft)!==lastSavedSnapshot)await saveDraft(false);
 if(showMessage!==false)status('Borrador guardado correctamente','ok');
-}catch(e){status('No se pudo guardar: '+e.message,'bad');throw e;}
-finally{saving=false;}
 }
 async function publish(){
-const b=$('publish-btn');b.disabled=true;
+const b=$('publish-btn');b.disabled=true;clearTimeout(saveTimer);
 try{
 if((draft.media||[]).some(x=>!x.public_url||!x.storage_path))throw new Error('Hay una fotografía nueva sin subir. Súbela antes de publicar.');
 const {data:oldPublic}=await supabase.from('site_settings').select('setting_value').eq('setting_key','public').single();
