@@ -1031,7 +1031,7 @@
                             </p>
                             <div class="pt-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-silver tabular-data">
                                 <span>${escapeHTML(exp.durationLabel)}</span>
-                                <span>${exp.price !== null ? 'Desde 
+                                <span>${exp.price !== null ? 'Desde $' + escapeHTML(exp.price) + ' MXN' : escapeHTML(exp.priceLabel)}</span>
                             </div>
                         </div>
                         <div class="lg:col-span-3 flex lg:justify-end">
