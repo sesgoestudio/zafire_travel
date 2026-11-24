@@ -510,7 +510,7 @@
                 <div class="lg:col-span-5 bg-navy-900 text-warmwhite p-6 sm:p-10 rounded-sm">
                     <form id="reservation-form" novalidate class="space-y-6">
                         <div>
-                            <span class="type-tech-label text-[10px] text-champagne block font-medium">Paso 04</span>
+                            <span class="type-tech-label text-[10px] text-champagne block font-medium">Paso 03</span>
                             <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-1">Datos de solicitud</h3>
                         </div>
 
@@ -1103,7 +1103,6 @@
                     this.updateBookingSummary();
                 });
 
-                // Renderizar turnos disponibles
                 // Controles de pasajeros (1 a 15)
                 const btnDec = document.getElementById('pax-decrease');
                 const btnInc = document.getElementById('pax-increase');
@@ -1285,7 +1284,7 @@
                 const submit=document.querySelector('#reservation-form button[type="submit"]');
                 submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
                 try{
-                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:this.state.selectedSlotId,experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
+                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:'all',experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
                     document.getElementById('reservation-form').classList.add('hidden');
                     document.getElementById('reservation-submitted-panel').classList.remove('hidden');
                     document.getElementById('generated-folio').textContent=result.record.folio;
