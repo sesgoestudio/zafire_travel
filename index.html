@@ -1383,7 +1383,30 @@
                     document.getElementById('reservation-submitted-panel').classList.remove('hidden');
                     document.getElementById('generated-folio').textContent=result.record.folio;
                     document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nEstado: solicitud pendiente de confirmación.';
-                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
+                    const waMessage=[
+                        '🌊 *SOLICITUD DE RESERVACIÓN | ZAFIRE*',
+                        '━━━━━━━━━━━━━━━━━━',
+                        '*Folio:* '+result.record.folio,
+                        '',
+                        '📅 *DETALLES DE LA EXPERIENCIA*',
+                        '• *Fecha:* '+this.formatReadableDate(this.state.selectedDate),
+                        '• *Horario:* '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde'),
+                        '• *Experiencia:* '+(exp?exp.title:this.state.selectedExperienceId),
+                        '• *Pasajeros:* '+this.state.pax,
+                        '',
+                        '👤 *DATOS DEL CLIENTE*',
+                        '• *Nombre:* '+name,
+                        '• *WhatsApp:* '+phone,
+                        notes?'':'',
+                        notes?'📝 *Notas:* '+notes:'',
+                        '',
+                        '━━━━━━━━━━━━━━━━━━',
+                        'Hola, acabo de enviar mi solicitud desde el sitio web de ZAFIRE.',
+                        'Quedo pendiente de que me confirmen la disponibilidad y me compartan los datos para realizar el anticipo.',
+                        '',
+                        '¡Gracias!'
+                    ].filter(line=>line!==null && line!==undefined).join('\n');
+                    const waText=encodeURIComponent(waMessage);
                     const whatsappUrl='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
                     document.getElementById('whatsapp-confirm-link').href=whatsappUrl;
                     if(whatsappWindow&&!whatsappWindow.closed){whatsappWindow.location.href=whatsappUrl;}
