@@ -315,6 +315,8 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
   finally{$('login-btn').disabled=false;}
  });
+ $('reservation-filter').addEventListener('change',()=>renderReservations());
+ $('refresh-reservations').addEventListener('click',()=>loadReservations().catch(e=>{alert('No se pudieron actualizar las reservaciones: '+e.message);}));
  $('publish').addEventListener('click',publish);
  $('logout').addEventListener('click',async()=>{await db.auth.signOut();user=null;$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');});
  db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');}});
