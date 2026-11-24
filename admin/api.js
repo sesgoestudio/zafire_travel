@@ -10,16 +10,13 @@
       body: JSON.stringify(payload)
     });
     const result = await response.json().catch(() => ({ error: { message: "Respuesta inválida del servidor." } }));
-    if (!response.ok || result.error) {
-      const error = new Error(result.error?.message || "No se pudo completar la operación.");
-      error.code = result.error?.code;
-      if (response.status === 401 && auth) { token = ""; sessionStorage.removeItem(tokenKey); }
-      throw error;
-    }
+    if ((!response.ok || result.error) && response.status === 401 && auth) { token = ""; sessionStorage.removeItem(tokenKey); }
+    if (!response.ok && !result.error) result.error = { message: "No se pudo completar la operación." };
     return result;
   }
   const login = async password => {
     const result = await call({ action: "login", password }, false);
+    if (result.error) throw new Error(result.error.message || "Contraseña incorrecta.");
     token = result.data.token;
     sessionStorage.setItem(tokenKey, token);
     return result.data;
