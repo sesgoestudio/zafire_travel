@@ -364,6 +364,7 @@
                 </div>
 
             </div>
+            <div id="vessel-gallery" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
         </div>
     </section>
 
@@ -902,6 +903,11 @@
                 const el=document.querySelector('[data-editable="' + CSS.escape(item.category) + '"]');
                 if(el){el.src=item.public_url;if(item.alt_text)el.alt=item.alt_text;el.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';el.style.setProperty('--admin-zoom',(Number(item.crop_zoom??100)/100).toString());el.style.transform='scale('+(Number(item.crop_zoom??100)/100)+')';}
             });
+            const vesselExtras=items.filter(x=>x.category==='vessel-photo-extra'&&x.public_url);
+            const vesselGrid=document.getElementById('vessel-gallery');
+            if(vesselGrid){
+                vesselGrid.innerHTML=vesselExtras.map(item=>`<div class="overflow-hidden rounded-sm bg-sand/40 h-[280px] md:h-[360px]"><img src="${escapeHTML(item.public_url)}" alt="${escapeHTML(item.alt_text||'Fotografía de ZAFIRE')}" loading="lazy" class="w-full h-full object-cover" style="object-position:${item.crop_x??50}% ${item.crop_y??50}%;transform:scale(${Number(item.crop_zoom??100)/100})"></div>`).join('');
+            }
             const gallery=items.filter(x=>x.category==='gallery'&&x.public_url);
             SITE_CONFIG.gallery=gallery.map((x,i)=>({src:x.public_url,caption:x.alt_text||'ZAFIRE · Mazatlán',crop_x:x.crop_x??50,crop_y:x.crop_y??50,crop_zoom:x.crop_zoom??100,spanClass:i%2?'md:col-span-7 h-[360px] md:h-[420px]':'md:col-span-5 h-[360px] md:h-[460px]'}));
         }
