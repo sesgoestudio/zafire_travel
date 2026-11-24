@@ -177,10 +177,10 @@
 
             <!-- Navegación Desktop -->
             <nav class="hidden md:flex items-center gap-10 type-tech-label text-[11px] font-medium">
-                <a href="#embarcacion" class="hover:text-champagne transition-colors duration-300 py-2">La Embarcación</a>
-                <a href="#experiencias" class="hover:text-champagne transition-colors duration-300 py-2">Experiencias</a>
-                <a href="#galeria" class="hover:text-champagne transition-colors duration-300 py-2">Galería</a>
-                <a href="#ubicacion" class="hover:text-champagne transition-colors duration-300 py-2">Ubicación</a>
+                <a data-cms-key="nav_boat" href="#embarcacion" class="hover:text-champagne transition-colors duration-300 py-2">La Embarcación</a>
+                <a data-cms-key="nav_experiences" href="#experiencias" class="hover:text-champagne transition-colors duration-300 py-2">Experiencias</a>
+                <a data-cms-key="nav_gallery" href="#galeria" class="hover:text-champagne transition-colors duration-300 py-2">Galería</a>
+                <a data-cms-key="nav_location" href="#ubicacion" class="hover:text-champagne transition-colors duration-300 py-2">Ubicación</a>
             </nav>
 
             <!-- Acción Desktop + Botón Hamburguesa Móvil -->
@@ -204,10 +204,10 @@
         <!-- Drawer Menú Móvil Minimalista -->
         <div id="mobile-menu" class="fixed inset-0 top-[72px] bg-navy-900/98 backdrop-blur-md z-40 hidden flex-col justify-between px-8 py-12 md:hidden transition-opacity duration-300">
             <nav class="flex flex-col space-y-6 text-warmwhite">
-                <a href="#embarcacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">La Embarcación</a>
-                <a href="#experiencias" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Experiencias</a>
-                <a href="#galeria" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Galería</a>
-                <a href="#ubicacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Ubicación</a>
+                <a data-cms-key="nav_boat" href="#embarcacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">La Embarcación</a>
+                <a data-cms-key="nav_experiences" href="#experiencias" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Experiencias</a>
+                <a data-cms-key="nav_gallery" href="#galeria" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Galería</a>
+                <a data-cms-key="nav_location" href="#ubicacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Ubicación</a>
                 <a href="#reservaciones" class="mobile-nav-link inline-flex items-center justify-center w-full py-4 mt-4 bg-champagne text-navy-950 type-tech-label text-xs font-semibold rounded-sm">
                     Reservar Experiencia
                 </a>
@@ -497,7 +497,7 @@
                     <form id="reservation-form" novalidate class="space-y-6">
                         <div>
                             <span class="type-tech-label text-[10px] text-champagne block font-medium">Paso 03</span>
-                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-1">Datos de solicitud</h3>
+                            <h3 data-cms-key="booking_form_title" class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-1">Datos de solicitud</h3>
                         </div>
 
                         <!-- Resumen en Vivo -->
@@ -552,7 +552,7 @@
 
                         <!-- Aviso Obligatorio de Estado Pendiente -->
                         <div class="p-4 border-l-2 border-champagne bg-white/[0.03] text-xs text-sand/90 leading-relaxed">
-                            <strong class="block type-tech-label text-champagne text-[10px] mb-1">Importante sobre tu reservación</strong>
+                            <strong data-cms-key="booking_notice_title" class="block type-tech-label text-champagne text-[10px] mb-1">Importante sobre tu reservación</strong>
                             Toda solicitud queda en estado <strong>Pendiente de Confirmación</strong> hasta validar el anticipo correspondiente directamente con nuestro equipo.
                         </div>
 
@@ -568,7 +568,7 @@
                             <span class="inline-block px-3 py-1 bg-champagne/20 text-champagne type-tech-label text-[10px] rounded-sm mb-3">
                                 Estado: Pendiente de Confirmación
                             </span>
-                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite">Solicitud registrada</h3>
+                            <h3 data-cms-key="booking_success_title" class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite">Solicitud registrada</h3>
                             <p class="text-xs text-silver mt-2 leading-relaxed">
                                 Folio de referencia: <span id="generated-folio" class="text-warmwhite font-tech font-medium tabular-data"></span>. Para agilizar la validación de disponibilidad y anticipo, envía tu resumen directamente por WhatsApp.
                             </p>
@@ -611,7 +611,7 @@
 
                 <div class="pt-4 flex flex-col sm:flex-row gap-4">
                     <a id="direct-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-luxury inline-flex items-center justify-center gap-3 px-7 py-4 bg-navy-900 hover:bg-navy-800 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm">
-                        <span>Atención directa por WhatsApp</span>
+                        <span data-cms-key="location_whatsapp_cta">Atención directa por WhatsApp</span>
                         <svg class="w-4 h-4 text-champagne" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg>
                     </a>
                 </div>
@@ -663,7 +663,7 @@
                     <a href="#embarcacion" class="hover:text-warmwhite transition-colors">La Embarcación</a>
                     <a href="#experiencias" class="hover:text-warmwhite transition-colors">Experiencias</a>
                     <a href="#galeria" class="hover:text-warmwhite transition-colors">Galería</a>
-                    <a href="#reservaciones" class="hover:text-warmwhite transition-colors">Reservaciones</a>
+                    <a data-cms-key="footer_nav_booking" href="#reservaciones" class="hover:text-warmwhite transition-colors">Reservaciones</a>
                 </div>
 
                 <!-- Redes Sociales Editables -->
@@ -860,8 +860,7 @@
             if (!content || typeof content !== 'object') return;
             Object.entries(content).forEach(([key, value]) => {
                 if (typeof value !== 'string') return;
-                const el = document.querySelector('[data-cms-key="' + CSS.escape(key) + '"]');
-                if (el) el.textContent = value;
+                document.querySelectorAll('[data-cms-key="' + CSS.escape(key) + '"]').forEach(el => { el.textContent = value; });
             });
         }
 
