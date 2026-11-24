@@ -43,9 +43,25 @@
       return {
         getPublicUrl(path) { return { data: { publicUrl: publicRoot + path.split("/").map(encodeURIComponent).join("/") } }; },
         async upload(path, file, options = {}) {
-          const bytes = new Uint8Array(await file.arrayBuffer());
+          let source = file;
+          let contentType = options.contentType || file.type || "application/octet-stream";
+          if (file.type?.startsWith("image/") && !["image/svg+xml","image/gif"].includes(file.type) && typeof createImageBitmap === "function") {
+            try {
+              const bitmap = await createImageBitmap(file);
+              const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+              canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+              canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+              bitmap.close();
+              const compressed = await new Promise(resolve => canvas.toBlob(resolve, "image/webp", 0.82));
+              if (compressed && compressed.size < file.size) { source = compressed; contentType = "image/webp"; }
+            } catch (_) {}
+          }
+          if (source.size > 4 * 1024 * 1024) return { data: null, error: { message: "El archivo supera 4 MB después de optimizarlo. Reduce su tamaño e inténtalo de nuevo." } };
+          const bytes = new Uint8Array(await source.arrayBuffer());
           let binary = ""; for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-          return call({ action: "storage", method: "upload", bucket, path, contentType: options.contentType || file.type, file: btoa(binary) });
+          return call({ action: "storage", method: "upload", bucket, path, contentType, file: btoa(binary) });
         },
         remove(paths) { return call({ action: "storage", method: "remove", bucket, paths }); },
         createSignedUrl(path) { return call({ action: "storage", method: "signedUrl", bucket, path }); }
