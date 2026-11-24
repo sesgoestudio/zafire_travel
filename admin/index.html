@@ -161,7 +161,7 @@ return [
 function preview(){
 const frame=$('preview-frame');
 if(!draft||!frame.contentWindow)return;
-frame.contentWindow.postMessage({type:'zafire-admin-preview',content:draft.content||{},experiences:draft.experiences||[],media:draft.media||[],contact:draft.contact||{}},location.origin);
+frame.contentWindow.postMessage({type:'zafire-admin-preview',content:draft.content||{},experiences:draft.experiences||[],media:draft.media||[],contact:draft.contact||{},brand:draft.brand||{}},location.origin);
 }
 function queueSave(){
 status('Cambios sin guardar','bad');
@@ -212,8 +212,10 @@ return '<div class="field '+(f.area?'full':'')+'"><label>'+esc(f.label)+'</label
 }
 function renderCopySection(){
 const fields=contentFields.filter(f=>f.section===activeTab);
-$('editor-content').innerHTML='<div class="section-head"><div><div class="eyebrow">'+esc(tabs.find(x=>x[0]===activeTab)[1])+'</div><h2>Editar textos</h2><p class="muted">Los cambios se reflejan al instante en la vista previa.</p></div></div><div class="field-grid">'+fields.map(fieldHtml).join('')+'</div>';
+$('editor-content').innerHTML='<div class="section-head"><div><div class="eyebrow">'+esc(tabs.find(x=>x[0]===activeTab)[1])+'</div><h2>Editar textos</h2><p class="muted">Los cambios se reflejan al instante en la vista previa.</p></div></div><div class="field-grid">'+fields.map(fieldHtml).join('')+(activeTab==='embarcacion'?'<div class="field"><label>Capacidad máxima real para solicitudes</label><input type="number" min="1" max="15" step="1" data-max-capacity value="'+esc(draft.brand?.maxCapacity??15)+'"><p class="help">Este valor controla el máximo de pasajeros que permite el formulario.</p></div>':'')+'</div>';
 $('editor-content').querySelectorAll('[data-content]').forEach(el=>el.addEventListener('input',()=>{draft.content[el.dataset.content]=el.value;preview();queueSave();}));
+const capacity=$('editor-content').querySelector('[data-max-capacity]');
+if(capacity)capacity.addEventListener('input',()=>{draft.brand=draft.brand||{};draft.brand.maxCapacity=Math.max(1,Math.min(15,Number(capacity.value)||1));preview();queueSave();});
 }
 function renderExperiences(){
 const items=draft.experiences||[];
@@ -281,7 +283,7 @@ if(error)throw error;
 const pub=rows.find(x=>x.setting_key==='public')?.setting_value||{};
 const saved=rows.find(x=>x.setting_key==='draft')?.setting_value;
 draft=JSON.parse(JSON.stringify(saved||pub));
-draft.content=draft.content||{};draft.experiences=draft.experiences||[];draft.media=Array.isArray(draft.media)&&draft.media.length?draft.media:defaultMedia();draft.contact=draft.contact||pub.contact||{};
+draft.content=draft.content||{};draft.brand=draft.brand||pub.brand||{minCapacity:1,maxCapacity:15};draft.experiences=draft.experiences||[];draft.media=Array.isArray(draft.media)&&draft.media.length?draft.media:defaultMedia();draft.contact=draft.contact||pub.contact||{};
 $('login-screen').classList.add('hidden');$('admin-shell').classList.remove('hidden');
 renderTabsAndEditor();preview();status('Borrador listo','ok');
 }
