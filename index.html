@@ -1257,6 +1257,8 @@
                     document.getElementById('reservation-submitted-panel').classList.add('hidden');
                     form.classList.remove('hidden');
                     form.reset();
+                    this.state.selectedDate=null;this.state.selectedSlot=null;
+                    this.renderCalendar();this.updateBookingSummary();
                     this.hideFeedback();
                 });
 
@@ -1383,7 +1385,7 @@
                     document.getElementById('reservation-form').classList.add('hidden');
                     document.getElementById('reservation-submitted-panel').classList.remove('hidden');
                     document.getElementById('generated-folio').textContent=result.record.folio;
-                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
+                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nEstado: solicitud pendiente de confirmación.';
                     const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
                     document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
                     await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
