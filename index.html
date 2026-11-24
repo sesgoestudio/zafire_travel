@@ -177,15 +177,15 @@
 
             <!-- Navegación Desktop -->
             <nav class="hidden md:flex items-center gap-10 type-tech-label text-[11px] font-medium">
-                <a href="#embarcacion" class="hover:text-champagne transition-colors duration-300 py-2">La Embarcación</a>
-                <a href="#experiencias" class="hover:text-champagne transition-colors duration-300 py-2">Experiencias</a>
-                <a href="#galeria" class="hover:text-champagne transition-colors duration-300 py-2">Galería</a>
-                <a href="#ubicacion" class="hover:text-champagne transition-colors duration-300 py-2">Ubicación</a>
+                <a data-cms-key="nav_boat" href="#embarcacion" class="hover:text-champagne transition-colors duration-300 py-2">La Embarcación</a>
+                <a data-cms-key="nav_experiences" href="#experiencias" class="hover:text-champagne transition-colors duration-300 py-2">Experiencias</a>
+                <a data-cms-key="nav_gallery" href="#galeria" class="hover:text-champagne transition-colors duration-300 py-2">Galería</a>
+                <a data-cms-key="nav_location" href="#ubicacion" class="hover:text-champagne transition-colors duration-300 py-2">Ubicación</a>
             </nav>
 
             <!-- Acción Desktop + Botón Hamburguesa Móvil -->
             <div class="flex items-center gap-4">
-                <a href="#reservaciones" class="hidden sm:inline-flex items-center justify-center px-6 py-2.5 type-tech-label text-[11px] font-medium border border-champagne/70 text-warmwhite hover:bg-champagne hover:text-navy-950 rounded-sm transition-all duration-300">
+                <a data-cms-key="nav_cta" href="#reservaciones" class="hidden sm:inline-flex items-center justify-center px-6 py-2.5 type-tech-label text-[11px] font-medium border border-champagne/70 text-warmwhite hover:bg-champagne hover:text-navy-950 rounded-sm transition-all duration-300">
                     Reservar
                 </a>
 
@@ -204,11 +204,11 @@
         <!-- Drawer Menú Móvil Minimalista -->
         <div id="mobile-menu" class="fixed inset-0 top-[72px] bg-navy-900/98 backdrop-blur-md z-40 hidden flex-col justify-between px-8 py-12 md:hidden transition-opacity duration-300">
             <nav class="flex flex-col space-y-6 text-warmwhite">
-                <a href="#embarcacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">La Embarcación</a>
-                <a href="#experiencias" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Experiencias</a>
-                <a href="#galeria" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Galería</a>
-                <a href="#ubicacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Ubicación</a>
-                <a href="#reservaciones" class="mobile-nav-link inline-flex items-center justify-center w-full py-4 mt-4 bg-champagne text-navy-950 type-tech-label text-xs font-semibold rounded-sm">
+                <a data-cms-key="nav_boat" href="#embarcacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">La Embarcación</a>
+                <a data-cms-key="nav_experiences" href="#experiencias" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Experiencias</a>
+                <a data-cms-key="nav_gallery" href="#galeria" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Galería</a>
+                <a data-cms-key="nav_location" href="#ubicacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Ubicación</a>
+                <a data-cms-key="mobile_cta" href="#reservaciones" class="mobile-nav-link inline-flex items-center justify-center w-full py-4 mt-4 bg-champagne text-navy-950 type-tech-label text-xs font-semibold rounded-sm">
                     Reservar Experiencia
                 </a>
             </nav>
@@ -242,28 +242,28 @@
         <div class="relative z-10 max-w-5xl mx-auto px-6 md:px-12 text-center pt-20">
             <div class="inline-flex items-center gap-3 mb-7 opacity-90">
                 <span class="h-[1px] w-8 bg-champagne/80"></span>
-                <span class="type-tech-label text-[10px] sm:text-[11px] text-sand font-medium">Mazatlán · Sinaloa · México</span>
+                <span data-cms-key="hero_kicker" class="type-tech-label text-[10px] sm:text-[11px] text-sand font-medium">Mazatlán · Sinaloa · México</span>
                 <span class="h-[1px] w-8 bg-champagne/80"></span>
             </div>
 
-            <h1 class="type-hero-title text-warmwhite mb-5">
+            <h1 data-cms-key="hero_title" class="type-hero-title text-warmwhite mb-5">
                 ZAFIRE
             </h1>
 
-            <p class="font-display text-xl sm:text-2xl md:text-3xl text-sand font-medium tracking-tightdisplay mb-5">
+            <p data-cms-key="hero_tagline" class="font-display text-xl sm:text-2xl md:text-3xl text-sand font-medium tracking-tightdisplay mb-5">
                 Navega. Descubre. <span class="type-editorial-accent text-3xl sm:text-4xl md:text-[2.6rem] text-champagne font-normal">Vive el mar.</span>
             </p>
 
-            <p class="max-w-lg mx-auto text-sm sm:text-base text-warmwhite/80 font-light leading-relaxed mb-11">
+            <p data-cms-key="hero_description" class="max-w-lg mx-auto text-sm sm:text-base text-warmwhite/80 font-light leading-relaxed mb-11">
                 Pesca deportiva, excursiones y encuentros con la vida marina. Descubre Mazatlán desde el mar a bordo de ZAFIRE.
             </p>
 
             <!-- Botones Refinados -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
-                <a href="#reservaciones" class="btn-luxury w-full sm:w-auto px-8 py-4 bg-champagne text-navy-950 hover:bg-warmwhite type-tech-label text-[11px] font-semibold rounded-sm">
+                <a data-cms-key="hero_cta_primary" href="#reservaciones" class="btn-luxury w-full sm:w-auto px-8 py-4 bg-champagne text-navy-950 hover:bg-warmwhite type-tech-label text-[11px] font-semibold rounded-sm">
                     Reservar experiencia
                 </a>
-                <a href="#embarcacion" class="btn-luxury w-full sm:w-auto px-8 py-4 border border-warmwhite/40 hover:border-warmwhite text-warmwhite hover:bg-white/10 type-tech-label text-[11px] font-medium rounded-sm">
+                <a data-cms-key="hero_cta_secondary" href="#embarcacion" class="btn-luxury w-full sm:w-auto px-8 py-4 border border-warmwhite/40 hover:border-warmwhite text-warmwhite hover:bg-white/10 type-tech-label text-[11px] font-medium rounded-sm">
                     Descubrir Zafire
                 </a>
             </div>
@@ -285,11 +285,9 @@
             <div class="reveal max-w-3xl mb-16 md:mb-24">
                 <div class="flex items-center gap-3 mb-5">
                     <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
-                    <span class="type-tech-label text-[11px] text-silver font-medium">La Embarcación</span>
+                    <span data-cms-key="vessel_eyebrow" class="type-tech-label text-[11px] text-silver font-medium">La Embarcación</span>
                 </div>
-                <h2 class="type-section-title text-navy-900">
-                    Horizontes abiertos con carácter clásico y <span class="type-editorial-accent text-[1.18em] text-navy-800">serenidad</span> contemporánea.
-                </h2>
+                <h2 data-cms-key="vessel_heading" class="type-section-title text-navy-900">Horizontes abiertos con carácter clásico y serenidad contemporánea.</h2>
             </div>
 
             <!-- Grid Asimétrico: Narrativa + Ficha Técnica + Fotografía Doble -->
@@ -297,10 +295,10 @@
                 
                 <!-- Columna Izquierda: Narrativa y Especificaciones Limpias -->
                 <div class="lg:col-span-5 reveal space-y-7">
-                    <p class="text-base md:text-lg text-navy-800/90 font-light leading-[1.7]">
+                    <p data-cms-key="vessel_paragraph_1" class="text-base md:text-lg text-navy-800/90 font-light leading-[1.7]">
                         Desde Muelle 10, en Marina Mazatlán, <strong class="font-semibold text-navy-900">ZAFIRE</strong> te lleva a vivir el Pacífico de distintas maneras: jornadas de pesca, excursiones por la costa y salidas especiales para observar ballenas durante su temporada.
                     </p>
-                    <p class="text-sm md:text-base text-navy-800/75 font-light leading-[1.7]">
+                    <p data-cms-key="vessel_paragraph_2" class="text-sm md:text-base text-navy-800/75 font-light leading-[1.7]">
                         Elige el tipo de salida que buscas y disfruta el mar acompañado por una tripulación dedicada a hacer de cada recorrido una experiencia memorable.
                     </p>
 
@@ -308,15 +306,15 @@
                     <div class="pt-6 border-t border-navy-900/15 space-y-5 tabular-data">
                         <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
                             <span class="type-tech-label text-[11px] text-silver">Embarcación</span>
-                            <span class="font-display text-lg font-medium tracking-tight text-navy-900">Embarcación ZAFIRE</span>
+                            <span data-cms-key="vessel_name" class="font-display text-lg font-medium tracking-tight text-navy-900">Embarcación ZAFIRE</span>
                         </div>
                         <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
                             <span class="type-tech-label text-[11px] text-silver">Capacidad</span>
-                            <span class="font-display text-lg font-medium tracking-tight text-navy-900">13 – 15 pasajeros</span>
+                            <span data-cms-key="vessel_capacity" class="font-display text-lg font-medium tracking-tight text-navy-900">13 – 15 pasajeros</span>
                         </div>
                         <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
                             <span class="type-tech-label text-[11px] text-silver">Punto de salida</span>
-                            <span class="text-sm font-medium text-navy-900">Muelle 10 · Marina Mazatlán</span>
+                            <span data-cms-key="vessel_location" class="text-sm font-medium text-navy-900">Muelle 10 · Marina Mazatlán</span>
                         </div>
                     </div>
 
@@ -355,7 +353,7 @@
                                 onerror="this.src='https://placehold.co/600x750/EAE5DC/081523?text=DETALLE+NAUTICO'"
                             >
                         </div>
-                        <p class="text-xs text-silver font-light leading-relaxed italic">
+                        <p data-cms-key="vessel_photo_note" class="text-xs text-silver font-light leading-relaxed italic">
                             Fotografías referenciales. Sustituibles directamente desde la configuración multimedia por tomas reales de ZAFIRE.
                         </p>
                     </div>
@@ -373,12 +371,10 @@
             <!-- Cabecera -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-6 reveal">
                 <div>
-                    <span class="type-tech-label text-[11px] text-champagne block mb-4 font-medium">Travesías & Momentos</span>
-                    <h2 class="type-section-title text-warmwhite">
-                        Experiencias
-                    </h2>
+                    <span data-cms-key="experiences_eyebrow" class="type-tech-label text-[11px] text-champagne block mb-4 font-medium">Travesías & Momentos</span>
+                    <h2 data-cms-key="experiences_heading" class="type-section-title text-warmwhite">Experiencias</h2>
                 </div>
-                <p class="max-w-md text-sm text-silver font-light leading-relaxed">
+                <p data-cms-key="experiences_description" class="max-w-md text-sm text-silver font-light leading-relaxed">
                     Desde una salida de pesca al amanecer hasta una tarde navegando por la costa, encuentra la experiencia que mejor va contigo.
                 </p>
             </div>
@@ -397,12 +393,10 @@
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-14 gap-4 reveal">
                 <div>
-                    <span class="type-tech-label text-[11px] text-silver block mb-3 font-medium">Bitácora Visual</span>
-                    <h2 class="type-section-title text-navy-900">
-                        El mar en <span class="type-editorial-accent text-[1.15em] text-navy-800">perspectiva</span>
-                    </h2>
+                    <span data-cms-key="gallery_eyebrow" class="type-tech-label text-[11px] text-silver block mb-3 font-medium">Bitácora Visual</span>
+                    <h2 data-cms-key="gallery_heading" class="type-section-title text-navy-900">El mar en perspectiva</h2>
                 </div>
-                <p class="type-tech-label text-[10px] text-silver">
+                <p data-cms-key="gallery_hint" class="type-tech-label text-[10px] text-silver">
                     Toca cualquier fotografía para ampliar
                 </p>
             </div>
@@ -422,12 +416,10 @@
             <div class="max-w-2xl mb-14 reveal">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
-                    <span class="type-tech-label text-[11px] text-navy-800/70 font-medium">Solicitudes de Salida</span>
+                    <span data-cms-key="booking_eyebrow" class="type-tech-label text-[11px] text-navy-800/70 font-medium">Solicitudes de Salida</span>
                 </div>
-                <h2 class="type-section-title text-navy-900 mb-4">
-                    Reserva tu <span class="type-editorial-accent text-[1.15em]">travesía</span> en ZAFIRE
-                </h2>
-                <p class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed">
+                <h2 data-cms-key="booking_heading" class="type-section-title text-navy-900 mb-4">Reserva tu travesía en ZAFIRE</h2>
+                <p data-cms-key="booking_description" class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed">
                     Cuéntanos qué experiencia te interesa, la fecha y cuántas personas asistirán. Nuestro equipo confirmará la disponibilidad y coordinará contigo los detalles de la salida.
                 </p>
             </div>
@@ -443,7 +435,7 @@
                         <div class="flex items-center justify-between mb-6">
                             <div>
                                 <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 01</span>
-                                <h3 class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 mt-0.5">Selecciona una fecha</h3>
+                                <h3 data-cms-key="booking_date_label" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 mt-0.5">Selecciona una fecha</h3>
                             </div>
                             <!-- Controles de Mes -->
                             <div class="flex items-center gap-2">
@@ -481,15 +473,15 @@
                     <div class="pt-6 border-t border-navy-900/10 grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 02</span>
-                            <label for="booking-experience" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Experiencia</label>
+                            <label data-cms-key="booking_experience_label" for="booking-experience" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Experiencia</label>
                             <select id="booking-experience" class="w-full h-12 px-4 bg-warmwhite border border-navy-900/20 rounded-sm text-sm text-navy-900 focus:outline-none focus:border-navy-900">
                                 <!-- Opciones sincronizadas con SITE_CONFIG.experiences -->
                             </select>
                         </div>
 
                         <div>
-                            <span class="type-tech-label text-[10px] text-champagne font-semibold block">Capacidad Máx. 15</span>
-                            <span class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Pasajeros</span>
+                            <span id="booking-capacity-label" class="type-tech-label text-[10px] text-champagne font-semibold block">Capacidad Máx. 15</span>
+                            <span data-cms-key="booking_pax_label" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Pasajeros</span>
                             <div class="flex items-center justify-between h-12 border border-navy-900/20 rounded-sm px-2 bg-warmwhite tabular-data">
                                 <button type="button" id="pax-decrease" aria-label="Disminuir pasajeros" class="w-10 h-10 flex items-center justify-center text-navy-900 hover:bg-sand/60 rounded-sm transition-colors text-lg">
                                     &minus;
@@ -511,7 +503,7 @@
                     <form id="reservation-form" novalidate class="space-y-6">
                         <div>
                             <span class="type-tech-label text-[10px] text-champagne block font-medium">Paso 03</span>
-                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-1">Datos de solicitud</h3>
+                            <h3 data-cms-key="booking_form_title" class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-1">Datos de solicitud</h3>
                         </div>
 
                         <!-- Resumen en Vivo -->
@@ -541,22 +533,22 @@
                         <!-- Campos del Formulario -->
                         <div class="space-y-4">
                             <div>
-                                <label for="client-name" class="block type-tech-label text-[10px] text-silver mb-2">Nombre completo *</label>
+                                <label data-cms-key="booking_name_label" for="client-name" class="block type-tech-label text-[10px] text-silver mb-2">Nombre completo *</label>
                                 <input type="text" id="client-name" required placeholder="Ej. Alejandro Mendoza" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
                             </div>
 
                             <div>
-                                <label for="client-email" class="block type-tech-label text-[10px] text-silver mb-2">Correo electrónico (Opcional)</label>
+                                <label data-cms-key="booking_email_label" for="client-email" class="block type-tech-label text-[10px] text-silver mb-2">Correo electrónico (Opcional)</label>
                                 <input type="email" id="client-email" placeholder="tu@correo.com" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
                             </div>
 
                             <div>
-                                <label for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
+                                <label data-cms-key="booking_phone_label" for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
                                 <input type="tel" id="client-phone" required placeholder="Ej. +52 669 000 0000" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors tabular-data">
                             </div>
 
                             <div>
-                                <label for="client-notes" class="block type-tech-label text-[10px] text-silver mb-2">Comentarios especiales (Opcional)</label>
+                                <label data-cms-key="booking_notes_label" for="client-notes" class="block type-tech-label text-[10px] text-silver mb-2">Comentarios especiales (Opcional)</label>
                                 <textarea id="client-notes" rows="2" placeholder="Motivo de celebración o preferencia de horario..." class="w-full p-3.5 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors resize-none"></textarea>
                             </div>
                         </div>
@@ -566,12 +558,12 @@
 
                         <!-- Aviso Obligatorio de Estado Pendiente -->
                         <div class="p-4 border-l-2 border-champagne bg-white/[0.03] text-xs text-sand/90 leading-relaxed">
-                            <strong class="block type-tech-label text-champagne text-[10px] mb-1">Importante sobre tu reservación</strong>
-                            Toda solicitud queda en estado <strong>Pendiente de Confirmación</strong> hasta validar el anticipo correspondiente directamente con nuestro equipo.
+                            <strong data-cms-key="booking_notice_title" class="block type-tech-label text-champagne text-[10px] mb-1">Importante sobre tu reservación</strong>
+                            <p data-cms-key="booking_notice_body" class="m-0">Toda solicitud queda en estado <strong>Pendiente de Confirmación</strong> hasta validar el anticipo correspondiente directamente con nuestro equipo.</p>
                         </div>
 
                         <!-- Botón Principal -->
-                        <button type="submit" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm cursor-pointer">
+                        <button data-cms-key="booking_form_submit" type="submit" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm cursor-pointer">
                             SOLICITAR RESERVACIÓN
                         </button>
                     </form>
@@ -582,7 +574,7 @@
                             <span class="inline-block px-3 py-1 bg-champagne/20 text-champagne type-tech-label text-[10px] rounded-sm mb-3">
                                 Estado: Pendiente de Confirmación
                             </span>
-                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite">Solicitud registrada</h3>
+                            <h3 data-cms-key="booking_success_title" class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite">Solicitud registrada</h3>
                             <p class="text-xs text-silver mt-2 leading-relaxed">
                                 Folio de referencia: <span id="generated-folio" class="text-warmwhite font-tech font-medium tabular-data"></span>. Para agilizar la validación de disponibilidad y anticipo, envía tu resumen directamente por WhatsApp.
                             </p>
@@ -617,17 +609,15 @@
     <section id="ubicacion" class="py-24 md:py-32 px-6 md:px-12 bg-warmwhite text-navy-900 border-t border-navy-900/10">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div class="lg:col-span-6 space-y-6 reveal">
-                <span class="type-tech-label text-[11px] text-silver block font-medium">Punto de Embarque</span>
-                <h2 class="type-section-title text-navy-900">
-                    Mazatlán, <span class="type-editorial-accent text-[1.15em]">Sinaloa</span>, México
-                </h2>
-                <p class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed max-w-lg">
+                <span data-cms-key="location_eyebrow" class="type-tech-label text-[11px] text-silver block font-medium">Punto de Embarque</span>
+                <h2 data-cms-key="location_heading" class="type-section-title text-navy-900">Mazatlán, Sinaloa, México</h2>
+                <p data-cms-key="location_description" class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed max-w-lg">
                     Zarpamos desde Mazatlán hacia las aguas del Pacífico mexicano. La ubicación exacta de muelle y logística de abordaje se comparte al confirmar tu reservación.
                 </p>
 
                 <div class="pt-4 flex flex-col sm:flex-row gap-4">
                     <a id="direct-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-luxury inline-flex items-center justify-center gap-3 px-7 py-4 bg-navy-900 hover:bg-navy-800 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm">
-                        <span>Atención directa por WhatsApp</span>
+                        <span data-cms-key="location_whatsapp_cta">Atención directa por WhatsApp</span>
                         <svg class="w-4 h-4 text-champagne" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg>
                     </a>
                 </div>
@@ -646,15 +636,15 @@
                     <div class="relative z-10 space-y-6">
                         <div class="border-b border-white/10 pb-4">
                             <span class="type-tech-label text-[10px] text-champagne">Punto de salida</span>
-                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-3">Marina Mazatlán</h3>
-                            <p class="text-sm text-silver mt-1">Muelle 10 · Mazatlán, Sinaloa</p>
+                            <h3 data-cms-key="location_card_title" class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-3">Marina Mazatlán</h3>
+                            <p data-cms-key="location_card_detail" class="text-sm text-silver mt-1">Muelle 10 · Mazatlán, Sinaloa</p>
                         </div>
                         <div>
-                            <p class="text-xs text-silver font-light">Punto de embarque para nuestras experiencias en el Pacífico.</p>
+                            <p data-cms-key="location_card_note" class="text-xs text-silver font-light">Punto de embarque para nuestras experiencias en el Pacífico.</p>
                         </div>
                         <div class="pt-2 flex items-center gap-3 text-xs text-sand">
                             <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
-                            <span>Operaciones sujetas a condiciones meteorológicas y capitanía de puerto.</span>
+                            <span data-cms-key="location_weather_note">Operaciones sujetas a condiciones meteorológicas y capitanía de puerto.</span>
                         </div>
                     </div>
                 </div>
@@ -671,15 +661,15 @@
                         <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
                         <span class="font-display text-2xl font-semibold tracking-[0.14em]">ZAFIRE</span>
                     </div>
-                    <p class="text-xs text-silver mt-2 tracking-wide">Pesca, excursiones y avistamiento de ballenas · Mazatlán, Sinaloa.</p>
+                    <p data-cms-key="footer_description" class="text-xs text-silver mt-2 tracking-wide">Pesca, excursiones y avistamiento de ballenas · Mazatlán, Sinaloa.</p>
                 </div>
 
                 <!-- Enlaces -->
                 <div class="flex flex-wrap gap-8 type-tech-label text-[11px] text-silver">
-                    <a href="#embarcacion" class="hover:text-warmwhite transition-colors">La Embarcación</a>
-                    <a href="#experiencias" class="hover:text-warmwhite transition-colors">Experiencias</a>
-                    <a href="#galeria" class="hover:text-warmwhite transition-colors">Galería</a>
-                    <a href="#reservaciones" class="hover:text-warmwhite transition-colors">Reservaciones</a>
+                    <a data-cms-key="footer_nav_boat" href="#embarcacion" class="hover:text-warmwhite transition-colors">La Embarcación</a>
+                    <a data-cms-key="footer_nav_experiences" href="#experiencias" class="hover:text-warmwhite transition-colors">Experiencias</a>
+                    <a data-cms-key="footer_nav_gallery" href="#galeria" class="hover:text-warmwhite transition-colors">Galería</a>
+                    <a data-cms-key="footer_nav_booking" href="#reservaciones" class="hover:text-warmwhite transition-colors">Reservaciones</a>
                 </div>
 
                 <!-- Redes Sociales Editables -->
@@ -827,10 +817,89 @@
                     spanClass: 'md:col-span-7 h-[360px] md:h-[420px]'
                 }
             ],
+            content: {
+                      "hero_kicker": "Mazatlán · Sinaloa · México",
+                      "hero_title": "ZAFIRE",
+                      "hero_tagline": "Navega. Descubre. Vive el mar.",
+                      "hero_description": "Pesca deportiva, excursiones y encuentros con la vida marina. Descubre Mazatlán desde el mar a bordo de ZAFIRE.",
+                      "hero_cta_primary": "Reservar experiencia",
+                      "hero_cta_secondary": "Descubrir Zafire",
+                      "vessel_eyebrow": "La Embarcación",
+                      "vessel_heading": "Horizontes abiertos con carácter clásico y serenidad contemporánea.",
+                      "vessel_paragraph_1": "Desde Muelle 10, en Marina Mazatlán, ZAFIRE te lleva a vivir el Pacífico de distintas maneras: jornadas de pesca, excursiones por la costa y salidas especiales para observar ballenas durante su temporada.",
+                      "vessel_paragraph_2": "Elige el tipo de salida que buscas y disfruta el mar acompañado por una tripulación dedicada a hacer de cada recorrido una experiencia memorable.",
+                      "vessel_name": "Embarcación ZAFIRE",
+                      "vessel_capacity": "13 – 15 pasajeros",
+                      "vessel_location": "Muelle 10 · Marina Mazatlán",
+                      "vessel_photo_note": "Fotografías referenciales. Sustituibles directamente desde la configuración multimedia por tomas reales de ZAFIRE.",
+                      "experiences_eyebrow": "Travesías & Momentos",
+                      "experiences_heading": "Experiencias",
+                      "experiences_description": "Desde una salida de pesca al amanecer hasta una tarde navegando por la costa, encuentra la experiencia que mejor va contigo.",
+                      "gallery_eyebrow": "Bitácora Visual",
+                      "gallery_heading": "El mar en perspectiva",
+                      "gallery_hint": "Toca cualquier fotografía para ampliar",
+                      "booking_eyebrow": "Solicitudes de Salida",
+                      "booking_heading": "Reserva tu travesía en ZAFIRE",
+                      "booking_description": "Cuéntanos qué experiencia te interesa, la fecha y cuántas personas asistirán. Nuestro equipo confirmará la disponibilidad y coordinará contigo los detalles de la salida.",
+                      "location_eyebrow": "Punto de Embarque",
+                      "location_heading": "Mazatlán, Sinaloa, México",
+                      "location_description": "Zarpamos desde Mazatlán hacia las aguas del Pacífico mexicano. La ubicación exacta de muelle y logística de abordaje se comparte al confirmar tu reservación.",
+                      "location_card_title": "Marina Mazatlán",
+                      "location_card_detail": "Muelle 10 · Mazatlán, Sinaloa",
+                      "location_card_note": "Punto de embarque para nuestras experiencias en el Pacífico.",
+                      "location_weather_note": "Operaciones sujetas a condiciones meteorológicas y capitanía de puerto.",
+                      "footer_description": "Pesca, excursiones y avistamiento de ballenas · Mazatlán, Sinaloa.",
+                      "nav_boat": "La Embarcación",
+                      "nav_experiences": "Experiencias",
+                      "nav_gallery": "Galería",
+                      "nav_location": "Ubicación",
+                      "nav_cta": "Reservar",
+                      "mobile_cta": "Reservar Experiencia",
+                      "footer_nav_boat": "La Embarcación",
+                      "footer_nav_experiences": "Experiencias",
+                      "footer_nav_gallery": "Galería",
+                      "footer_nav_booking": "Reservaciones",
+                      "booking_date_label": "Selecciona una fecha",
+                      "booking_experience_label": "Experiencia",
+                      "booking_pax_label": "Pasajeros",
+                      "booking_form_title": "Datos de solicitud",
+                      "booking_success_title": "Solicitud registrada",
+                      "booking_notice_title": "Importante sobre tu reservación",
+                      "booking_notice_body": "Toda solicitud queda en estado Pendiente de Confirmación hasta validar el anticipo correspondiente directamente con nuestro equipo.",
+                      "booking_form_submit": "SOLICITAR RESERVACIÓN",
+                      "booking_name_label": "Nombre completo *",
+                      "booking_email_label": "Correo electrónico (Opcional)",
+                      "booking_phone_label": "Teléfono / WhatsApp *",
+                      "booking_notes_label": "Comentarios especiales (Opcional)",
+                      "location_whatsapp_cta": "Atención directa por WhatsApp"
+            },
+            media: [],
             bookingHoldMinutes: 30,
             // Fechas y disponibilidad se consultan en Supabase
             initialBlockedDates: []
         };
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+            }[char]));
+        }
+        function applySiteContent(content) {
+            if (!content || typeof content !== 'object') return;
+            Object.entries(content).forEach(([key,value]) => {
+                if (typeof value !== 'string') return;
+                document.querySelectorAll('[data-cms-key="' + CSS.escape(key) + '"]').forEach(el => { el.textContent=value; });
+            });
+        }
+        function applySiteMedia(items) {
+            if (!Array.isArray(items)) return;
+            items.filter(x=>x&&x.category&&x.public_url).forEach(item=>{
+                const el=document.querySelector('[data-editable="' + CSS.escape(item.category) + '"]');
+                if(el){el.src=item.public_url;if(item.alt_text)el.alt=item.alt_text;}
+            });
+            const gallery=items.filter(x=>x.category==='gallery'&&x.public_url);
+            SITE_CONFIG.gallery=gallery.map((x,i)=>({src:x.public_url,caption:x.alt_text||'ZAFIRE · Mazatlán',spanClass:i%2?'md:col-span-7 h-[360px] md:h-[420px]':'md:col-span-5 h-[360px] md:h-[460px]'}));
+        }
 
         /**
          * 2. SUPABASE_SCHEMA_SERVICE
@@ -856,18 +925,19 @@
                 const value=data?.setting_value||{};
                 SITE_CONFIG.bookingHoldMinutes=Number(value.bookingHoldMinutes)||30;
                 if(value.contact) Object.assign(SITE_CONFIG.contact,value.contact);
-                if(Array.isArray(value.schedules)) SITE_CONFIG.schedules=SITE_CONFIG.schedules.map(base=>({...base,...(value.schedules.find(x=>x.id===base.id)||{})}));
-                if(Array.isArray(value.experiences)) SITE_CONFIG.experiences=SITE_CONFIG.experiences.map(base=>({...base,...(value.experiences.find(x=>x.id===base.id)||{})}));
+                if(value.brand) Object.assign(SITE_CONFIG.brand,value.brand);
+                if(value.content) Object.assign(SITE_CONFIG.content,value.content);
+                if(Array.isArray(value.experiences)&&value.experiences.length) SITE_CONFIG.experiences=value.experiences;
+                if(Array.isArray(value.media)) SITE_CONFIG.media=value.media;
+                const capacityLabel=document.getElementById('booking-capacity-label');
+                if(capacityLabel)capacityLabel.textContent='Capacidad Máx. '+SITE_CONFIG.brand.maxCapacity;
+                applySiteContent(SITE_CONFIG.content);
             },
             async loadSiteMedia() {
+                if(Array.isArray(SITE_CONFIG.media)&&SITE_CONFIG.media.length){applySiteMedia(SITE_CONFIG.media);return;}
                 const {data,error}=await this.client.from('site_media').select('*').eq('is_active',true).order('sort_order');
                 if(error) throw error;
-                (data||[]).forEach(item=>{
-                    if(item.category==='hero-background'){const el=document.getElementById('hero-bg-img');if(el)el.src=item.public_url;}
-                    else if(item.category==='vessel-photo-primary'||item.category==='vessel-photo-secondary'){const el=document.querySelector('[data-editable="'+item.category+'"]');if(el)el.src=item.public_url;}
-                });
-                const gallery=(data||[]).filter(x=>x.category==='gallery');
-                if(gallery.length) SITE_CONFIG.gallery=gallery.map((x,i)=>({src:x.public_url,caption:x.alt_text||'ZAFIRE · Mazatlán',spanClass:i%2?'md:col-span-7 h-[360px] md:h-[420px]':'md:col-span-5 h-[360px] md:h-[420px]'}));
+                applySiteMedia(data||[]);
             },
             async getAvailability(start,end) {
                 const {data,error}=await this.client.rpc('zafire_get_slot_availability',{p_start:start,p_end:end});
@@ -970,25 +1040,25 @@
                 container.innerHTML = SITE_CONFIG.experiences.map(exp => `
                     <article class="reveal py-10 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center group">
                         <div class="lg:col-span-1 font-tech text-xs text-champagne tabular-data">
-                            ${exp.number}
+                            ${escapeHTML(exp.number)}
                         </div>
                         <div class="lg:col-span-4">
                             <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite group-hover:text-champagne transition-colors">
-                                ${exp.title}
+                                ${escapeHTML(exp.title)}
                             </h3>
-                            <p class="type-tech-label text-[10px] text-silver mt-2">${exp.subtitle}</p>
+                            <p class="type-tech-label text-[10px] text-silver mt-2">${escapeHTML(exp.subtitle)}</p>
                         </div>
                         <div class="lg:col-span-4 space-y-2">
                             <p class="text-sm text-warmwhite/80 font-light leading-relaxed">
-                                ${exp.description}
+                                ${escapeHTML(exp.description)}
                             </p>
                             <div class="pt-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-silver tabular-data">
-                                <span>${exp.durationLabel}</span>
-                                <span>${exp.price !== null ? 'Desde $' + exp.price + ' MXN' : exp.priceLabel}</span>
+                                <span>${escapeHTML(exp.durationLabel)}</span>
+                                <span>${exp.price !== null ? 'Desde $' + escapeHTML(exp.price) + ' MXN' : escapeHTML(exp.priceLabel)}</span>
                             </div>
                         </div>
                         <div class="lg:col-span-3 flex lg:justify-end">
-                            <button type="button" data-select-exp="${exp.id}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
+                            <button type="button" data-select-exp="${escapeHTML(exp.id)}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
                                 Seleccionar salida
                             </button>
                         </div>
@@ -1014,17 +1084,17 @@
                 grid.innerHTML = SITE_CONFIG.gallery.map((item, idx) => `
                     <figure 
                         data-gallery-idx="${idx}"
-                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${item.spanClass}"
+                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${escapeHTML(item.spanClass)}"
                     >
                         <img 
-                            src="${item.src}" 
-                            alt="${item.caption}" 
+                            src="${escapeHTML(item.src)}" 
+                            alt="${escapeHTML(item.caption)}" 
                             loading="lazy"
                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                             onerror="this.src='https://placehold.co/1200x800/081523/EAE5DC?text=ZAFIRE+GALERIA'"
                         >
                         <figcaption class="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-between p-6">
-                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${item.caption}</span>
+                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${escapeHTML(item.caption)}</span>
                             <span class="type-tech-label text-[10px] text-champagne border border-champagne/50 px-2.5 py-1 rounded-sm">Ampliar</span>
                         </figcaption>
                     </figure>
@@ -1096,7 +1166,7 @@
                 // Poblar selector de experiencias
                 const expSelect = document.getElementById('booking-experience');
                 expSelect.innerHTML = SITE_CONFIG.experiences.map(exp => `
-                    <option value="${exp.id}">${exp.title}</option>
+                    <option value="${escapeHTML(exp.id)}">${escapeHTML(exp.title)}</option>
                 `).join('');
                 expSelect.addEventListener('change', (e) => {
                     this.state.selectedExperienceId = e.target.value;
@@ -1324,9 +1394,27 @@
             }
         };
 
+        window.addEventListener('message', event => {
+            if(event.source!==window.parent||event.origin!==window.location.origin)return;
+            const payload=event.data||{};
+            if(payload.type!=='zafire-admin-preview')return;
+            if(payload.content){Object.assign(SITE_CONFIG.content,payload.content);applySiteContent(SITE_CONFIG.content);}
+            if(payload.brand){Object.assign(SITE_CONFIG.brand,payload.brand);const label=document.getElementById('booking-capacity-label');if(label)label.textContent='Capacidad Máx. '+SITE_CONFIG.brand.maxCapacity;}
+            if(Array.isArray(payload.experiences)){
+                SITE_CONFIG.experiences=payload.experiences;
+                if(typeof UI_CONTROLLER!=='undefined'){
+                    UI_CONTROLLER.renderExperiences();
+                    const select=document.getElementById('booking-experience');
+                    if(select){const previous=select.value;select.innerHTML=SITE_CONFIG.experiences.map(exp=>'<option value="'+escapeHTML(exp.id)+'">'+escapeHTML(exp.title)+'</option>').join('');select.value=SITE_CONFIG.experiences.some(x=>x.id===previous)?previous:(SITE_CONFIG.experiences[0]?.id||'');UI_CONTROLLER.state.selectedExperienceId=select.value;UI_CONTROLLER.updateBookingSummary();}
+                }
+            }
+            if(Array.isArray(payload.media)){SITE_CONFIG.media=payload.media;applySiteMedia(payload.media);if(typeof UI_CONTROLLER!=='undefined')UI_CONTROLLER.renderGallery();}
+            if(payload.contact){Object.assign(SITE_CONFIG.contact,payload.contact);if(typeof UI_CONTROLLER!=='undefined')UI_CONTROLLER.setupContactAndFooter();}
+        });
+
         // Inicialización al cargar el DOM
         document.addEventListener('DOMContentLoaded', async () => {
-            try { SUPABASE_SCHEMA_SERVICE.init(); await UI_CONTROLLER.init(); }
+            try { await UI_CONTROLLER.init(); }
             catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
         });
     </script>
