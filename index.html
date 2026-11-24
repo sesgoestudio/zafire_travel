@@ -858,6 +858,9 @@
             buildReservationPayload(formData) { return { folio: 'ZFR-' + Date.now().toString(36).toUpperCase().slice(-6), customer_name: formData.name.trim(), phone: formData.phone.trim(), guests: Number(formData.pax), experience: formData.experienceId, reservation_date: formData.date, time_slot: formData.slotId, notes: formData.notes.trim() || null, status: 'pending', deposit_status: 'pending', deposit_amount: 0, total_amount: formData.quotedPrice, source: 'website' }; },
             async createReservationRequest(payload) { const { data, error } = await this.client.from('reservation_requests').insert(payload).select().single(); if (error) throw error; return { ok: true, record: data }; }
         };
+
+        /**
+         * 3. UI_CONTROLLER
          * Maneja la interactividad, navegación responsive, calendario táctil,
          * lightbox y generación de enlaces de WhatsApp.
          */
@@ -1263,75 +1266,28 @@
                 const name = document.getElementById('client-name').value.trim();
                 const phone = document.getElementById('client-phone').value.trim();
                 const notes = document.getElementById('client-notes').value.trim();
-
-                if (!this.state.selectedDate) {
-                    this.showFeedback('Por favor selecciona una fecha disponible en el calendario.');
-                    return;
-                }
-                if (!name) {
-                    this.showFeedback('Por favor ingresa tu nombre completo.');
-                    document.getElementById('client-name').focus();
-                    return;
-                }
-                if (!phone || phone.replace(/\D/g, '').length < 8) {
-                    this.showFeedback('Por favor ingresa un número de teléfono o WhatsApp válido.');
-                    document.getElementById('client-phone').focus();
-                    return;
-                }
-
+                if (!this.state.selectedDate) return this.showFeedback('Por favor selecciona una fecha disponible.');
+                if (!name) { this.showFeedback('Por favor ingresa tu nombre completo.'); document.getElementById('client-name').focus(); return; }
+                if (!phone || phone.replace(/\\D/g, '').length < 8) { this.showFeedback('Ingresa un teléfono o WhatsApp válido.'); document.getElementById('client-phone').focus(); return; }
                 const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
                 const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
                 const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
-
-                // Construir payload estructurado para Supabase
-                const payload = SUPABASE_SCHEMA_SERVICE.buildReservationPayload({
-                    date: this.state.selectedDate,
-                    slotId: this.state.selectedSlotId,
-                    experienceId: this.state.selectedExperienceId,
-                    pax: this.state.pax,
-                    name,
-                    phone,
-                    notes,
-                    quotedPrice: activePrice
-                });
-
-                const result = await SUPABASE_SCHEMA_SERVICE.createReservationRequest(payload);
-
-                if (result.ok) {
-                    // Mostrar panel post-solicitud (Sin simular pago ni confirmación automática)
+                const payload = SUPABASE_SCHEMA_SERVICE.buildReservationPayload({ date: this.state.selectedDate, slotId: this.state.selectedSlotId, experienceId: this.state.selectedExperienceId, pax: this.state.pax, name, phone, notes, quotedPrice: activePrice });
+                const submit = document.querySelector('#reservation-form button[type="submit"]');
+                submit.disabled = true; submit.textContent = 'ENVIANDO SOLICITUD…';
+                try {
+                    const result = await SUPABASE_SCHEMA_SERVICE.createReservationRequest(payload);
                     document.getElementById('reservation-form').classList.add('hidden');
-                    const panel = document.getElementById('reservation-submitted-panel');
-                    panel.classList.remove('hidden');
-
-                    document.getElementById('generated-folio').textContent = result.record.folio;
-                    document.getElementById('submitted-details').innerHTML = `
-                        <p><strong>Titular:</strong> ${payload.customer_name}</p>
-                        <p><strong>Fecha:</strong> ${this.formatReadableDate(payload.reservation_date)}</p>
-                        <p><strong>Turno:</strong> ${slot ? slot.label : payload.schedule_slot_id}</p>
-                        <p><strong>Experiencia:</strong> ${exp ? exp.title : payload.experience_id}</p>
-                        <p><strong>Pasajeros:</strong> ${payload.passengers_count} personas</p>
-                        <p class="text-champagne pt-1"><strong>Estatus:</strong> Pendiente de confirmación y validación de anticipo.</p>
-                    `;
-
-                    // Construir mensaje de WhatsApp prellenado
-                    const waText = encodeURIComponent(
-                        `Hola equipo ZAFIRE, solicito disponibilidad para navegar en Mazatlán:\n\n` +
-                        `• Folio: ${payload.folio_code}\n` +
-                        `• Nombre: ${payload.customer_name}\n` +
-                        `• Fecha: ${this.formatReadableDate(payload.reservation_date)}\n` +
-                        `• Turno: ${slot ? slot.label : ''}\n` +
-                        `• Experiencia: ${exp ? exp.title : ''}\n` +
-                        `• Pasajeros: ${payload.passengers_count}\n` +
-                        (payload.customer_notes ? `• Notas: ${payload.customer_notes}\n` : '') +
-                        `\nQuedo atento a la validación de disponibilidad y anticipo.`
-                    );
-                    document.getElementById('whatsapp-confirm-link').href = `https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${waText}`;
-
-                    // Mostrar JSON preparado para Supabase en inspector
-                    document.getElementById('supabase-payload-preview').textContent = JSON.stringify(payload, null, 2);
-                }
+                    document.getElementById('reservation-submitted-panel').classList.remove('hidden');
+                    document.getElementById('generated-folio').textContent = result.record.folio || payload.folio;
+                    document.getElementById('submitted-details').textContent = 'Titular: ' + name + '\\nFecha: ' + this.formatReadableDate(this.state.selectedDate) + '\\nTurno: ' + (slot ? slot.label : this.state.selectedSlotId) + '\\nExperiencia: ' + (exp ? exp.title : this.state.selectedExperienceId) + '\\nPasajeros: ' + this.state.pax + '\\nEstatus: Pendiente de confirmación y validación de anticipo.';
+                    const waText = encodeURIComponent('Hola equipo ZAFIRE, solicito disponibilidad para navegar en Mazatlán:\\n\\n' + '• Folio: ' + (result.record.folio || payload.folio) + '\\n' + '• Nombre: ' + name + '\\n' + '• Fecha: ' + this.formatReadableDate(this.state.selectedDate) + '\\n' + '• Turno: ' + (slot ? slot.label : this.state.selectedSlotId) + '\\n' + '• Experiencia: ' + (exp ? exp.title : this.state.selectedExperienceId) + '\\n' + '• Pasajeros: ' + this.state.pax + '\\n' + (notes ? '• Notas: ' + notes + '\\n' : '') + '\\nQuedo atento a la validación de disponibilidad y anticipo.');
+                    document.getElementById('whatsapp-confirm-link').href = 'https://wa.me/' + SITE_CONFIG.contact.whatsappNumber + '?text=' + waText;
+                } catch (error) {
+                    console.error('Error al registrar solicitud:', error);
+                    this.showFeedback('No pudimos registrar tu solicitud. Verifica tus datos o contáctanos por WhatsApp. ' + (error.message || ''));
+                } finally { submit.disabled = false; submit.textContent = 'SOLICITAR RESERVACIÓN'; }
             },
-
             setupContactAndFooter() {
                 document.getElementById('current-year').textContent = new Date().getFullYear();
 
