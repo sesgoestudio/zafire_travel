@@ -36,6 +36,9 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
 .crop-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px}
 .crop-reset{background:none;border:0;color:var(--gold);font-size:11px;cursor:pointer;padding:4px 0}
 .crop-tip{font-size:10px;color:var(--muted)}
+.add-photo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0 3px}
+.add-photo{background:#1a3449;border-color:var(--gold);color:var(--gold)}
+
 @media(max-width:600px){.crop-tools{grid-template-columns:1fr 1fr}.preview{height:190px}}
 .image-title{font-weight:700;margin:1px 0 4px}.image-note{font-size:11px;color:var(--muted)}
 .file-button{display:inline-flex;margin-top:12px;align-items:center;gap:8px;padding:9px 12px;border:1px solid #536477;border-radius:7px;cursor:pointer;font-size:12px}
@@ -84,10 +87,10 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  ];
  const groups=[
   {id:'portada',title:'Portada',description:'Imagen principal que aparece al entrar al sitio.',categories:['hero-background']},
-  {id:'embarcacion',title:'Embarcación',description:'Fotografías de la sección que presenta la embarcación.',categories:['vessel-photo-primary','vessel-photo-detail']},
-  {id:'galeria',title:'Galería',description:'Fotografías que aparecen en la galería visual.',categories:['gallery']}
+  {id:'embarcacion',title:'Embarcación',description:'Agrega todas las fotografías que quieras mostrar en la sección de la embarcación.',categories:['vessel-photo-primary','vessel-photo-detail','vessel-photo-extra'],addCategory:'vessel-photo-extra'},
+  {id:'galeria',title:'Galería',description:'Agrega y organiza todas las fotografías de tus experiencias.',categories:['gallery'],addCategory:'gallery'}
  ];
- const labels={'hero-background':'Imagen principal de portada','vessel-photo-primary':'Fotografía principal','vessel-photo-detail':'Fotografía de detalle','gallery':'Fotografía de galería'};
+ const labels={'hero-background':'Imagen principal de portada','vessel-photo-primary':'Fotografía principal','vessel-photo-detail':'Fotografía de detalle','vessel-photo-extra':'Fotografía adicional de embarcación','gallery':'Fotografía de galería'};
  function setStatus(message,kind){$('status').textContent=message;$('status').className='status '+(kind||'');}
  function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  async function isAdmin(u){const {data,error}=await db.from('admin_users').select('user_id').eq('user_id',u.id).maybeSingle();if(error)throw error;return !!data;}
@@ -127,7 +130,8 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  function render(){
   $('sections').innerHTML=groups.map((g,i)=>{
    const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
-   return '<details '+(i===0?'open':'')+'><summary><span>'+g.title+'</span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+'</div></details>';
+   const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
+   return '<details '+(i===0?'open':'')+'><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
   }).join('');
   $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
    const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
@@ -142,6 +146,11 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   $('sections').querySelectorAll('[data-reset]').forEach(el=>el.addEventListener('click',async()=>{
    const index=Number(el.dataset.reset),item=draft.media[index];item.crop_x=50;item.crop_y=50;item.crop_zoom=100;
    try{await saveDraft();render();setStatus('Encuadre restablecido','ok');}catch(e){setStatus('No se pudo guardar: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-add-file]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const category=el.dataset.addFile;el.disabled=true;
+   try{await addImage(category,file);}catch(e){setStatus('No se pudo agregar la foto: '+e.message,'bad');alert('No se pudo agregar la foto: '+e.message);}finally{el.disabled=false;}
   }));
   $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
    const file=el.files?.[0];if(!file)return;
@@ -170,6 +179,24 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
    item.public_url=data.publicUrl;item.storage_path=uploadedPath;item.id='upload-'+Date.now();item.alt_text=item.alt_text||file.name.replace(/\.[^.]+$/,'');
    try{await saveDraft();}catch(e){Object.assign(item,previous);await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
    render();setStatus('Imagen subida y borrador guardado','ok');
+  }finally{busy=false;}
+ }
+ async function addImage(category,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Agregando fotografía…');
+  let uploadedPath=null;
+  try{
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const item={id:'upload-'+Date.now(),category,public_url:data.publicUrl,storage_path:uploadedPath,alt_text:file.name.replace(/\.[^.]+$/,''),sort_order:draft.media.length,is_active:true,crop_x:50,crop_y:50,crop_zoom:100};
+   draft.media.push(item);
+   try{await saveDraft();}catch(e){draft.media.pop();await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Fotografía agregada al borrador','ok');
   }finally{busy=false;}
  }
  async function publish(){
