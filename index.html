@@ -428,14 +428,14 @@
                     Reserva tu <span class="type-editorial-accent text-[1.15em]">travesía</span> en ZAFIRE
                 </h2>
                 <p class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed">
-                    Cuéntanos qué experiencia te interesa, la fecha y cuántas personas asistirán. Nuestro equipo confirmará el horario, la modalidad y la disponibilidad de tu salida.
+                    Cuéntanos qué experiencia te interesa, la fecha y cuántas personas asistirán. Nuestro equipo confirmará la disponibilidad y coordinará contigo los detalles de la salida.
                 </p>
             </div>
 
             <!-- Contenedor Principal de Reservación -->
             <div id="booking-workspace" class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
                 
-                <!-- COLUMNA IZQUIERDA (7 cols): Calendario + Turnos + Pasajeros -->
+                <!-- COLUMNA IZQUIERDA (7 cols): Calendario + Experiencia + Pasajeros -->
                 <div class="lg:col-span-7 space-y-10 bg-warmwhite p-6 sm:p-10 rounded-sm border border-navy-900/10">
                     
                     <!-- PASO 1: Calendario Cómodo a Una Mano -->
@@ -477,19 +477,10 @@
                         </div>
                     </div>
 
-                    <!-- PASO 2: Horario / Turno Disponible -->
-                    <div class="pt-6 border-t border-navy-900/10">
-                        <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 02</span>
-                        <h3 class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 mt-0.5 mb-4">Horario de salida</h3>
-                        <div id="time-slots-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <!-- Generado desde SITE_CONFIG.schedules -->
-                        </div>
-                    </div>
-
-                    <!-- PASO 3: Experiencia y Número de Pasajeros -->
+                    <!-- PASO 2: Experiencia y Número de Pasajeros -->
                     <div class="pt-6 border-t border-navy-900/10 grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                            <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 03</span>
+                            <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 02</span>
                             <label for="booking-experience" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Experiencia</label>
                             <select id="booking-experience" class="w-full h-12 px-4 bg-warmwhite border border-navy-900/20 rounded-sm text-sm text-navy-900 focus:outline-none focus:border-navy-900">
                                 <!-- Opciones sincronizadas con SITE_CONFIG.experiences -->
@@ -515,7 +506,7 @@
                     </div>
                 </div>
 
-                <!-- COLUMNA DERECHA (5 cols): Datos del Cliente, Tarifa Configurable y Envío -->
+                <!-- COLUMNA DERECHA (5 cols): Datos del Cliente, Tarifa y Envío -->
                 <div class="lg:col-span-5 bg-navy-900 text-warmwhite p-6 sm:p-10 rounded-sm">
                     <form id="reservation-form" novalidate class="space-y-6">
                         <div>
@@ -534,8 +525,8 @@
                                 <span id="summary-date" class="text-champagne font-medium">Selecciona en el calendario</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-silver">Horario:</span>
-                                <span id="summary-slot" class="text-warmwhite">—</span>
+                                <span class="text-silver">Experiencia:</span>
+                                <span id="summary-experience" class="text-warmwhite text-right ml-4">—</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-silver">Pasajeros:</span>
@@ -904,7 +895,6 @@
                 currentMonth: new Date().getMonth(),
                 currentYear: new Date().getFullYear(),
                 selectedDate: null,
-                selectedSlotId: SITE_CONFIG.schedules[0].id,
                 selectedExperienceId: SITE_CONFIG.experiences[0].id,
                 pax: 6,
                 blockedDates: [],
@@ -1114,8 +1104,6 @@
                 });
 
                 // Renderizar turnos disponibles
-                this.renderTimeSlots();
-
                 // Controles de pasajeros (1 a 15)
                 const btnDec = document.getElementById('pax-decrease');
                 const btnInc = document.getElementById('pax-increase');
@@ -1126,7 +1114,6 @@
                     if (next >= SITE_CONFIG.brand.minCapacity && next <= SITE_CONFIG.brand.maxCapacity) {
                         this.state.pax = next;
                         paxLabel.textContent = next;
-                        this.renderTimeSlots();
                         this.updateBookingSummary();
                     }
                 };
@@ -1182,8 +1169,7 @@
                 const last=new Date(this.state.currentYear,this.state.currentMonth+1,0);
                 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
                 this.state.availability=await SUPABASE_SCHEMA_SERVICE.getAvailability(iso(first),iso(last));
-                this.state.blockedDates=[...new Set(this.state.availability.filter(x=>!x.is_available).map(x=>x.reservation_date))]
-                    .filter(date=>this.state.availability.filter(x=>x.reservation_date===date).every(x=>!x.is_available));
+                this.state.blockedDates=this.state.availability.filter(x=>!x.is_available).map(x=>x.reservation_date);
             },
 
             renderCalendar() {
@@ -1213,7 +1199,7 @@
                     const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const isPast = dateObj < today;
                     const daySlots = this.state.availability.filter(x => x.reservation_date === isoDate);
-                    const isBlocked = daySlots.length === 3 && daySlots.every(x => !x.is_available);
+                    const isBlocked = daySlots.some(x => !x.is_available);
                     const isSelected = this.state.selectedDate === isoDate;
 
                     if (isPast || isBlocked) {
@@ -1243,31 +1229,13 @@
                     btn.addEventListener('click', () => {
                         this.state.selectedDate = btn.getAttribute('data-date');
                         this.renderCalendar();
-                        this.renderTimeSlots();
                         this.updateBookingSummary();
                         this.hideFeedback();
                     });
                 });
             },
 
-            renderTimeSlots() {
-                const container = document.getElementById('time-slots-container');
-                container.innerHTML = SITE_CONFIG.schedules.map(slot => {
-                    const availability=this.state.availability.find(x=>x.reservation_date===this.state.selectedDate&&x.time_slot===slot.id);
-                    const remaining=availability?Math.max(0,15-Number(availability.booked_guests||0)):15;
-                    const unavailable=!!(this.state.selectedDate&&availability&&(!availability.is_available||remaining<this.state.pax));
-                    const isSelected=this.state.selectedSlotId===slot.id;
-                    return `<button type="button" data-slot-id="${slot.id}" ${unavailable?'disabled':''} class="slot-btn text-left p-3.5 rounded-sm border transition-all ${unavailable?'opacity-40 cursor-not-allowed bg-gray-100 text-silver border-gray-200':(isSelected?'bg-navy-900 text-warmwhite border-navy-900':'bg-warmwhite text-navy-900 border-navy-900/20 hover:border-navy-900')}">
-                        <span class="block text-xs font-medium tracking-wide">${slot.label}</span>
-                        <span class="block text-[11px] mt-1 ${isSelected&&!unavailable?'text-champagne':'text-silver'}">${unavailable?'Sin disponibilidad':(this.state.selectedDate?remaining+' lugares disponibles':slot.detail)}</span></button>`;
-                }).join('');
-                container.querySelectorAll('.slot-btn:not(:disabled)').forEach(btn=>btn.addEventListener('click',()=>{
-                    this.state.selectedSlotId=btn.getAttribute('data-slot-id');this.renderTimeSlots();this.updateBookingSummary();
-                }));
-            },
-
             updateBookingSummary() {
-                const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
                 const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
 
                 document.getElementById('summary-date').textContent = this.state.selectedDate 
@@ -1312,9 +1280,8 @@
                 if(!this.state.selectedDate)return this.showFeedback('Por favor selecciona una fecha disponible.');
                 if(!name)return this.showFeedback('Por favor ingresa tu nombre completo.');
                 if(!phone||phone.replace(/\D/g,'').length<8)return this.showFeedback('Ingresa un teléfono o WhatsApp válido.');
-                const slot=SITE_CONFIG.schedules.find(s=>s.id===this.state.selectedSlotId);
                 const exp=SITE_CONFIG.experiences.find(e=>e.id===this.state.selectedExperienceId);
-                const activePrice=(slot&&slot.price!==null)?slot.price:(exp&&exp.price!==null?exp.price:null);
+                const activePrice=(exp&&exp.price!==null)?exp.price:null;
                 const submit=document.querySelector('#reservation-form button[type="submit"]');
                 submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
                 try{
@@ -1322,10 +1289,10 @@
                     document.getElementById('reservation-form').classList.add('hidden');
                     document.getElementById('reservation-submitted-panel').classList.remove('hidden');
                     document.getElementById('generated-folio').textContent=result.record.folio;
-                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nTurno: '+(slot?slot.label:this.state.selectedSlotId)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
-                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nTurno: '+(slot?slot.label:this.state.selectedSlotId)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
+                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
+                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
                     document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
-                    await this.loadAvailabilityForCurrentMonth();this.renderCalendar();this.renderTimeSlots();
+                    await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
                 }catch(error){console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
                 finally{submit.disabled=false;submit.textContent='SOLICITAR RESERVACIÓN';}
             },
