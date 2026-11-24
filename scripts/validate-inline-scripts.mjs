@@ -28,4 +28,9 @@ for (const file of files) {
     }
   });
 }
-for (const file of externalScripts) {\n  const result = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });\n  if (result.status !== 0) { console.error('ERROR ' + file); console.error(result.stderr || result.stdout); failures++; }\n  else console.log('OK ' + file);\n}\nif (failures) process.exit(1);
+for (const file of externalScripts) {
+  const result = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
+  if (result.status !== 0) { console.error('ERROR ' + file); console.error(result.stderr || result.stdout); failures++; }
+  else console.log('OK ' + file);
+}
+if (failures) process.exit(1);
