@@ -233,10 +233,9 @@
             <img 
                 id="hero-bg-img"
                 data-editable="hero-background"
-                src="https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=2000&q=85" 
+                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
                 alt="ZAFIRE navegando en aguas abiertas del Pacífico"
                 class="w-full h-full object-cover object-center hero-zoom opacity-80"
-                onerror="this.src='https://placehold.co/1920x1080/081523/EAE5DC?text=ZAFIRE+MAZATLAN'"
             >
             <!-- Gradiente cinematográfico para legibilidad editorial -->
             <div class="absolute inset-0 bg-gradient-to-b from-navy-950/70 via-navy-900/45 to-navy-950/85"></div>
@@ -338,7 +337,7 @@
                     <div class="sm:col-span-7 overflow-hidden rounded-sm bg-sand/40">
                         <img 
                             data-editable="vessel-photo-primary"
-                            src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80" 
+                            src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
                             alt="Cubierta y velas en navegación sobre el océano"
                             loading="lazy"
                             class="w-full h-[420px] md:h-[520px] object-cover hover:scale-105 transition-transform duration-1000"
@@ -807,29 +806,8 @@
                     price: null
                 }
             ],
-            // Galería curada (reemplazar URLs con fotografías reales de Zafire)
-            gallery: [
-                {
-                    src: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=80',
-                    caption: 'Navegación costera en aguas del Pacífico',
-                    spanClass: 'md:col-span-7 h-[360px] md:h-[460px]'
-                },
-                {
-                    src: 'https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=1200&q=80',
-                    caption: 'Horizonte abierto desde cubierta',
-                    spanClass: 'md:col-span-5 h-[360px] md:h-[460px]'
-                },
-                {
-                    src: 'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=1200&q=80',
-                    caption: 'Atardecer dorado en Mazatlán',
-                    spanClass: 'md:col-span-5 h-[360px] md:h-[420px]'
-                },
-                {
-                    src: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80',
-                    caption: 'Experiencias en el Pacífico de Mazatlán',
-                    spanClass: 'md:col-span-7 h-[360px] md:h-[420px]'
-                }
-            ],
+            // La galería se carga únicamente desde las imágenes activas de Supabase.
+            gallery: [],
             content: {
                       "hero_kicker": "Mazatlán · Sinaloa · México",
                       "hero_title": "ZAFIRE",
