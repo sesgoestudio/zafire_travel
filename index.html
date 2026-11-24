@@ -465,6 +465,17 @@
                         <div id="calendar-days-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2 tabular-data">
                             <!-- Generado dinámicamente por UI_CONTROLLER -->
                         </div>
+                        <div id="calendar-slot-choices" class="mt-5 hidden">
+                            <p class="type-tech-label text-[10px] text-champagne font-semibold mb-3">SELECCIONA TU HORARIO</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" data-slot="morning" class="slot-choice rounded-sm border border-navy-900/20 p-4 text-left transition-colors">
+                                    <span class="block text-xs text-silver">☀ Mañana</span><span class="block text-sm font-medium mt-1">Horario de mañana</span><span data-slot-state="morning" class="block text-[10px] mt-2">Disponible</span>
+                                </button>
+                                <button type="button" data-slot="afternoon" class="slot-choice rounded-sm border border-navy-900/20 p-4 text-left transition-colors">
+                                    <span class="block text-xs text-silver">☼ Tarde</span><span class="block text-sm font-medium mt-1">Horario de tarde</span><span data-slot-state="afternoon" class="block text-[10px] mt-2">Disponible</span>
+                                </button>
+                            </div>
+                        </div>
 
                         <!-- Leyenda sutil -->
                         <div class="flex items-center gap-6 mt-4 pt-3 border-t border-navy-900/10 text-[11px] text-silver">
@@ -520,6 +531,10 @@
                             <div class="flex justify-between">
                                 <span class="text-silver">Fecha seleccionada:</span>
                                 <span id="summary-date" class="text-champagne font-medium">Selecciona en el calendario</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-silver">Horario:</span>
+                                <span id="summary-slot" class="text-champagne font-medium">Selecciona mañana o tarde</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-silver">Experiencia:</span>
@@ -978,6 +993,7 @@
                 currentMonth: new Date().getMonth(),
                 currentYear: new Date().getFullYear(),
                 selectedDate: null,
+                selectedSlot: null,
                 selectedExperienceId: SITE_CONFIG.experiences[0].id,
                 pax: 6,
                 blockedDates: [],
@@ -1259,71 +1275,65 @@
                 const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
                 const label = document.getElementById('cal-month-label');
                 const grid = document.getElementById('calendar-days-grid');
-
-                const year = this.state.currentYear;
-                const month = this.state.currentMonth;
-                label.textContent = `${monthNames[month]} ${year}`;
-
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
+                label.textContent = `${monthNames[this.state.currentMonth]} ${this.state.currentYear}`;
+                const firstDay = new Date(this.state.currentYear, this.state.currentMonth, 1).getDay();
+                const daysInMonth = new Date(this.state.currentYear, this.state.currentMonth + 1, 0).getDate();
+                const today = new Date(); today.setHours(0,0,0,0);
                 let html = '';
-
-                // Espacios vacíos antes del primer día del mes
-                for (let i = 0; i < firstDay; i++) {
-                    html += `<div class="h-11"></div>`;
-                }
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateObj = new Date(year, month, day);
-                    const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const isPast = dateObj < today;
-                    const daySlots = this.state.availability.filter(x => x.reservation_date === isoDate);
-                    const isBlocked = daySlots.some(x => !x.is_available);
-                    const isSelected = this.state.selectedDate === isoDate;
-
-                    if (isPast || isBlocked) {
-                        html += `
-                            <button type="button" disabled class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed">
-                                ${day}
-                            </button>
-                        `;
-                    } else if (isSelected) {
-                        html += `
-                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-semibold bg-navy-900 text-warmwhite shadow-sm transition-all">
-                                ${day}
-                            </button>
-                        `;
-                    } else {
-                        html += `
-                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-medium text-navy-900 bg-sand/50 hover:bg-champagne/40 border border-transparent hover:border-navy-900/20 transition-all">
-                                ${day}
-                            </button>
-                        `;
+                for(let i=0;i<firstDay;i++) html += '<div class="h-11"></div>';
+                for(let day=1;day<=daysInMonth;day++){
+                    const dateObj=new Date(this.state.currentYear,this.state.currentMonth,day);
+                    const isoDate=`${this.state.currentYear}-${String(this.state.currentMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const rows=this.state.availability.filter(x=>x.reservation_date===isoDate);
+                    const anyAvailable=rows.some(x=>x.is_available);
+                    const isPast=dateObj<today, selected=this.state.selectedDate===isoDate;
+                    if(isPast||!anyAvailable){
+                        html+=`<button type="button" disabled class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed">${day}</button>`;
+                    }else{
+                        html+=`<button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs ${selected?'font-semibold bg-navy-900 text-warmwhite shadow-sm':'font-medium text-navy-900 bg-sand/50 hover:bg-champagne/40 border border-transparent hover:border-navy-900/20'} transition-all">${day}</button>`;
                     }
                 }
+                grid.innerHTML=html;
+                grid.querySelectorAll('.cal-day-btn').forEach(btn=>btn.addEventListener('click',()=>{
+                    this.state.selectedDate=btn.dataset.date;
+                    const choices=this.state.availability.filter(x=>x.reservation_date===this.state.selectedDate);
+                    if(!choices.some(x=>x.time_slot===this.state.selectedSlot&&x.is_available))this.state.selectedSlot=null;
+                    this.renderCalendar();this.renderSlotChoices();this.updateBookingSummary();this.hideFeedback();
+                }));
+                this.renderSlotChoices();
+            },
 
-                grid.innerHTML = html;
-
-                document.querySelectorAll('.cal-day-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        this.state.selectedDate = btn.getAttribute('data-date');
-                        this.renderCalendar();
-                        this.updateBookingSummary();
-                        this.hideFeedback();
-                    });
+            renderSlotChoices(){
+                const box=document.getElementById('calendar-slot-choices');
+                if(!box)return;
+                if(!this.state.selectedDate){box.classList.add('hidden');return;}
+                box.classList.remove('hidden');
+                const slots=this.state.availability.filter(x=>x.reservation_date===this.state.selectedDate);
+                ['morning','afternoon'].forEach(slot=>{
+                    const row=slots.find(x=>x.time_slot===slot);
+                    const btn=box.querySelector('[data-slot="'+slot+'"]');
+                    const state=box.querySelector('[data-slot-state="'+slot+'"]');
+                    const available=!!row?.is_available,selected=this.state.selectedSlot===slot;
+                    btn.disabled=!available;
+                    btn.className='slot-choice rounded-sm border p-4 text-left transition-colors '+(selected?'border-navy-900 bg-navy-900 text-warmwhite':available?'border-navy-900/20 hover:border-navy-900 text-navy-900':'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed');
+                    state.textContent=available?(selected?'Seleccionado':'Disponible'):'No disponible';
+                    state.className='block text-[10px] mt-2 '+(available?(selected?'text-champagne':'text-emerald-700'):'text-gray-400');
+                });
+                box.querySelectorAll('[data-slot]').forEach(btn=>btn.onclick=()=>{
+                    if(btn.disabled)return;
+                    this.state.selectedSlot=btn.dataset.slot;
+                    this.renderSlotChoices();this.updateBookingSummary();this.hideFeedback();
                 });
             },
 
             updateBookingSummary() {
                 const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
 
-                document.getElementById('summary-date').textContent = this.state.selectedDate 
-                    ? this.formatReadableDate(this.state.selectedDate) 
+                document.getElementById('summary-date').textContent = this.state.selectedDate
+                    ? this.formatReadableDate(this.state.selectedDate)
                     : 'Selecciona en el calendario';
+                const slotLabel=this.state.selectedSlot==='morning'?'Mañana':this.state.selectedSlot==='afternoon'?'Tarde':'Selecciona mañana o tarde';
+                document.getElementById('summary-slot').textContent=slotLabel;
                 document.getElementById('summary-experience').textContent = exp ? exp.title : '—';
                 document.getElementById('summary-pax').textContent = `${this.state.pax} ${this.state.pax === 1 ? 'persona' : 'personas'}`;
 
@@ -1361,6 +1371,7 @@
                 const email=document.getElementById('client-email')?.value.trim()||'';
                 const notes=document.getElementById('client-notes').value.trim();
                 if(!this.state.selectedDate)return this.showFeedback('Por favor selecciona una fecha disponible.');
+                if(!this.state.selectedSlot)return this.showFeedback('Selecciona el horario de mañana o tarde.');
                 if(!name)return this.showFeedback('Por favor ingresa tu nombre completo.');
                 if(!phone||phone.replace(/\D/g,'').length<8)return this.showFeedback('Ingresa un teléfono o WhatsApp válido.');
                 const exp=SITE_CONFIG.experiences.find(e=>e.id===this.state.selectedExperienceId);
@@ -1368,12 +1379,12 @@
                 const submit=document.querySelector('#reservation-form button[type="submit"]');
                 submit.disabled=true;submit.textContent='ENVIANDO SOLICITUD…';
                 try{
-                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:'all',experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
+                    const result=await SUPABASE_SCHEMA_SERVICE.createReservationRequest({date:this.state.selectedDate,slotId:this.state.selectedSlot,experienceId:this.state.selectedExperienceId,pax:this.state.pax,name,phone,email,notes,quotedPrice:activePrice});
                     document.getElementById('reservation-form').classList.add('hidden');
                     document.getElementById('reservation-submitted-panel').classList.remove('hidden');
                     document.getElementById('generated-folio').textContent=result.record.folio;
-                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
-                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
+                    document.getElementById('submitted-details').textContent='Titular: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nRetención temporal: '+SITE_CONFIG.bookingHoldMinutes+' minutos. Solicitud pendiente de confirmación.';
+                    const waText=encodeURIComponent('Hola equipo ZAFIRE, registré una solicitud de navegación:\n\nFolio: '+result.record.folio+'\nNombre: '+name+'\nFecha: '+this.formatReadableDate(this.state.selectedDate)+'\nHorario: '+(this.state.selectedSlot==='morning'?'Mañana':'Tarde')+'\nExperiencia: '+(exp?exp.title:this.state.selectedExperienceId)+'\nPasajeros: '+this.state.pax+'\nTeléfono: '+phone+'\n'+(email?'Correo: '+email+'\n':'')+(notes?'Notas: '+notes+'\n':'')+'\nQuedo atento a la confirmación y datos del anticipo.');
                     document.getElementById('whatsapp-confirm-link').href='https://wa.me/'+SITE_CONFIG.contact.whatsappNumber+'?text='+waText;
                     await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
                 }catch(error){console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
