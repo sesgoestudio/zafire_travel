@@ -185,7 +185,7 @@
 
             <!-- Acción Desktop + Botón Hamburguesa Móvil -->
             <div class="flex items-center gap-4">
-                <a href="#reservaciones" class="hidden sm:inline-flex items-center justify-center px-6 py-2.5 type-tech-label text-[11px] font-medium border border-champagne/70 text-warmwhite hover:bg-champagne hover:text-navy-950 rounded-sm transition-all duration-300">
+                <a data-cms-key="nav_cta" href="#reservaciones" class="hidden sm:inline-flex items-center justify-center px-6 py-2.5 type-tech-label text-[11px] font-medium border border-champagne/70 text-warmwhite hover:bg-champagne hover:text-navy-950 rounded-sm transition-all duration-300">
                     Reservar
                 </a>
 
@@ -208,7 +208,7 @@
                 <a data-cms-key="nav_experiences" href="#experiencias" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Experiencias</a>
                 <a data-cms-key="nav_gallery" href="#galeria" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Galería</a>
                 <a data-cms-key="nav_location" href="#ubicacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Ubicación</a>
-                <a href="#reservaciones" class="mobile-nav-link inline-flex items-center justify-center w-full py-4 mt-4 bg-champagne text-navy-950 type-tech-label text-xs font-semibold rounded-sm">
+                <a data-cms-key="mobile_cta" href="#reservaciones" class="mobile-nav-link inline-flex items-center justify-center w-full py-4 mt-4 bg-champagne text-navy-950 type-tech-label text-xs font-semibold rounded-sm">
                     Reservar Experiencia
                 </a>
             </nav>
@@ -467,7 +467,7 @@
                     <div class="pt-6 border-t border-navy-900/10 grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 02</span>
-                            <label for="booking-experience" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Experiencia</label>
+                            <label data-cms-key="booking_experience_label" for="booking-experience" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Experiencia</label>
                             <select id="booking-experience" class="w-full h-12 px-4 bg-warmwhite border border-navy-900/20 rounded-sm text-sm text-navy-900 focus:outline-none focus:border-navy-900">
                                 <!-- Opciones sincronizadas con SITE_CONFIG.experiences -->
                             </select>
@@ -475,7 +475,7 @@
 
                         <div>
                             <span class="type-tech-label text-[10px] text-champagne font-semibold block">Capacidad Máx. 15</span>
-                            <span class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Pasajeros</span>
+                            <span data-cms-key="booking_pax_label" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Pasajeros</span>
                             <div class="flex items-center justify-between h-12 border border-navy-900/20 rounded-sm px-2 bg-warmwhite tabular-data">
                                 <button type="button" id="pax-decrease" aria-label="Disminuir pasajeros" class="w-10 h-10 flex items-center justify-center text-navy-900 hover:bg-sand/60 rounded-sm transition-colors text-lg">
                                     &minus;
@@ -527,22 +527,22 @@
                         <!-- Campos del Formulario -->
                         <div class="space-y-4">
                             <div>
-                                <label for="client-name" class="block type-tech-label text-[10px] text-silver mb-2">Nombre completo *</label>
+                                <label data-cms-key="booking_name_label" for="client-name" class="block type-tech-label text-[10px] text-silver mb-2">Nombre completo *</label>
                                 <input type="text" id="client-name" required placeholder="Ej. Alejandro Mendoza" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
                             </div>
 
                             <div>
-                                <label for="client-email" class="block type-tech-label text-[10px] text-silver mb-2">Correo electrónico (Opcional)</label>
+                                <label data-cms-key="booking_email_label" for="client-email" class="block type-tech-label text-[10px] text-silver mb-2">Correo electrónico (Opcional)</label>
                                 <input type="email" id="client-email" placeholder="tu@correo.com" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
                             </div>
 
                             <div>
-                                <label for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
+                                <label data-cms-key="booking_phone_label" for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
                                 <input type="tel" id="client-phone" required placeholder="Ej. +52 669 000 0000" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors tabular-data">
                             </div>
 
                             <div>
-                                <label for="client-notes" class="block type-tech-label text-[10px] text-silver mb-2">Comentarios especiales (Opcional)</label>
+                                <label data-cms-key="booking_notes_label" for="client-notes" class="block type-tech-label text-[10px] text-silver mb-2">Comentarios especiales (Opcional)</label>
                                 <textarea id="client-notes" rows="2" placeholder="Motivo de celebración o preferencia de horario..." class="w-full p-3.5 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors resize-none"></textarea>
                             </div>
                         </div>
@@ -553,11 +553,11 @@
                         <!-- Aviso Obligatorio de Estado Pendiente -->
                         <div class="p-4 border-l-2 border-champagne bg-white/[0.03] text-xs text-sand/90 leading-relaxed">
                             <strong data-cms-key="booking_notice_title" class="block type-tech-label text-champagne text-[10px] mb-1">Importante sobre tu reservación</strong>
-                            Toda solicitud queda en estado <strong>Pendiente de Confirmación</strong> hasta validar el anticipo correspondiente directamente con nuestro equipo.
+                            <p data-cms-key="booking_notice_body" class="m-0">Toda solicitud queda en estado <strong>Pendiente de Confirmación</strong> hasta validar el anticipo correspondiente directamente con nuestro equipo.</p>
                         </div>
 
                         <!-- Botón Principal -->
-                        <button type="submit" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm cursor-pointer">
+                        <button data-cms-key="booking_form_submit" type="submit" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm cursor-pointer">
                             SOLICITAR RESERVACIÓN
                         </button>
                     </form>
@@ -660,9 +660,9 @@
 
                 <!-- Enlaces -->
                 <div class="flex flex-wrap gap-8 type-tech-label text-[11px] text-silver">
-                    <a href="#embarcacion" class="hover:text-warmwhite transition-colors">La Embarcación</a>
-                    <a href="#experiencias" class="hover:text-warmwhite transition-colors">Experiencias</a>
-                    <a href="#galeria" class="hover:text-warmwhite transition-colors">Galería</a>
+                    <a data-cms-key="footer_nav_boat" href="#embarcacion" class="hover:text-warmwhite transition-colors">La Embarcación</a>
+                    <a data-cms-key="footer_nav_experiences" href="#experiencias" class="hover:text-warmwhite transition-colors">Experiencias</a>
+                    <a data-cms-key="footer_nav_gallery" href="#galeria" class="hover:text-warmwhite transition-colors">Galería</a>
                     <a data-cms-key="footer_nav_booking" href="#reservaciones" class="hover:text-warmwhite transition-colors">Reservaciones</a>
                 </div>
 
@@ -842,7 +842,30 @@
                       "location_card_detail": "Muelle 10 · Mazatlán, Sinaloa",
                       "location_card_note": "Punto de embarque para nuestras experiencias en el Pacífico.",
                       "location_weather_note": "Operaciones sujetas a condiciones meteorológicas y capitanía de puerto.",
-                      "footer_description": "Pesca, excursiones y avistamiento de ballenas · Mazatlán, Sinaloa."
+                      "footer_description": "Pesca, excursiones y avistamiento de ballenas · Mazatlán, Sinaloa.",
+                      "nav_boat": "La Embarcación",
+                      "nav_experiences": "Experiencias",
+                      "nav_gallery": "Galería",
+                      "nav_location": "Ubicación",
+                      "nav_cta": "Reservar",
+                      "mobile_cta": "Reservar Experiencia",
+                      "footer_nav_boat": "La Embarcación",
+                      "footer_nav_experiences": "Experiencias",
+                      "footer_nav_gallery": "Galería",
+                      "footer_nav_booking": "Reservaciones",
+                      "booking_date_label": "Selecciona una fecha",
+                      "booking_experience_label": "Experiencia",
+                      "booking_pax_label": "Pasajeros",
+                      "booking_form_title": "Datos de solicitud",
+                      "booking_success_title": "Solicitud registrada",
+                      "booking_notice_title": "Importante sobre tu reservación",
+                      "booking_notice_body": "Toda solicitud queda en estado Pendiente de Confirmación hasta validar el anticipo correspondiente directamente con nuestro equipo.",
+                      "booking_form_submit": "SOLICITAR RESERVACIÓN",
+                      "booking_name_label": "Nombre completo *",
+                      "booking_email_label": "Correo electrónico (Opcional)",
+                      "booking_phone_label": "Teléfono / WhatsApp *",
+                      "booking_notes_label": "Comentarios especiales (Opcional)",
+                      "location_whatsapp_cta": "Atención directa por WhatsApp"
             },
             media: [],
             bookingHoldMinutes: 30,
