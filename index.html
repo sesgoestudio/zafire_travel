@@ -1312,6 +1312,7 @@
             },
 
             getRequiredSlot(){
+                if(this.state.selectedExperienceId==='pesca-deportiva')return 'morning';
                 if(this.state.selectedExperienceId==='excursion-matutina')return 'morning';
                 if(this.state.selectedExperienceId==='excursion-vespertina')return 'afternoon';
                 return null;
