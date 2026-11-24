@@ -137,7 +137,7 @@ return [
 ];}
 function preview(){
 const frame=$('preview-frame');
-if(!frame.contentWindow)return;
+if(!draft||!frame.contentWindow)return;
 frame.contentWindow.postMessage({type:'zafire-admin-preview',content:draft.content||{},experiences:draft.experiences||[],media:draft.media||[],contact:draft.contact||{}},location.origin);
 }
 function queueSave(){
@@ -194,7 +194,7 @@ items.map((x,i)=>'<article class="card experience-card" data-exp="'+i+'"><div cl
 '<p class="help">El identificador interno se conserva para que las solicitudes sigan guardando la experiencia correcta.</p>';
 $('editor-content').querySelectorAll('[data-exp-field]').forEach(el=>el.addEventListener('input',()=>{const i=Number(el.dataset.expField),key=el.dataset.key;draft.experiences[i][key]=key==='price'?(el.value===''?null:Number(el.value)):el.value;preview();queueSave();}));
 $('editor-content').querySelector('#add-experience').addEventListener('click',()=>{const n=items.length+1;draft.experiences.push({id:'experiencia-'+Date.now(),number:String(n).padStart(2,'0'),title:'Nueva experiencia',subtitle:'',description:'',durationLabel:'',priceLabel:'Tarifa: Consultar disponibilidad',price:null});renderExperiences();preview();queueSave();});
-$('editor-content').querySelectorAll('[data-remove-exp]').forEach(b=>b.addEventListener('click',()=>{draft.experiences.splice(Number(b.dataset.removeExp),1);draft.experiences.forEach((x,i)=>x.number=String(i+1).padStart(2,'0'));renderExperiences();preview();queueSave();}));
+$('editor-content').querySelectorAll('[data-remove-exp]').forEach(b=>b.addEventListener('click',()=>{if(draft.experiences.length<=1){alert('Debe quedar al menos una experiencia activa.');return;}draft.experiences.splice(Number(b.dataset.removeExp),1);draft.experiences.forEach((x,i)=>x.number=String(i+1).padStart(2,'0'));renderExperiences();preview();queueSave();}));
 $('editor-content').querySelectorAll('[data-up],[data-down]').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.up??b.dataset.down),j=b.dataset.up!==undefined?i-1:i+1;[draft.experiences[i],draft.experiences[j]]=[draft.experiences[j],draft.experiences[i]];draft.experiences.forEach((x,k)=>x.number=String(k+1).padStart(2,'0'));renderExperiences();preview();queueSave();}));
 }
 function mediaCard(item,index){
