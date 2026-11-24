@@ -1,1 +1,1436 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO & Metadatos para Redes Sociales -->
+    <title>ZAFIRE | Navega. Descubre. Vive el mar — Mazatlán, Sinaloa</title>
+    <meta name="description" content="Una experiencia náutica exclusiva a bordo del velero ZAFIRE en las costas de Mazatlán, Sinaloa, México. Paseos privados, atardeceres y celebraciones para 13 a 15 pasajeros.">
+    <meta name="keywords" content="Zafire, velero Mazatlán, paseo privado en velero, renta de velero Mazatlán, experiencias náuticas Sinaloa, Zafire Travel">
+    <meta name="author" content="SESGO Estudio">
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ZAFIRE — Experiencia Privada en Velero | Mazatlán">
+    <meta property="og:description" content="Navega. Descubre. Vive el mar. Experiencias privadas en el Pacífico mexicano a bordo de ZAFIRE.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=1600&q=80">
+    <meta property="og:locale" content="es_MX">
 
+    <!-- Google Fonts: Sistema Tipográfico Arquitectónico Contemporáneo (Syne + Instrument Serif + Plus Jakarta Sans + Space Grotesk) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#050E18',
+                            900: '#081523',
+                            800: '#10243A',
+                            700: '#1B3654'
+                        },
+                        warmwhite: '#F8F7F4',
+                        sand: '#EAE5DC',
+                        silver: '#94A0AD',
+                        champagne: '#C6A972',
+                        zafireblue: '#1E88B8'
+                    },
+                    fontFamily: {
+                        display: ['"Syne"', '"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        tech: ['"Space Grotesk"', 'monospace']
+                    },
+                    letterSpacing: {
+                        editorial: '0.18em',
+                        widestplus: '0.26em',
+                        tightdisplay: '-0.03em'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos base y refinamientos tipográficos contemporáneos */
+        body {
+            background-color: #F8F7F4;
+            color: #081523;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.65;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+
+        /* Jerarquía tipográfica fluida arquitectónica */
+        .type-hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3.5rem, 11vw, 8.25rem);
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+            font-weight: 600;
+        }
+
+        .type-section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.1rem, 4.8vw, 3.75rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            font-weight: 500;
+        }
+
+        .type-editorial-accent {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0em;
+        }
+
+        .type-tech-label {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .tabular-data {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Animaciones suaves de aparición al hacer scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Efecto cinematográfico sutil en imagen Hero */
+        @keyframes slowZoom {
+            0% { transform: scale(1.0); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1.0); }
+        }
+        .hero-zoom {
+            animation: slowZoom 28s ease-in-out infinite;
+        }
+
+        /* Scrollbar minimalista */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F8F7F4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94A0AD;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #081523;
+        }
+
+        /* Ocultar scrollbar en carrusel táctil manteniendo funcionalidad */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Transiciones refinadas de botones */
+        .btn-luxury {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+    </style>
+</head>
+<body class="selection:bg-navy-900 selection:text-warmwhite">
+
+    <!-- =====================================================================
+         1. NAVBAR TRANSPARENTE -> AZUL MARINO PROFUNDO AL SCROLL
+    ====================================================================== -->
+    <header id="main-navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-5 px-6 md:px-12 text-warmwhite">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Marca / Monograma Náutico -->
+            <a href="#inicio" class="flex items-center gap-3 group focus:outline-none">
+                <span class="w-2 h-2 rounded-full bg-zafireblue transition-transform duration-500 group-hover:scale-125"></span>
+                <div class="flex flex-col">
+                    <span class="font-display text-xl md:text-2xl tracking-[0.14em] font-semibold leading-none">ZAFIRE</span>
+                    <span class="type-tech-label text-[9px] text-silver/90 mt-1">Mazatlán</span>
+                </div>
+            </a>
+
+            <!-- Navegación Desktop -->
+            <nav class="hidden md:flex items-center gap-10 type-tech-label text-[11px] font-medium">
+                <a href="#embarcacion" class="hover:text-champagne transition-colors duration-300 py-2">La Embarcación</a>
+                <a href="#experiencias" class="hover:text-champagne transition-colors duration-300 py-2">Experiencias</a>
+                <a href="#galeria" class="hover:text-champagne transition-colors duration-300 py-2">Galería</a>
+                <a href="#ubicacion" class="hover:text-champagne transition-colors duration-300 py-2">Ubicación</a>
+            </nav>
+
+            <!-- Acción Desktop + Botón Hamburguesa Móvil -->
+            <div class="flex items-center gap-4">
+                <a href="#reservaciones" class="hidden sm:inline-flex items-center justify-center px-6 py-2.5 type-tech-label text-[11px] font-medium border border-champagne/70 text-warmwhite hover:bg-champagne hover:text-navy-950 rounded-sm transition-all duration-300">
+                    Reservar
+                </a>
+
+                <!-- Botón Hamburguesa Minimalista Móvil -->
+                <button id="mobile-menu-btn" aria-label="Abrir menú de navegación" aria-expanded="false" class="md:hidden p-2.5 text-warmwhite hover:text-champagne focus:outline-none transition-colors">
+                    <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.25" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 8.25h16.5M3.75 15.75h16.5" />
+                    </svg>
+                    <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="1.25" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Drawer Menú Móvil Minimalista -->
+        <div id="mobile-menu" class="fixed inset-0 top-[72px] bg-navy-900/98 backdrop-blur-md z-40 hidden flex-col justify-between px-8 py-12 md:hidden transition-opacity duration-300">
+            <nav class="flex flex-col space-y-6 text-warmwhite">
+                <a href="#embarcacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">La Embarcación</a>
+                <a href="#experiencias" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Experiencias</a>
+                <a href="#galeria" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Galería</a>
+                <a href="#ubicacion" class="mobile-nav-link font-display text-2xl tracking-tightdisplay hover:text-champagne transition-colors border-b border-white/10 pb-4">Ubicación</a>
+                <a href="#reservaciones" class="mobile-nav-link inline-flex items-center justify-center w-full py-4 mt-4 bg-champagne text-navy-950 type-tech-label text-xs font-semibold rounded-sm">
+                    Reservar Experiencia
+                </a>
+            </nav>
+
+            <div class="pt-8 border-t border-white/10 flex flex-col gap-2 text-xs text-silver">
+                <p class="type-tech-label text-[10px] text-champagne">Puerto Base</p>
+                <p>Mazatlán, Sinaloa, México</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         2. HERO / PORTADA CINEMATOGRÁFICA
+    ====================================================================== -->
+    <section id="inicio" class="relative w-full min-h-[100svh] flex items-center justify-center overflow-hidden bg-navy-950 text-warmwhite">
+        <!-- Fotografía Protagonista (Atributo data-editable para reemplazo por fotografía real de Zafire) -->
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img 
+                id="hero-bg-img"
+                data-editable="hero-background"
+                src="https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=2000&q=85" 
+                alt="Velero ZAFIRE navegando en aguas abiertas del Pacífico"
+                class="w-full h-full object-cover object-center hero-zoom opacity-80"
+                onerror="this.src='https://placehold.co/1920x1080/081523/EAE5DC?text=ZAFIRE+MAZATLAN'"
+            >
+            <!-- Gradiente cinematográfico para legibilidad editorial -->
+            <div class="absolute inset-0 bg-gradient-to-b from-navy-950/70 via-navy-900/45 to-navy-950/85"></div>
+        </div>
+
+        <!-- Contenido Central Hero -->
+        <div class="relative z-10 max-w-5xl mx-auto px-6 md:px-12 text-center pt-20">
+            <div class="inline-flex items-center gap-3 mb-7 opacity-90">
+                <span class="h-[1px] w-8 bg-champagne/80"></span>
+                <span class="type-tech-label text-[10px] sm:text-[11px] text-sand font-medium">Mazatlán · Sinaloa · México</span>
+                <span class="h-[1px] w-8 bg-champagne/80"></span>
+            </div>
+
+            <h1 class="type-hero-title text-warmwhite mb-5">
+                ZAFIRE
+            </h1>
+
+            <p class="font-display text-xl sm:text-2xl md:text-3xl text-sand font-medium tracking-tightdisplay mb-5">
+                Navega. Descubre. <span class="type-editorial-accent text-3xl sm:text-4xl md:text-[2.6rem] text-champagne font-normal">Vive el mar.</span>
+            </p>
+
+            <p class="max-w-lg mx-auto text-sm sm:text-base text-warmwhite/80 font-light leading-relaxed mb-11">
+                Una experiencia única navegando por las costas de Mazatlán.
+            </p>
+
+            <!-- Botones Refinados -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
+                <a href="#reservaciones" class="btn-luxury w-full sm:w-auto px-8 py-4 bg-champagne text-navy-950 hover:bg-warmwhite type-tech-label text-[11px] font-semibold rounded-sm">
+                    Reservar experiencia
+                </a>
+                <a href="#embarcacion" class="btn-luxury w-full sm:w-auto px-8 py-4 border border-warmwhite/40 hover:border-warmwhite text-warmwhite hover:bg-white/10 type-tech-label text-[11px] font-medium rounded-sm">
+                    Descubrir Zafire
+                </a>
+            </div>
+        </div>
+
+        <!-- Indicador de Scroll Discreto -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-75">
+            <span class="type-tech-label text-[9px] text-sand">Explorar</span>
+            <div class="w-[1px] h-8 bg-gradient-to-b from-champagne to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         3. LA EMBARCACIÓN (COMPOSICIÓN EDITORIAL ASIMÉTRICA)
+    ====================================================================== -->
+    <section id="embarcacion" class="py-24 md:py-36 px-6 md:px-12 bg-warmwhite text-navy-900">
+        <div class="max-w-7xl mx-auto">
+            <!-- Encabezado Editorial -->
+            <div class="reveal max-w-3xl mb-16 md:mb-24">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
+                    <span class="type-tech-label text-[11px] text-silver font-medium">La Embarcación</span>
+                </div>
+                <h2 class="type-section-title text-navy-900">
+                    Horizontes abiertos con carácter clásico y <span class="type-editorial-accent text-[1.18em] text-navy-800">serenidad</span> contemporánea.
+                </h2>
+            </div>
+
+            <!-- Grid Asimétrico: Narrativa + Ficha Técnica + Fotografía Doble -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+                
+                <!-- Columna Izquierda: Narrativa y Especificaciones Limpias -->
+                <div class="lg:col-span-5 reveal space-y-7">
+                    <p class="text-base md:text-lg text-navy-800/90 font-light leading-[1.7]">
+                        Distinguido por su casco en tono azul celeste sobre el Pacífico mexicano, <strong class="font-semibold text-navy-900">ZAFIRE</strong> ha sido concebido para quienes valoran la privacidad, el ritmo pausado del viento y la contemplación sin multitudes.
+                    </p>
+                    <p class="text-sm md:text-base text-navy-800/75 font-light leading-[1.7]">
+                        Su cubierta abierta y áreas de descanso permiten disfrutar de la bahía e islas de Mazatlán en un entorno íntimo, versátil y cuidadosamente atendido.
+                    </p>
+
+                    <!-- Ficha Técnica Editorial con Líneas Divisorias Finas (Sin cajas pesadas) -->
+                    <div class="pt-6 border-t border-navy-900/15 space-y-5 tabular-data">
+                        <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
+                            <span class="type-tech-label text-[11px] text-silver">Embarcación</span>
+                            <span class="font-display text-lg font-medium tracking-tight text-navy-900">Velero ZAFIRE</span>
+                        </div>
+                        <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
+                            <span class="type-tech-label text-[11px] text-silver">Registro</span>
+                            <span class="font-tech text-sm font-medium tracking-wider text-navy-900">MAT. 25034097141</span>
+                        </div>
+                        <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
+                            <span class="type-tech-label text-[11px] text-silver">Capacidad</span>
+                            <span class="font-display text-lg font-medium tracking-tight text-navy-900">13 – 15 pasajeros</span>
+                        </div>
+                        <div class="flex items-baseline justify-between border-b border-navy-900/10 pb-3.5">
+                            <span class="type-tech-label text-[11px] text-silver">Puerto Base</span>
+                            <span class="text-sm font-medium text-navy-900">Mazatlán, Sinaloa, México</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <a href="#reservaciones" class="inline-flex items-center gap-3 type-tech-label text-[11px] font-medium text-navy-900 hover:text-zafireblue transition-colors group">
+                            <span>Consultar disponibilidad</span>
+                            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Composición Fotográfica Doble Editorial -->
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-6 items-end reveal">
+                    <!-- Fotografía Principal Vertical -->
+                    <div class="sm:col-span-7 overflow-hidden rounded-sm bg-sand/40">
+                        <img 
+                            data-editable="vessel-photo-primary"
+                            src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80" 
+                            alt="Cubierta y velas en navegación sobre el océano"
+                            loading="lazy"
+                            class="w-full h-[420px] md:h-[520px] object-cover hover:scale-105 transition-transform duration-1000"
+                            onerror="this.src='https://placehold.co/800x1000/EAE5DC/081523?text=ZAFIRE+CUBIERTA'"
+                        >
+                    </div>
+                    <!-- Fotografía Secundaria Desplazada -->
+                    <div class="sm:col-span-5 space-y-4">
+                        <div class="overflow-hidden rounded-sm bg-sand/40">
+                            <img 
+                                data-editable="vessel-photo-detail"
+                                src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&w=800&q=80" 
+                                alt="Detalle náutico y horizonte marino en Mazatlán"
+                                loading="lazy"
+                                class="w-full h-[260px] md:h-[320px] object-cover hover:scale-105 transition-transform duration-1000"
+                                onerror="this.src='https://placehold.co/600x750/EAE5DC/081523?text=DETALLE+NAUTICO'"
+                            >
+                        </div>
+                        <p class="text-xs text-silver font-light leading-relaxed italic">
+                            Fotografías referenciales. Sustituibles directamente desde la configuración multimedia por tomas reales de ZAFIRE.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         4. EXPERIENCIAS (LAYOUT EDITORIAL INTERACTIVO)
+    ====================================================================== -->
+    <section id="experiencias" class="py-24 md:py-36 px-6 md:px-12 bg-navy-900 text-warmwhite">
+        <div class="max-w-7xl mx-auto">
+            <!-- Cabecera -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-6 reveal">
+                <div>
+                    <span class="type-tech-label text-[11px] text-champagne block mb-4 font-medium">Travesías & Momentos</span>
+                    <h2 class="type-section-title text-warmwhite">
+                        Experiencias <span class="type-editorial-accent text-[1.15em] text-champagne">a bordo</span>
+                    </h2>
+                </div>
+                <p class="max-w-md text-sm text-silver font-light leading-relaxed">
+                    Cada salida se adapta al ritmo de nuestros huéspedes. Selecciona una experiencia para iniciar tu solicitud de fecha y horario.
+                </p>
+            </div>
+
+            <!-- Lista Editorial Interactiva de 4 Categorías (Renderizada dinámicamente desde SITE_CONFIG) -->
+            <div id="experiences-container" class="divide-y divide-white/10 border-t border-b border-white/10">
+                <!-- Inyectado por UI_CONTROLLER -->
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         5. GALERÍA VISUAL Y LIGHTBOX
+    ====================================================================== -->
+    <section id="galeria" class="py-24 md:py-36 px-6 md:px-12 bg-warmwhite text-navy-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-14 gap-4 reveal">
+                <div>
+                    <span class="type-tech-label text-[11px] text-silver block mb-3 font-medium">Bitácora Visual</span>
+                    <h2 class="type-section-title text-navy-900">
+                        El mar en <span class="type-editorial-accent text-[1.15em] text-navy-800">perspectiva</span>
+                    </h2>
+                </div>
+                <p class="type-tech-label text-[10px] text-silver">
+                    Toca cualquier fotografía para ampliar
+                </p>
+            </div>
+
+            <!-- Carrusel Táctil en Móvil / Cuadrícula Curada en Desktop -->
+            <div id="gallery-grid" class="flex md:grid md:grid-cols-12 gap-5 overflow-x-auto md:overflow-visible snap-x snap-mandatory no-scrollbar pb-4 md:pb-0">
+                <!-- Inyectado dinámicamente desde SITE_CONFIG.gallery -->
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         6. MÓDULO DE RESERVACIONES INTERACTIVO (SUPABASE & WHATSAPP READY)
+    ====================================================================== -->
+    <section id="reservaciones" class="py-24 md:py-36 px-6 md:px-12 bg-sand/55 text-navy-900 border-t border-navy-900/10">
+        <div class="max-w-6xl mx-auto">
+            <div class="max-w-2xl mb-14 reveal">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
+                    <span class="type-tech-label text-[11px] text-navy-800/70 font-medium">Solicitudes de Salida</span>
+                </div>
+                <h2 class="type-section-title text-navy-900 mb-4">
+                    Reserva tu <span class="type-editorial-accent text-[1.15em]">travesía</span> en ZAFIRE
+                </h2>
+                <p class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed">
+                    Selecciona la fecha deseada, turno disponible y el número de pasajeros. Nuestro equipo validará disponibilidad y te contactará para confirmar tu salida.
+                </p>
+            </div>
+
+            <!-- Contenedor Principal de Reservación -->
+            <div id="booking-workspace" class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+                
+                <!-- COLUMNA IZQUIERDA (7 cols): Calendario + Turnos + Pasajeros -->
+                <div class="lg:col-span-7 space-y-10 bg-warmwhite p-6 sm:p-10 rounded-sm border border-navy-900/10">
+                    
+                    <!-- PASO 1: Calendario Cómodo a Una Mano -->
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 01</span>
+                                <h3 class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 mt-0.5">Selecciona una fecha</h3>
+                            </div>
+                            <!-- Controles de Mes -->
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="cal-prev-month" aria-label="Mes anterior" class="w-10 h-10 flex items-center justify-center rounded-sm border border-navy-900/15 hover:border-navy-900 text-navy-900 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                                </button>
+                                <span id="cal-month-label" class="min-w-[135px] text-center type-tech-label text-[11px] font-semibold text-navy-900 tabular-data">
+                                    Mes Año
+                                </span>
+                                <button type="button" id="cal-next-month" aria-label="Mes siguiente" class="w-10 h-10 flex items-center justify-center rounded-sm border border-navy-900/15 hover:border-navy-900 text-navy-900 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Días de la semana -->
+                        <div class="grid grid-cols-7 gap-1 text-center type-tech-label text-[10px] text-silver mb-2">
+                            <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                        </div>
+
+                        <!-- Grid de Días -->
+                        <div id="calendar-days-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2 tabular-data">
+                            <!-- Generado dinámicamente por UI_CONTROLLER -->
+                        </div>
+
+                        <!-- Leyenda sutil -->
+                        <div class="flex items-center gap-6 mt-4 pt-3 border-t border-navy-900/10 text-[11px] text-silver">
+                            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-navy-900 inline-block"></span> Seleccionado</span>
+                            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-sand border border-navy-900/20 inline-block"></span> Disponible</span>
+                            <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-gray-200 inline-block"></span> No disponible</span>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: Horario / Turno Disponible -->
+                    <div class="pt-6 border-t border-navy-900/10">
+                        <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 02</span>
+                        <h3 class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 mt-0.5 mb-4">Horario de salida</h3>
+                        <div id="time-slots-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- Generado desde SITE_CONFIG.schedules -->
+                        </div>
+                    </div>
+
+                    <!-- PASO 3: Experiencia y Número de Pasajeros -->
+                    <div class="pt-6 border-t border-navy-900/10 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <span class="type-tech-label text-[10px] text-champagne font-semibold block">Paso 03</span>
+                            <label for="booking-experience" class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Experiencia</label>
+                            <select id="booking-experience" class="w-full h-12 px-4 bg-warmwhite border border-navy-900/20 rounded-sm text-sm text-navy-900 focus:outline-none focus:border-navy-900">
+                                <!-- Opciones sincronizadas con SITE_CONFIG.experiences -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <span class="type-tech-label text-[10px] text-champagne font-semibold block">Capacidad Máx. 15</span>
+                            <span class="font-display text-xl sm:text-2xl font-medium tracking-tight text-navy-900 block mt-0.5 mb-3">Pasajeros</span>
+                            <div class="flex items-center justify-between h-12 border border-navy-900/20 rounded-sm px-2 bg-warmwhite tabular-data">
+                                <button type="button" id="pax-decrease" aria-label="Disminuir pasajeros" class="w-10 h-10 flex items-center justify-center text-navy-900 hover:bg-sand/60 rounded-sm transition-colors text-lg">
+                                    &minus;
+                                </button>
+                                <div class="text-center">
+                                    <span id="pax-count" class="text-base font-semibold text-navy-900">6</span>
+                                    <span class="text-xs text-silver ml-1">personas</span>
+                                </div>
+                                <button type="button" id="pax-increase" aria-label="Aumentar pasajeros" class="w-10 h-10 flex items-center justify-center text-navy-900 hover:bg-sand/60 rounded-sm transition-colors text-lg">
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA DERECHA (5 cols): Datos del Cliente, Tarifa Configurable y Envío -->
+                <div class="lg:col-span-5 bg-navy-900 text-warmwhite p-6 sm:p-10 rounded-sm">
+                    <form id="reservation-form" novalidate class="space-y-6">
+                        <div>
+                            <span class="type-tech-label text-[10px] text-champagne block font-medium">Paso 04</span>
+                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mt-1">Datos de solicitud</h3>
+                        </div>
+
+                        <!-- Resumen en Vivo -->
+                        <div class="p-4 bg-navy-950/60 border border-white/10 rounded-sm space-y-2.5 text-xs tabular-data">
+                            <div class="flex justify-between">
+                                <span class="text-silver">Embarcación:</span>
+                                <span class="text-warmwhite font-medium">Velero ZAFIRE</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-silver">Fecha seleccionada:</span>
+                                <span id="summary-date" class="text-champagne font-medium">Selecciona en el calendario</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-silver">Horario:</span>
+                                <span id="summary-slot" class="text-warmwhite">—</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-silver">Pasajeros:</span>
+                                <span id="summary-pax" class="text-warmwhite">6 personas</span>
+                            </div>
+                            <div class="pt-2.5 mt-2 border-t border-white/10 flex justify-between items-baseline">
+                                <span class="text-silver">Tarifa estimada:</span>
+                                <span id="summary-price" class="text-warmwhite font-medium text-right">A definir según configuración</span>
+                            </div>
+                        </div>
+
+                        <!-- Campos del Formulario -->
+                        <div class="space-y-4">
+                            <div>
+                                <label for="client-name" class="block type-tech-label text-[10px] text-silver mb-2">Nombre completo *</label>
+                                <input type="text" id="client-name" required placeholder="Ej. Alejandro Mendoza" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors">
+                            </div>
+
+                            <div>
+                                <label for="client-phone" class="block type-tech-label text-[10px] text-silver mb-2">Teléfono / WhatsApp *</label>
+                                <input type="tel" id="client-phone" required placeholder="Ej. +52 669 000 0000" class="w-full h-12 px-4 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors tabular-data">
+                            </div>
+
+                            <div>
+                                <label for="client-notes" class="block type-tech-label text-[10px] text-silver mb-2">Comentarios especiales (Opcional)</label>
+                                <textarea id="client-notes" rows="2" placeholder="Motivo de celebración o preferencia de horario..." class="w-full p-3.5 bg-navy-950/50 border border-white/15 focus:border-champagne rounded-sm text-sm text-warmwhite placeholder:text-silver/40 focus:outline-none transition-colors resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje de Validación / Feedback Inline (Reemplaza alert()) -->
+                        <div id="form-feedback" class="hidden p-3.5 rounded-sm text-xs leading-relaxed border"></div>
+
+                        <!-- Aviso Obligatorio de Estado Pendiente -->
+                        <div class="p-4 border-l-2 border-champagne bg-white/[0.03] text-xs text-sand/90 leading-relaxed">
+                            <strong class="block type-tech-label text-champagne text-[10px] mb-1">Importante sobre tu reservación</strong>
+                            Toda solicitud queda en estado <strong>Pendiente de Confirmación</strong> hasta validar el anticipo correspondiente directamente con nuestro equipo.
+                        </div>
+
+                        <!-- Botón Principal -->
+                        <button type="submit" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm cursor-pointer">
+                            SOLICITAR RESERVACIÓN
+                        </button>
+                    </form>
+
+                    <!-- Estado Post-Envío (Resumen de Solicitud Pendiente + Acción WhatsApp + Inspector Supabase) -->
+                    <div id="reservation-submitted-panel" class="hidden space-y-6">
+                        <div class="border-b border-white/15 pb-5">
+                            <span class="inline-block px-3 py-1 bg-champagne/20 text-champagne type-tech-label text-[10px] rounded-sm mb-3">
+                                Estado: Pendiente de Confirmación
+                            </span>
+                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite">Solicitud registrada</h3>
+                            <p class="text-xs text-silver mt-2 leading-relaxed">
+                                Folio de referencia: <span id="generated-folio" class="text-warmwhite font-tech font-medium tabular-data"></span>. Para agilizar la validación de disponibilidad y anticipo, envía tu resumen directamente por WhatsApp.
+                            </p>
+                        </div>
+
+                        <div id="submitted-details" class="space-y-2 text-xs text-sand bg-navy-950/60 p-4 rounded-sm border border-white/10 tabular-data">
+                            <!-- Detalles dinámicos -->
+                        </div>
+
+                        <div class="space-y-3">
+                            <a id="whatsapp-confirm-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-luxury w-full py-4 px-6 bg-champagne hover:bg-warmwhite text-navy-950 type-tech-label text-xs font-semibold rounded-sm flex items-center justify-center gap-2">
+                                <span>Continuar en WhatsApp</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                            </a>
+
+                            <button type="button" id="reset-booking-btn" class="w-full py-3 type-tech-label text-[11px] text-silver hover:text-warmwhite transition-colors">
+                                Realizar otra solicitud
+                            </button>
+                        </div>
+
+                        <!-- Inspector Técnico Discreto para Integración Supabase -->
+                        <div class="pt-4 border-t border-white/10">
+                            <button type="button" id="toggle-payload-btn" class="type-tech-label text-[10px] text-silver/70 hover:text-champagne flex items-center gap-2">
+                                <span>Ver estructura JSON preparada para Supabase</span>
+                            </button>
+                            <pre id="supabase-payload-preview" class="hidden mt-3 p-3 bg-navy-950 text-[11px] text-champagne/90 font-tech overflow-x-auto rounded-sm border border-white/10"></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =====================================================================
+         7. UBICACIÓN, CONTACTO Y FOOTER MINIMALISTA
+    ====================================================================== -->
+    <section id="ubicacion" class="py-24 md:py-32 px-6 md:px-12 bg-warmwhite text-navy-900 border-t border-navy-900/10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-6 space-y-6 reveal">
+                <span class="type-tech-label text-[11px] text-silver block font-medium">Punto de Embarque</span>
+                <h2 class="type-section-title text-navy-900">
+                    Mazatlán, <span class="type-editorial-accent text-[1.15em]">Sinaloa</span>, México
+                </h2>
+                <p class="text-sm md:text-base text-navy-800/80 font-light leading-relaxed max-w-lg">
+                    Zarpamos desde Mazatlán hacia las aguas del Pacífico mexicano. La ubicación exacta de muelle y logística de abordaje se comparte al confirmar tu reservación.
+                </p>
+
+                <div class="pt-4 flex flex-col sm:flex-row gap-4">
+                    <a id="direct-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-luxury inline-flex items-center justify-center gap-3 px-7 py-4 bg-navy-900 hover:bg-navy-800 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm">
+                        <span>Atención directa por WhatsApp</span>
+                        <svg class="w-4 h-4 text-champagne" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta Cartográfica Minimalista (Coordenadas Náuticas Estilizadas) -->
+            <div class="lg:col-span-6 reveal">
+                <div class="relative overflow-hidden rounded-sm bg-navy-900 text-warmwhite p-8 sm:p-12 border border-navy-900/15">
+                    <!-- Líneas náuticas decorativas SVG -->
+                    <svg class="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 400 250" fill="none">
+                        <circle cx="320" cy="60" r="140" stroke="#C6A972" stroke-width="0.75" stroke-dasharray="4 4"/>
+                        <circle cx="320" cy="60" r="90" stroke="#1E88B8" stroke-width="0.75"/>
+                        <line x1="0" y1="190" x2="400" y2="190" stroke="#F8F7F4" stroke-width="0.5"/>
+                    </svg>
+
+                    <div class="relative z-10 space-y-6">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                            <span class="type-tech-label text-[10px] text-champagne">Coordenadas Base</span>
+                            <span class="font-tech text-xs text-silver tabular-data">23.2494° N, 106.4111° W</span>
+                        </div>
+                        <div>
+                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite mb-2">Costa del Pacífico · Mazatlán</h3>
+                            <p class="text-xs text-silver font-light tabular-data">Sinaloa, México · Embarcación Mat. 25034097141</p>
+                        </div>
+                        <div class="pt-2 flex items-center gap-3 text-xs text-sand">
+                            <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
+                            <span>Operaciones sujetas a condiciones meteorológicas y capitanía de puerto.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Minimalista -->
+    <footer class="bg-navy-950 text-warmwhite py-16 px-6 md:px-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-white/10">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
+                        <span class="font-display text-2xl font-semibold tracking-[0.14em]">ZAFIRE</span>
+                    </div>
+                    <p class="text-xs text-silver mt-2 tracking-wide">Experiencias privadas en velero · Mazatlán, Sinaloa, México.</p>
+                </div>
+
+                <!-- Enlaces -->
+                <div class="flex flex-wrap gap-8 type-tech-label text-[11px] text-silver">
+                    <a href="#embarcacion" class="hover:text-warmwhite transition-colors">La Embarcación</a>
+                    <a href="#experiencias" class="hover:text-warmwhite transition-colors">Experiencias</a>
+                    <a href="#galeria" class="hover:text-warmwhite transition-colors">Galería</a>
+                    <a href="#reservaciones" class="hover:text-warmwhite transition-colors">Reservaciones</a>
+                </div>
+
+                <!-- Redes Sociales Editables -->
+                <div id="social-links-container" class="flex items-center gap-5 type-tech-label text-[11px] text-champagne">
+                    <!-- Inyectado desde SITE_CONFIG.contact -->
+                </div>
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-silver/70">
+                <p>&copy; <span id="current-year" class="tabular-data"></span> ZAFIRE. Todos los derechos reservados.</p>
+                <!-- Firma discreta de SESGO Estudio -->
+                <p class="tracking-wider">
+                    Arquitectura y diseño digital por <span class="text-sand/90 font-medium">SESGO Estudio</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         VISOR LIGHTBOX A PANTALLA COMPLETA
+    ====================================================================== -->
+    <div id="lightbox-modal" role="dialog" aria-modal="true" aria-label="Visor de fotografía" class="fixed inset-0 z-50 bg-navy-950/96 backdrop-blur-md hidden flex-col justify-between p-6 md:p-10 text-warmwhite">
+        <div class="flex items-center justify-between">
+            <span id="lightbox-counter" class="type-tech-label text-xs text-silver tabular-data">1 / 4</span>
+            <button id="lightbox-close" aria-label="Cerrar visor" class="p-2.5 text-warmwhite hover:text-champagne transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+
+        <div class="relative flex-1 flex items-center justify-center my-4 overflow-hidden">
+            <button id="lightbox-prev" aria-label="Imagen anterior" class="absolute left-2 md:left-6 z-10 p-3 bg-navy-900/70 hover:bg-champagne hover:text-navy-950 rounded-full transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+            </button>
+
+            <img id="lightbox-img" src="" alt="" class="max-h-[75vh] max-w-full object-contain rounded-sm transition-opacity duration-300">
+
+            <button id="lightbox-next" aria-label="Imagen siguiente" class="absolute right-2 md:right-6 z-10 p-3 bg-navy-900/70 hover:bg-champagne hover:text-navy-950 rounded-full transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+        </div>
+
+        <div class="text-center">
+            <p id="lightbox-caption" class="font-display text-lg sm:text-xl font-medium tracking-tight text-sand"></p>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         ARQUITECTURA MODULAR JAVASCRIPT
+         1. SITE_CONFIG: Configuración centralizada editable (textos, precios, fotos, WhatsApp)
+         2. SUPABASE_SCHEMA_SERVICE: Capa preparada para conexión con Supabase y futuro panel admin
+         3. UI_CONTROLLER: Controlador de interfaz, calendario, galería y flujo de solicitud
+    ====================================================================== -->
+    <script>
+        /**
+         * 1. SITE_CONFIG
+         * Archivo central de configuración. Permite actualizar tarifas, horarios,
+         * número de WhatsApp y reemplazar fotografías provisionales por fotos reales
+         * sin modificar la lógica de la aplicación.
+         */
+        const SITE_CONFIG = {
+            brand: {
+                name: 'ZAFIRE',
+                registration: 'MAT.25034097141',
+                type: 'Velero',
+                minCapacity: 1,
+                maxCapacity: 15,
+                recommendedCapacity: '13–15 pasajeros',
+                location: 'Mazatlán, Sinaloa, México',
+                studioCredit: 'SESGO Estudio'
+            },
+            contact: {
+                // Sustituir por número real con código de país (sin signos + ni espacios)
+                whatsappNumber: '526690000000',
+                instagramUrl: 'https://instagram.com',
+                facebookUrl: 'https://facebook.com'
+            },
+            // Horarios configurables. Si price es null, la interfaz muestra estado "A definir según configuración"
+            schedules: [
+                { id: 'morning', label: 'Turno Matutino', detail: 'Horario por definir', price: null },
+                { id: 'sunset', label: 'Turno Atardecer', detail: 'Horario por definir', price: null },
+                { id: 'fullday', label: 'Jornada Personalizada', detail: 'Horario por definir', price: null }
+            ],
+            // 4 Experiencias editoriales sin inventar tarifas ni duraciones fijas
+            experiences: [
+                {
+                    id: 'paseos-privados',
+                    number: '01',
+                    title: 'Paseos Privados',
+                    subtitle: 'Navegación exclusiva por la bahía e islas',
+                    description: 'Disfruta de la embarcación reservada únicamente para tu grupo. Ideal para recorrer la costa de Mazatlán con total privacidad y libertad.',
+                    durationLabel: 'Duración: A definir según configuración',
+                    priceLabel: 'Tarifa: Consultar disponibilidad',
+                    price: null
+                },
+                {
+                    id: 'atardeceres',
+                    number: '02',
+                    title: 'Atardeceres en el Mar',
+                    subtitle: 'La hora dorada sobre el Pacífico mexicano',
+                    description: 'Una travesía vespertina pensada para contemplar la caída del sol en el horizonte marino en un ambiente sereno y sofisticado.',
+                    durationLabel: 'Duración: A definir según configuración',
+                    priceLabel: 'Tarifa: Consultar disponibilidad',
+                    price: null
+                },
+                {
+                    id: 'celebraciones',
+                    number: '03',
+                    title: 'Celebraciones Especiales',
+                    subtitle: 'Aniversarios, encuentros íntimos y ocasiones memorables',
+                    description: 'Un escenario incomparable en altamar para conmemorar momentos significativos acompañados de hasta 15 invitados.',
+                    durationLabel: 'Duración: A definir según configuración',
+                    priceLabel: 'Tarifa: Consultar disponibilidad',
+                    price: null
+                },
+                {
+                    id: 'personalizadas',
+                    number: '04',
+                    title: 'Experiencias Personalizadas',
+                    subtitle: 'Itinerarios diseñados a la medida',
+                    description: 'Configuramos la salida de acuerdo con las preferencias de horario y navegación de tu grupo.',
+                    durationLabel: 'Duración: Flexible bajo solicitud',
+                    priceLabel: 'Tarifa: Cotización directa',
+                    price: null
+                }
+            ],
+            // Galería curada (reemplazar URLs con fotografías reales de Zafire)
+            gallery: [
+                {
+                    src: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=80',
+                    caption: 'Navegación costera en aguas del Pacífico',
+                    spanClass: 'md:col-span-7 h-[360px] md:h-[460px]'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1500514966906-fe245eea9344?auto=format&fit=crop&w=1200&q=80',
+                    caption: 'Horizonte abierto desde cubierta',
+                    spanClass: 'md:col-span-5 h-[360px] md:h-[460px]'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&w=1200&q=80',
+                    caption: 'Atardecer dorado en Mazatlán',
+                    spanClass: 'md:col-span-5 h-[360px] md:h-[420px]'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1400&q=80',
+                    caption: 'Travesías privadas para grupos de hasta 15 pasajeros',
+                    spanClass: 'md:col-span-7 h-[360px] md:h-[420px]'
+                }
+            ],
+            // Fechas bloqueadas de ejemplo (YYYY-MM-DD) — en producción se leen desde Supabase `blocked_dates`
+            initialBlockedDates: []
+        };
+
+        /**
+         * 2. SUPABASE_SCHEMA_SERVICE
+         * Capa de abstracción de datos diseñada para conectarse con Supabase.
+         * Mantiene la estructura relacional exacta requerida para la Fase 2 (Panel Administrativo):
+         * - Tabla `reservations` (solicitudes, estado pendiente, anticipos, vendedor asignado)
+         * - Tabla `blocked_dates` (control de disponibilidad y bloqueos operativos)
+         * - Tabla `sellers` / `commissions` (control de vendedores y comisiones)
+         * - Tabla `site_media` (gestión de fotografías y tarifas)
+         */
+        const SUPABASE_SCHEMA_SERVICE = {
+            config: {
+                supabaseUrl: 'https://TU-PROYECTO.supabase.co',
+                supabaseAnonKey: 'TU-SUPABASE-ANON-KEY',
+                isConnected: false // Cambiar a true al inicializar @supabase/supabase-js
+            },
+
+            /**
+             * Obtiene fechas bloqueadas (simulación local limpia hasta conectar Supabase)
+             */
+            async getBlockedDates() {
+                // En producción:
+                // const { data, error } = await supabase.from('blocked_dates').select('blocked_date, slot_id');
+                return [...SITE_CONFIG.initialBlockedDates];
+            },
+
+            /**
+             * Construye el registro estructurado para insertar en `public.reservations`
+             * No simula pagos ni confirmaciones automáticas: siempre nace en `pending_deposit`.
+             */
+            buildReservationPayload(formData) {
+                const folio = 'ZFR-' + Date.now().toString(36).toUpperCase().slice(-6);
+                return {
+                    folio_code: folio,
+                    vessel_id: 'zafire-mat-25034097141',
+                    reservation_date: formData.date,          // DATE (YYYY-MM-DD)
+                    schedule_slot_id: formData.slotId,        // TEXT ('morning' | 'sunset' | 'fullday')
+                    experience_id: formData.experienceId,     // TEXT
+                    passengers_count: Number(formData.pax),   // INTEGER (1 - 15)
+                    customer_name: formData.name.trim(),      // TEXT
+                    customer_phone: formData.phone.trim(),    // TEXT
+                    customer_notes: formData.notes.trim() || null,
+                    quoted_amount: formData.quotedPrice,      // NUMERIC NULLABLE
+                    deposit_validated: false,                 // BOOLEAN (Siempre false hasta validación manual admin)
+                    status: 'pending_confirmation',           // ENUM ('pending_confirmation', 'confirmed', 'cancelled', 'completed')
+                    seller_id: null,                          // UUID NULLABLE (Para atribución de vendedores y comisiones)
+                    commission_amount: null,                  // NUMERIC NULLABLE
+                    source_channel: 'web_public',
+                    created_at: new Date().toISOString()
+                };
+            },
+
+            /**
+             * Prepara el envío hacia Supabase (sin simular éxito falso de pago)
+             */
+            async createReservationRequest(payload) {
+                // Cuando se conecte Supabase:
+                // const { data, error } = await supabase.from('reservations').insert([payload]).select();
+                // if (error) throw error;
+                // return data[0];
+
+                // Guardado temporal en sessionStorage para inspección local
+                try {
+                    const existing = JSON.parse(sessionStorage.getItem('zafire_pending_requests') || '[]');
+                    existing.push(payload);
+                    sessionStorage.setItem('zafire_pending_requests', JSON.stringify(existing));
+                } catch (e) {
+                    console.warn('Almacenamiento local no disponible:', e);
+                }
+
+                return { ok: true, record: payload };
+            }
+        };
+
+        /**
+         * 3. UI_CONTROLLER
+         * Maneja la interactividad, navegación responsive, calendario táctil,
+         * lightbox y generación de enlaces de WhatsApp.
+         */
+        const UI_CONTROLLER = {
+            state: {
+                currentMonth: new Date().getMonth(),
+                currentYear: new Date().getFullYear(),
+                selectedDate: null,
+                selectedSlotId: SITE_CONFIG.schedules[0].id,
+                selectedExperienceId: SITE_CONFIG.experiences[0].id,
+                pax: 6,
+                blockedDates: [],
+                lightboxIndex: 0
+            },
+
+            async init() {
+                this.state.blockedDates = await SUPABASE_SCHEMA_SERVICE.getBlockedDates();
+                this.setupNavbar();
+                this.setupMobileMenu();
+                this.renderExperiences();
+                this.renderGallery();
+                this.setupLightbox();
+                this.setupBookingModule();
+                this.setupContactAndFooter();
+                this.setupScrollReveal();
+            },
+
+            /* --- Navbar transparente -> sólido al hacer scroll --- */
+            setupNavbar() {
+                const navbar = document.getElementById('main-navbar');
+                const handleScroll = () => {
+                    if (window.scrollY > 40) {
+                        navbar.classList.add('bg-navy-900/95', 'backdrop-blur-md', 'py-3.5', 'shadow-sm');
+                        navbar.classList.remove('py-5');
+                    } else {
+                        navbar.classList.remove('bg-navy-900/95', 'backdrop-blur-md', 'py-3.5', 'shadow-sm');
+                        navbar.classList.add('py-5');
+                    }
+                };
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                handleScroll();
+            },
+
+            /* --- Menú hamburguesa móvil minimalista --- */
+            setupMobileMenu() {
+                const btn = document.getElementById('mobile-menu-btn');
+                const menu = document.getElementById('mobile-menu');
+                const iconOpen = document.getElementById('menu-icon-open');
+                const iconClose = document.getElementById('menu-icon-close');
+                const links = document.querySelectorAll('.mobile-nav-link');
+
+                const toggleMenu = (forceClose = false) => {
+                    const isOpen = !menu.classList.contains('hidden');
+                    const nextState = forceClose ? false : !isOpen;
+
+                    if (nextState) {
+                        menu.classList.remove('hidden');
+                        menu.classList.add('flex');
+                        iconOpen.classList.add('hidden');
+                        iconClose.classList.remove('hidden');
+                        btn.setAttribute('aria-expanded', 'true');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        menu.classList.add('hidden');
+                        menu.classList.remove('flex');
+                        iconOpen.classList.remove('hidden');
+                        iconClose.classList.add('hidden');
+                        btn.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                };
+
+                btn.addEventListener('click', () => toggleMenu());
+                links.forEach(link => link.addEventListener('click', () => toggleMenu(true)));
+            },
+
+            /* --- Renderizado Editorial de Experiencias --- */
+            renderExperiences() {
+                const container = document.getElementById('experiences-container');
+                container.innerHTML = SITE_CONFIG.experiences.map(exp => `
+                    <article class="reveal py-10 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center group">
+                        <div class="lg:col-span-1 font-tech text-xs text-champagne tabular-data">
+                            ${exp.number}
+                        </div>
+                        <div class="lg:col-span-4">
+                            <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite group-hover:text-champagne transition-colors">
+                                ${exp.title}
+                            </h3>
+                            <p class="type-tech-label text-[10px] text-silver mt-2">${exp.subtitle}</p>
+                        </div>
+                        <div class="lg:col-span-4 space-y-2">
+                            <p class="text-sm text-warmwhite/80 font-light leading-relaxed">
+                                ${exp.description}
+                            </p>
+                            <div class="pt-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-silver tabular-data">
+                                <span>${exp.durationLabel}</span>
+                                <span>${exp.price !== null ? 'Desde $' + exp.price + ' MXN' : exp.priceLabel}</span>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-3 flex lg:justify-end">
+                            <button type="button" data-select-exp="${exp.id}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
+                                Seleccionar salida
+                            </button>
+                        </div>
+                    </article>
+                `).join('');
+
+                // Vincular botones para preseleccionar experiencia y hacer scroll suave a reservaciones
+                document.querySelectorAll('.select-exp-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const expId = e.currentTarget.getAttribute('data-select-exp');
+                        this.state.selectedExperienceId = expId;
+                        const selectEl = document.getElementById('booking-experience');
+                        if (selectEl) selectEl.value = expId;
+                        this.updateBookingSummary();
+                        document.getElementById('reservaciones').scrollIntoView({ behavior: 'smooth' });
+                    });
+                });
+            },
+
+            /* --- Renderizado de Galería Curada --- */
+            renderGallery() {
+                const grid = document.getElementById('gallery-grid');
+                grid.innerHTML = SITE_CONFIG.gallery.map((item, idx) => `
+                    <figure 
+                        data-gallery-idx="${idx}"
+                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${item.spanClass}"
+                    >
+                        <img 
+                            src="${item.src}" 
+                            alt="${item.caption}" 
+                            loading="lazy"
+                            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                            onerror="this.src='https://placehold.co/1200x800/081523/EAE5DC?text=ZAFIRE+GALERIA'"
+                        >
+                        <figcaption class="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-between p-6">
+                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${item.caption}</span>
+                            <span class="type-tech-label text-[10px] text-champagne border border-champagne/50 px-2.5 py-1 rounded-sm">Ampliar</span>
+                        </figcaption>
+                    </figure>
+                `).join('');
+
+                document.querySelectorAll('.gallery-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const idx = Number(el.getAttribute('data-gallery-idx'));
+                        this.openLightbox(idx);
+                    });
+                });
+            },
+
+            /* --- Lightbox Fullscreen --- */
+            setupLightbox() {
+                const modal = document.getElementById('lightbox-modal');
+                const closeBtn = document.getElementById('lightbox-close');
+                const prevBtn = document.getElementById('lightbox-prev');
+                const nextBtn = document.getElementById('lightbox-next');
+
+                closeBtn.addEventListener('click', () => this.closeLightbox());
+                prevBtn.addEventListener('click', () => this.navigateLightbox(-1));
+                nextBtn.addEventListener('click', () => this.navigateLightbox(1));
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) this.closeLightbox();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (modal.classList.contains('hidden')) return;
+                    if (e.key === 'Escape') this.closeLightbox();
+                    if (e.key === 'ArrowLeft') this.navigateLightbox(-1);
+                    if (e.key === 'ArrowRight') this.navigateLightbox(1);
+                });
+            },
+
+            openLightbox(index) {
+                this.state.lightboxIndex = index;
+                this.updateLightboxView();
+                const modal = document.getElementById('lightbox-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            },
+
+            closeLightbox() {
+                const modal = document.getElementById('lightbox-modal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            },
+
+            navigateLightbox(dir) {
+                const total = SITE_CONFIG.gallery.length;
+                this.state.lightboxIndex = (this.state.lightboxIndex + dir + total) % total;
+                this.updateLightboxView();
+            },
+
+            updateLightboxView() {
+                const item = SITE_CONFIG.gallery[this.state.lightboxIndex];
+                document.getElementById('lightbox-img').src = item.src;
+                document.getElementById('lightbox-img').alt = item.caption;
+                document.getElementById('lightbox-caption').textContent = item.caption;
+                document.getElementById('lightbox-counter').textContent = `${this.state.lightboxIndex + 1} / ${SITE_CONFIG.gallery.length}`;
+            },
+
+            /* --- Módulo Interactivo de Reservaciones --- */
+            setupBookingModule() {
+                // Poblar selector de experiencias
+                const expSelect = document.getElementById('booking-experience');
+                expSelect.innerHTML = SITE_CONFIG.experiences.map(exp => `
+                    <option value="${exp.id}">${exp.title}</option>
+                `).join('');
+                expSelect.addEventListener('change', (e) => {
+                    this.state.selectedExperienceId = e.target.value;
+                    this.updateBookingSummary();
+                });
+
+                // Renderizar turnos disponibles
+                this.renderTimeSlots();
+
+                // Controles de pasajeros (1 a 15)
+                const btnDec = document.getElementById('pax-decrease');
+                const btnInc = document.getElementById('pax-increase');
+                const paxLabel = document.getElementById('pax-count');
+
+                const updatePax = (delta) => {
+                    const next = this.state.pax + delta;
+                    if (next >= SITE_CONFIG.brand.minCapacity && next <= SITE_CONFIG.brand.maxCapacity) {
+                        this.state.pax = next;
+                        paxLabel.textContent = next;
+                        this.updateBookingSummary();
+                    }
+                };
+                btnDec.addEventListener('click', () => updatePax(-1));
+                btnInc.addEventListener('click', () => updatePax(1));
+
+                // Navegación del calendario
+                document.getElementById('cal-prev-month').addEventListener('click', () => {
+                    if (this.state.currentMonth === 0) {
+                        this.state.currentMonth = 11;
+                        this.state.currentYear--;
+                    } else {
+                        this.state.currentMonth--;
+                    }
+                    this.renderCalendar();
+                });
+
+                document.getElementById('cal-next-month').addEventListener('click', () => {
+                    if (this.state.currentMonth === 11) {
+                        this.state.currentMonth = 0;
+                        this.state.currentYear++;
+                    } else {
+                        this.state.currentMonth++;
+                    }
+                    this.renderCalendar();
+                });
+
+                this.renderCalendar();
+                this.updateBookingSummary();
+
+                // Manejo del envío del formulario
+                const form = document.getElementById('reservation-form');
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.handleReservationSubmit();
+                });
+
+                // Botón reiniciar solicitud
+                document.getElementById('reset-booking-btn').addEventListener('click', () => {
+                    document.getElementById('reservation-submitted-panel').classList.add('hidden');
+                    form.classList.remove('hidden');
+                    form.reset();
+                    this.hideFeedback();
+                });
+
+                // Toggle inspector de payload Supabase
+                document.getElementById('toggle-payload-btn').addEventListener('click', () => {
+                    const pre = document.getElementById('supabase-payload-preview');
+                    pre.classList.toggle('hidden');
+                });
+            },
+
+            renderCalendar() {
+                const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                const label = document.getElementById('cal-month-label');
+                const grid = document.getElementById('calendar-days-grid');
+
+                const year = this.state.currentYear;
+                const month = this.state.currentMonth;
+                label.textContent = `${monthNames[month]} ${year}`;
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                let html = '';
+
+                // Espacios vacíos antes del primer día del mes
+                for (let i = 0; i < firstDay; i++) {
+                    html += `<div class="h-11"></div>`;
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateObj = new Date(year, month, day);
+                    const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const isPast = dateObj < today;
+                    const isBlocked = this.state.blockedDates.includes(isoDate);
+                    const isSelected = this.state.selectedDate === isoDate;
+
+                    if (isPast || isBlocked) {
+                        html += `
+                            <button type="button" disabled class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed">
+                                ${day}
+                            </button>
+                        `;
+                    } else if (isSelected) {
+                        html += `
+                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-semibold bg-navy-900 text-warmwhite shadow-sm transition-all">
+                                ${day}
+                            </button>
+                        `;
+                    } else {
+                        html += `
+                            <button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs font-medium text-navy-900 bg-sand/50 hover:bg-champagne/40 border border-transparent hover:border-navy-900/20 transition-all">
+                                ${day}
+                            </button>
+                        `;
+                    }
+                }
+
+                grid.innerHTML = html;
+
+                document.querySelectorAll('.cal-day-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.state.selectedDate = btn.getAttribute('data-date');
+                        this.renderCalendar();
+                        this.updateBookingSummary();
+                        this.hideFeedback();
+                    });
+                });
+            },
+
+            renderTimeSlots() {
+                const container = document.getElementById('time-slots-container');
+                container.innerHTML = SITE_CONFIG.schedules.map(slot => {
+                    const isSelected = this.state.selectedSlotId === slot.id;
+                    return `
+                        <button type="button" data-slot-id="${slot.id}" class="slot-btn text-left p-3.5 rounded-sm border transition-all ${
+                            isSelected 
+                            ? 'bg-navy-900 text-warmwhite border-navy-900' 
+                            : 'bg-warmwhite text-navy-900 border-navy-900/20 hover:border-navy-900'
+                        }">
+                            <span class="block text-xs font-medium tracking-wide">${slot.label}</span>
+                            <span class="block text-[11px] mt-1 ${isSelected ? 'text-champagne' : 'text-silver'}">${slot.detail}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.slot-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.state.selectedSlotId = btn.getAttribute('data-slot-id');
+                        this.renderTimeSlots();
+                        this.updateBookingSummary();
+                    });
+                });
+            },
+
+            updateBookingSummary() {
+                const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
+                const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
+
+                document.getElementById('summary-date').textContent = this.state.selectedDate 
+                    ? this.formatReadableDate(this.state.selectedDate) 
+                    : 'Selecciona en el calendario';
+                document.getElementById('summary-slot').textContent = slot ? slot.label : '—';
+                document.getElementById('summary-pax').textContent = `${this.state.pax} ${this.state.pax === 1 ? 'persona' : 'personas'}`;
+
+                // Cálculo dinámico solo si se configuró precio en SITE_CONFIG
+                const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
+                document.getElementById('summary-price').textContent = activePrice !== null
+                    ? `$${Number(activePrice).toLocaleString('es-MX')} MXN`
+                    : 'A definir según configuración';
+            },
+
+            formatReadableDate(isoStr) {
+                const [y, m, d] = isoStr.split('-').map(Number);
+                const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                return `${d} de ${months[m - 1]}, ${y}`;
+            },
+
+            showFeedback(message, isError = true) {
+                const box = document.getElementById('form-feedback');
+                box.textContent = message;
+                box.classList.remove('hidden', 'border-red-400/50', 'bg-red-950/40', 'text-red-200', 'border-champagne', 'bg-champagne/10', 'text-warmwhite');
+                if (isError) {
+                    box.classList.add('border-red-400/50', 'bg-red-950/40', 'text-red-200');
+                } else {
+                    box.classList.add('border-champagne', 'bg-champagne/10', 'text-warmwhite');
+                }
+            },
+
+            hideFeedback() {
+                document.getElementById('form-feedback').classList.add('hidden');
+            },
+
+            async handleReservationSubmit() {
+                const name = document.getElementById('client-name').value.trim();
+                const phone = document.getElementById('client-phone').value.trim();
+                const notes = document.getElementById('client-notes').value.trim();
+
+                if (!this.state.selectedDate) {
+                    this.showFeedback('Por favor selecciona una fecha disponible en el calendario.');
+                    return;
+                }
+                if (!name) {
+                    this.showFeedback('Por favor ingresa tu nombre completo.');
+                    document.getElementById('client-name').focus();
+                    return;
+                }
+                if (!phone || phone.replace(/\D/g, '').length < 8) {
+                    this.showFeedback('Por favor ingresa un número de teléfono o WhatsApp válido.');
+                    document.getElementById('client-phone').focus();
+                    return;
+                }
+
+                const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
+                const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
+                const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
+
+                // Construir payload estructurado para Supabase
+                const payload = SUPABASE_SCHEMA_SERVICE.buildReservationPayload({
+                    date: this.state.selectedDate,
+                    slotId: this.state.selectedSlotId,
+                    experienceId: this.state.selectedExperienceId,
+                    pax: this.state.pax,
+                    name,
+                    phone,
+                    notes,
+                    quotedPrice: activePrice
+                });
+
+                const result = await SUPABASE_SCHEMA_SERVICE.createReservationRequest(payload);
+
+                if (result.ok) {
+                    // Mostrar panel post-solicitud (Sin simular pago ni confirmación automática)
+                    document.getElementById('reservation-form').classList.add('hidden');
+                    const panel = document.getElementById('reservation-submitted-panel');
+                    panel.classList.remove('hidden');
+
+                    document.getElementById('generated-folio').textContent = payload.folio_code;
+                    document.getElementById('submitted-details').innerHTML = `
+                        <p><strong>Titular:</strong> ${payload.customer_name}</p>
+                        <p><strong>Fecha:</strong> ${this.formatReadableDate(payload.reservation_date)}</p>
+                        <p><strong>Turno:</strong> ${slot ? slot.label : payload.schedule_slot_id}</p>
+                        <p><strong>Experiencia:</strong> ${exp ? exp.title : payload.experience_id}</p>
+                        <p><strong>Pasajeros:</strong> ${payload.passengers_count} personas</p>
+                        <p class="text-champagne pt-1"><strong>Estatus:</strong> Pendiente de confirmación y validación de anticipo.</p>
+                    `;
+
+                    // Construir mensaje de WhatsApp prellenado
+                    const waText = encodeURIComponent(
+                        `Hola equipo ZAFIRE, solicito disponibilidad para navegar en Mazatlán:\n\n` +
+                        `• Folio: ${payload.folio_code}\n` +
+                        `• Nombre: ${payload.customer_name}\n` +
+                        `• Fecha: ${this.formatReadableDate(payload.reservation_date)}\n` +
+                        `• Turno: ${slot ? slot.label : ''}\n` +
+                        `• Experiencia: ${exp ? exp.title : ''}\n` +
+                        `• Pasajeros: ${payload.passengers_count}\n` +
+                        (payload.customer_notes ? `• Notas: ${payload.customer_notes}\n` : '') +
+                        `\nQuedo atento a la validación de disponibilidad y anticipo.`
+                    );
+                    document.getElementById('whatsapp-confirm-link').href = `https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${waText}`;
+
+                    // Mostrar JSON preparado para Supabase en inspector
+                    document.getElementById('supabase-payload-preview').textContent = JSON.stringify(payload, null, 2);
+                }
+            },
+
+            setupContactAndFooter() {
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+
+                const directMsg = encodeURIComponent('Hola equipo ZAFIRE, me gustaría recibir información sobre disponibilidad para navegar en Mazatlán.');
+                document.getElementById('direct-whatsapp-btn').href = `https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${directMsg}`;
+
+                const socialContainer = document.getElementById('social-links-container');
+                socialContainer.innerHTML = `
+                    <a href="${SITE_CONFIG.contact.instagramUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">Instagram</a>
+                    <a href="${SITE_CONFIG.contact.facebookUrl}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">Facebook</a>
+                    <a href="https://wa.me/${SITE_CONFIG.contact.whatsappNumber}" target="_blank" rel="noopener noreferrer" class="hover:text-warmwhite transition-colors">WhatsApp</a>
+                `;
+            },
+
+            setupScrollReveal() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            }
+        };
+
+        // Inicialización al cargar el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            UI_CONTROLLER.init();
+        });
+    </script>
+</body>
+</html>
