@@ -11,6 +11,8 @@
 <style>
 :root{color-scheme:dark;--bg:#07111d;--panel:#0c1b2a;--line:#263b4e;--text:#f5f2eb;--muted:#9aa8b5;--gold:#c6a972}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,sans-serif}button,input{font:inherit}.hidden{display:none!important}
+/* Control explícito de vistas: evita que el panel se muestre debajo del acceso */
+#admin-screen{display:none}#admin-screen:not(.hidden){display:block}#login-screen{display:grid}#login-screen.hidden{display:none!important}
 .login{min-height:100svh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 10%,#18334a,transparent 48%),var(--bg)}
 .login-card{width:min(420px,100%);padding:30px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
 .brand{font-size:23px;font-weight:800;letter-spacing:.22em}.eyebrow{color:var(--gold);font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
