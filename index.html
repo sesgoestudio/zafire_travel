@@ -850,6 +850,12 @@
             initialBlockedDates: []
         };
 
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+            }[char]));
+        }
+
         function applySiteContent(content) {
             if (!content || typeof content !== 'object') return;
             Object.entries(content).forEach(([key, value]) => {
@@ -1011,25 +1017,25 @@
                 container.innerHTML = SITE_CONFIG.experiences.map(exp => `
                     <article class="reveal py-10 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center group">
                         <div class="lg:col-span-1 font-tech text-xs text-champagne tabular-data">
-                            ${exp.number}
+                            ${escapeHTML(exp.number)}
                         </div>
                         <div class="lg:col-span-4">
                             <h3 class="font-display text-2xl sm:text-3xl font-medium tracking-tight text-warmwhite group-hover:text-champagne transition-colors">
-                                ${exp.title}
+                                ${escapeHTML(exp.title)}
                             </h3>
-                            <p class="type-tech-label text-[10px] text-silver mt-2">${exp.subtitle}</p>
+                            <p class="type-tech-label text-[10px] text-silver mt-2">${escapeHTML(exp.subtitle)}</p>
                         </div>
                         <div class="lg:col-span-4 space-y-2">
                             <p class="text-sm text-warmwhite/80 font-light leading-relaxed">
-                                ${exp.description}
+                                ${escapeHTML(exp.description)}
                             </p>
                             <div class="pt-2 flex flex-wrap gap-x-6 gap-y-1 text-[11px] text-silver tabular-data">
-                                <span>${exp.durationLabel}</span>
+                                <span>${escapeHTML(exp.durationLabel)}</span>
                                 <span>${exp.price !== null ? 'Desde $' + exp.price + ' MXN' : exp.priceLabel}</span>
                             </div>
                         </div>
                         <div class="lg:col-span-3 flex lg:justify-end">
-                            <button type="button" data-select-exp="${exp.id}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
+                            <button type="button" data-select-exp="${escapeHTML(exp.id)}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
                                 Seleccionar salida
                             </button>
                         </div>
@@ -1055,17 +1061,17 @@
                 grid.innerHTML = SITE_CONFIG.gallery.map((item, idx) => `
                     <figure 
                         data-gallery-idx="${idx}"
-                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${item.spanClass}"
+                        class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${escapeHTML(item.spanClass)}"
                     >
                         <img 
-                            src="${item.src}" 
-                            alt="${item.caption}" 
+                            src="${escapeHTML(item.src)}" 
+                            alt="${escapeHTML(item.caption)}" 
                             loading="lazy"
                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                             onerror="this.src='https://placehold.co/1200x800/081523/EAE5DC?text=ZAFIRE+GALERIA'"
                         >
                         <figcaption class="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-between p-6">
-                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${item.caption}</span>
+                            <span class="font-display text-base sm:text-lg font-medium tracking-tight text-warmwhite">${escapeHTML(item.caption)}</span>
                             <span class="type-tech-label text-[10px] text-champagne border border-champagne/50 px-2.5 py-1 rounded-sm">Ampliar</span>
                         </figcaption>
                     </figure>
@@ -1137,7 +1143,7 @@
                 // Poblar selector de experiencias
                 const expSelect = document.getElementById('booking-experience');
                 expSelect.innerHTML = SITE_CONFIG.experiences.map(exp => `
-                    <option value="${exp.id}">${exp.title}</option>
+                    <option value="${exp.id}">${escapeHTML(exp.title)}</option>
                 `).join('');
                 expSelect.addEventListener('change', (e) => {
                     this.state.selectedExperienceId = e.target.value;
@@ -1381,7 +1387,7 @@
                     const select = document.getElementById('booking-experience');
                     if (select) {
                         const previous = select.value;
-                        select.innerHTML = SITE_CONFIG.experiences.map(exp => '<option value="' + String(exp.id).replace(/"/g,'&quot;') + '">' + String(exp.title).replace(/</g,'&lt;') + '</option>').join('');
+                        select.innerHTML = SITE_CONFIG.experiences.map(exp => '<option value="' + escapeHTML(exp.id) + '">' + escapeHTML(exp.title) + '</option>').join('');
                         select.value = SITE_CONFIG.experiences.some(x=>x.id===previous) ? previous : SITE_CONFIG.experiences[0]?.id || '';
                         UI_CONTROLLER.state.selectedExperienceId = select.value;
                         UI_CONTROLLER.updateBookingSummary();
