@@ -131,7 +131,7 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   $('sections').innerHTML=groups.map((g,i)=>{
    const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
    const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
-   return '<details '+(i===0?'open':'')+'><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
+   return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
   }).join('');
   $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
    const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
