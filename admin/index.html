@@ -45,6 +45,19 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  .reservation-filters select{background:#10283b;border:1px solid var(--line);border-radius:6px;color:#f4f1e9;padding:8px 12px}
  .reservation-list{display:grid;gap:10px}
  .reservation-card{border:1px solid var(--line);background:#102538;border-radius:9px;padding:15px;display:grid;gap:10px}
+ .reservation-collapsible{padding:0;overflow:hidden;display:block}
+ .reservation-summary{list-style:none;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto 18px;align-items:center;gap:12px;padding:16px;cursor:pointer}
+ .reservation-summary::-webkit-details-marker{display:none}
+ .reservation-name{font-size:13px;font-weight:600;color:#f4f1e9;overflow-wrap:anywhere}
+ .reservation-date{font-size:12px;color:#c6cbd0}
+ .reservation-slot{font-size:12px;color:var(--gold);white-space:nowrap}
+ .reservation-chevron{font-size:18px;color:var(--gold);transition:transform .2s}
+ .reservation-collapsible[open] .reservation-chevron{transform:rotate(180deg)}
+ .reservation-summary:hover{background:#193248}
+ .reservation-expanded{padding:0 16px 16px;display:grid;gap:12px}
+ .reservation-expanded .reservation-card-top{padding-top:12px;border-top:1px solid var(--line)}
+ @media(max-width:600px){.reservation-summary{grid-template-columns:minmax(0,1fr) auto 16px;gap:7px;padding:14px}.reservation-date{grid-column:1;grid-row:2}.reservation-slot{grid-column:2;grid-row:1/3}.reservation-chevron{grid-column:3;grid-row:1/3}.reservation-expanded{padding:0 12px 12px}}
+
  .reservation-card-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
  .reservation-folio{font-size:11px;letter-spacing:.08em;color:var(--gold)}
  .reservation-status{font-size:10px;text-transform:uppercase;letter-spacing:.1em;padding:5px 8px;border-radius:99px;background:#263747;color:#d8e1e8}
@@ -160,7 +173,7 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
    }
    if(actions&&phone)actions+='<a target="_blank" rel="noopener" href="https://wa.me/'+phone+'">WhatsApp cliente</a>';
    if(actions)actions+='</div>';
-   return '<article class="reservation-card"><div class="reservation-card-top"><div><div class="reservation-folio">'+escapeHtml(r.folio)+'</div><strong>'+escapeHtml(r.customer_name)+'</strong></div><span class="reservation-status '+escapeHtml(r.status)+'">'+escapeHtml(statusLabel)+'</span></div><div class="reservation-data"><div><span class="reservation-label">Fecha y horario</span><strong>'+escapeHtml(date)+' · '+slot+'</strong></div><div><span class="reservation-label">Experiencia</span><strong>'+escapeHtml(r.experience)+'</strong></div><div><span class="reservation-label">Pasajeros</span><strong>'+Number(r.guests||0)+'</strong></div><div><span class="reservation-label">Contacto</span><strong>'+escapeHtml(r.phone)+(r.customer_email?'<br>'+escapeHtml(r.customer_email):'')+'</strong></div><div><span class="reservation-label">Total estimado</span><strong>'+(r.total_amount===null?'Por definir':'$'+Number(r.total_amount).toLocaleString('es-MX'))+'</strong></div><div><span class="reservation-label">Notas</span><strong>'+escapeHtml(r.notes||'—')+'</strong></div></div>'+actions+'</article>';
+   return '<details class="reservation-card reservation-collapsible"><summary class="reservation-summary"><strong class="reservation-name">'+escapeHtml(r.customer_name)+'</strong><span class="reservation-date">'+escapeHtml(date)+'</span><span class="reservation-slot">'+slot+'</span><span class="reservation-chevron" aria-hidden="true">⌄</span></summary><div class="reservation-expanded"><div class="reservation-card-top"><div><div class="reservation-folio">'+escapeHtml(r.folio)+'</div></div><span class="reservation-status '+escapeHtml(r.status)+'">'+escapeHtml(statusLabel)+'</span></div><div class="reservation-data"><div><span class="reservation-label">Experiencia</span><strong>'+escapeHtml(r.experience)+'</strong></div><div><span class="reservation-label">Pasajeros</span><strong>'+Number(r.guests||0)+'</strong></div><div><span class="reservation-label">Contacto</span><strong>'+escapeHtml(r.phone)+(r.customer_email?'<br>'+escapeHtml(r.customer_email):'')+'</strong></div><div><span class="reservation-label">Total estimado</span><strong>'+(r.total_amount===null?'Por definir':'$'+Number(r.total_amount).toLocaleString('es-MX'))+'</strong></div><div><span class="reservation-label">Notas</span><strong>'+escapeHtml(r.notes||'—')+'</strong></div></div>'+actions+'</div></details>';
   }).join('');
   $('reservation-list').innerHTML=html;
   $('reservation-list').querySelectorAll('[data-confirm]').forEach(btn=>btn.addEventListener('click',async()=>{
