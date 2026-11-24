@@ -1393,11 +1393,15 @@
                 applySiteMedia(payload.media);
                 if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.renderGallery();
             }
+            if (payload.contact) {
+                Object.assign(SITE_CONFIG.contact, payload.contact);
+                if (typeof UI_CONTROLLER !== 'undefined') UI_CONTROLLER.setupContactAndFooter();
+            }
         });
 
         // Inicialización al cargar el DOM
         document.addEventListener('DOMContentLoaded', async () => {
-            try { SUPABASE_SCHEMA_SERVICE.init(); await UI_CONTROLLER.init(); }
+            try { await UI_CONTROLLER.init(); }
             catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
         });
     </script>
