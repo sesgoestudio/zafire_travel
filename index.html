@@ -891,7 +891,7 @@
             if (!Array.isArray(items)) return;
             items.filter(x => x && x.category && x.public_url).forEach(item => {
                 const el = document.querySelector('[data-editable="' + CSS.escape(item.category) + '"]');
-                if (el) el.src = item.public_url;
+                if (el) { el.src = item.public_url; if (item.alt_text) el.alt = item.alt_text; }
             });
             const gallery = items.filter(x => x.category === 'gallery' && x.public_url);
             SITE_CONFIG.gallery = gallery.map((x,i) => ({
