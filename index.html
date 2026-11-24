@@ -611,13 +611,7 @@
                             </button>
                         </div>
 
-                        <!-- Inspector Técnico Discreto para Integración Supabase -->
-                        <div class="pt-4 border-t border-white/10">
-                            <button type="button" id="toggle-payload-btn" class="type-tech-label text-[10px] text-silver/70 hover:text-champagne flex items-center gap-2">
-                                <span>Ver estructura JSON preparada para Supabase</span>
-                            </button>
-                            <pre id="supabase-payload-preview" class="hidden mt-3 p-3 bg-navy-950 text-[11px] text-champagne/90 font-tech overflow-x-auto rounded-sm border border-white/10"></pre>
-                        </div>
+
                     </div>
                 </div>
 
@@ -707,6 +701,7 @@
                 <!-- Firma discreta de SESGO Estudio -->
                 <p class="tracking-wider">
                     Arquitectura y diseño digital por <span class="text-sand/90 font-medium">SESGO Estudio</span>
+                    <a href="/admin/" class="ml-3 text-silver/40 hover:text-champagne transition-colors text-[9px]">Acceso</a>
                 </p>
             </div>
         </div>
@@ -746,6 +741,7 @@
          2. SUPABASE_SCHEMA_SERVICE: Capa preparada para conexión con Supabase y futuro panel admin
          3. UI_CONTROLLER: Controlador de interfaz, calendario, galería y flujo de solicitud
     ====================================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         /**
          * 1. SITE_CONFIG
@@ -856,67 +852,12 @@
          * - Tabla `site_media` (gestión de fotografías y tarifas)
          */
         const SUPABASE_SCHEMA_SERVICE = {
-            config: {
-                supabaseUrl: 'https://TU-PROYECTO.supabase.co',
-                supabaseAnonKey: 'TU-SUPABASE-ANON-KEY',
-                isConnected: false // Cambiar a true al inicializar @supabase/supabase-js
-            },
-
-            /**
-             * Obtiene fechas bloqueadas (simulación local limpia hasta conectar Supabase)
-             */
-            async getBlockedDates() {
-                // En producción:
-                // const { data, error } = await supabase.from('blocked_dates').select('blocked_date, slot_id');
-                return [...SITE_CONFIG.initialBlockedDates];
-            },
-
-            /**
-             * Construye el registro estructurado para insertar en `public.reservations`
-             * No simula pagos ni confirmaciones automáticas: siempre nace en `pending_deposit`.
-             */
-            buildReservationPayload(formData) {
-                const folio = 'ZFR-' + Date.now().toString(36).toUpperCase().slice(-6);
-                return {
-                    folio_code: folio,
-                    vessel_id: 'zafire-mat-25034097141',
-                    reservation_date: formData.date,          // DATE (YYYY-MM-DD)
-                    schedule_slot_id: formData.slotId,        // TEXT ('morning' | 'sunset' | 'fullday')
-                    experience_id: formData.experienceId,     // TEXT
-                    passengers_count: Number(formData.pax),   // INTEGER (1 - 15)
-                    customer_name: formData.name.trim(),      // TEXT
-                    customer_phone: formData.phone.trim(),    // TEXT
-                    customer_notes: formData.notes.trim() || null,
-                    quoted_amount: formData.quotedPrice,      // NUMERIC NULLABLE
-                    deposit_validated: false,                 // BOOLEAN (Siempre false hasta validación manual admin)
-                    status: 'pending_confirmation',           // ENUM ('pending_confirmation', 'confirmed', 'cancelled', 'completed')
-                    seller_id: null,                          // UUID NULLABLE (Para atribución de vendedores y comisiones)
-                    commission_amount: null,                  // NUMERIC NULLABLE
-                    source_channel: 'web_public',
-                    created_at: new Date().toISOString()
-                };
-            },
-
-            /**
-             * Prepara el envío hacia Supabase (sin simular éxito falso de pago)
-             */
-            async createReservationRequest(payload) {
-                // Cuando se conecte Supabase:
-                // const { data, error } = await supabase.from('reservations').insert([payload]).select();
-                // if (error) throw error;
-                // return data[0];
-
-                // Guardado temporal en sessionStorage para inspección local
-                try {
-                    const existing = JSON.parse(sessionStorage.getItem('zafire_pending_requests') || '[]');
-                    existing.push(payload);
-                    sessionStorage.setItem('zafire_pending_requests', JSON.stringify(existing));
-                } catch (e) {
-                    console.warn('Almacenamiento local no disponible:', e);
-                }
-
-                return { ok: true, record: payload };
-            }
+            config: { supabaseUrl: 'https://mfgqbljtswvuqwluayfj.supabase.co', supabaseAnonKey: 'sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr', isConnected: true },
+            client: null,
+            init() { if (!window.supabase || !window.supabase.createClient) throw new Error('No se pudo cargar Supabase.'); this.client = window.supabase.createClient(this.config.supabaseUrl, this.config.supabaseAnonKey); },
+            async getBlockedDates() { const { data, error } = await this.client.from('blocked_dates').select('blocked_date').eq('is_active', true); if (error) throw error; return (data || []).map(row => row.blocked_date); },
+            buildReservationPayload(formData) { return { folio: 'ZFR-' + Date.now().toString(36).toUpperCase().slice(-6), customer_name: formData.name.trim(), phone: formData.phone.trim(), guests: Number(formData.pax), experience: formData.experienceId, reservation_date: formData.date, time_slot: formData.slotId, notes: formData.notes.trim() || null, status: 'pending', deposit_status: 'pending', deposit_amount: 0, total_amount: formData.quotedPrice, source: 'website' }; },
+            async createReservationRequest(payload) { const { data, error } = await this.client.from('reservation_requests').insert(payload).select().single(); if (error) throw error; return { ok: true, record: data }; }
         };
 
         /**
@@ -1194,11 +1135,7 @@
                     this.hideFeedback();
                 });
 
-                // Toggle inspector de payload Supabase
-                document.getElementById('toggle-payload-btn').addEventListener('click', () => {
-                    const pre = document.getElementById('supabase-payload-preview');
-                    pre.classList.toggle('hidden');
-                });
+
             },
 
             renderCalendar() {
@@ -1330,75 +1267,28 @@
                 const name = document.getElementById('client-name').value.trim();
                 const phone = document.getElementById('client-phone').value.trim();
                 const notes = document.getElementById('client-notes').value.trim();
-
-                if (!this.state.selectedDate) {
-                    this.showFeedback('Por favor selecciona una fecha disponible en el calendario.');
-                    return;
-                }
-                if (!name) {
-                    this.showFeedback('Por favor ingresa tu nombre completo.');
-                    document.getElementById('client-name').focus();
-                    return;
-                }
-                if (!phone || phone.replace(/\D/g, '').length < 8) {
-                    this.showFeedback('Por favor ingresa un número de teléfono o WhatsApp válido.');
-                    document.getElementById('client-phone').focus();
-                    return;
-                }
-
+                if (!this.state.selectedDate) return this.showFeedback('Por favor selecciona una fecha disponible.');
+                if (!name) { this.showFeedback('Por favor ingresa tu nombre completo.'); document.getElementById('client-name').focus(); return; }
+                if (!phone || phone.replace(/\D/g, '').length < 8) { this.showFeedback('Ingresa un teléfono o WhatsApp válido.'); document.getElementById('client-phone').focus(); return; }
                 const slot = SITE_CONFIG.schedules.find(s => s.id === this.state.selectedSlotId);
                 const exp = SITE_CONFIG.experiences.find(e => e.id === this.state.selectedExperienceId);
                 const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
-
-                // Construir payload estructurado para Supabase
-                const payload = SUPABASE_SCHEMA_SERVICE.buildReservationPayload({
-                    date: this.state.selectedDate,
-                    slotId: this.state.selectedSlotId,
-                    experienceId: this.state.selectedExperienceId,
-                    pax: this.state.pax,
-                    name,
-                    phone,
-                    notes,
-                    quotedPrice: activePrice
-                });
-
-                const result = await SUPABASE_SCHEMA_SERVICE.createReservationRequest(payload);
-
-                if (result.ok) {
-                    // Mostrar panel post-solicitud (Sin simular pago ni confirmación automática)
+                const payload = SUPABASE_SCHEMA_SERVICE.buildReservationPayload({ date: this.state.selectedDate, slotId: this.state.selectedSlotId, experienceId: this.state.selectedExperienceId, pax: this.state.pax, name, phone, notes, quotedPrice: activePrice });
+                const submit = document.querySelector('#reservation-form button[type="submit"]');
+                submit.disabled = true; submit.textContent = 'ENVIANDO SOLICITUD…';
+                try {
+                    const result = await SUPABASE_SCHEMA_SERVICE.createReservationRequest(payload);
                     document.getElementById('reservation-form').classList.add('hidden');
-                    const panel = document.getElementById('reservation-submitted-panel');
-                    panel.classList.remove('hidden');
-
-                    document.getElementById('generated-folio').textContent = payload.folio_code;
-                    document.getElementById('submitted-details').innerHTML = `
-                        <p><strong>Titular:</strong> ${payload.customer_name}</p>
-                        <p><strong>Fecha:</strong> ${this.formatReadableDate(payload.reservation_date)}</p>
-                        <p><strong>Turno:</strong> ${slot ? slot.label : payload.schedule_slot_id}</p>
-                        <p><strong>Experiencia:</strong> ${exp ? exp.title : payload.experience_id}</p>
-                        <p><strong>Pasajeros:</strong> ${payload.passengers_count} personas</p>
-                        <p class="text-champagne pt-1"><strong>Estatus:</strong> Pendiente de confirmación y validación de anticipo.</p>
-                    `;
-
-                    // Construir mensaje de WhatsApp prellenado
-                    const waText = encodeURIComponent(
-                        `Hola equipo ZAFIRE, solicito disponibilidad para navegar en Mazatlán:\n\n` +
-                        `• Folio: ${payload.folio_code}\n` +
-                        `• Nombre: ${payload.customer_name}\n` +
-                        `• Fecha: ${this.formatReadableDate(payload.reservation_date)}\n` +
-                        `• Turno: ${slot ? slot.label : ''}\n` +
-                        `• Experiencia: ${exp ? exp.title : ''}\n` +
-                        `• Pasajeros: ${payload.passengers_count}\n` +
-                        (payload.customer_notes ? `• Notas: ${payload.customer_notes}\n` : '') +
-                        `\nQuedo atento a la validación de disponibilidad y anticipo.`
-                    );
-                    document.getElementById('whatsapp-confirm-link').href = `https://wa.me/${SITE_CONFIG.contact.whatsappNumber}?text=${waText}`;
-
-                    // Mostrar JSON preparado para Supabase en inspector
-                    document.getElementById('supabase-payload-preview').textContent = JSON.stringify(payload, null, 2);
-                }
+                    document.getElementById('reservation-submitted-panel').classList.remove('hidden');
+                    document.getElementById('generated-folio').textContent = result.record.folio || payload.folio;
+                    document.getElementById('submitted-details').textContent = 'Titular: ' + name + '\\nFecha: ' + this.formatReadableDate(this.state.selectedDate) + '\\nTurno: ' + (slot ? slot.label : this.state.selectedSlotId) + '\\nExperiencia: ' + (exp ? exp.title : this.state.selectedExperienceId) + '\\nPasajeros: ' + this.state.pax + '\\nEstatus: Pendiente de confirmación y validación de anticipo.';
+                    const waText = encodeURIComponent('Hola equipo ZAFIRE, solicito disponibilidad para navegar en Mazatlán:\\n\\n' + '• Folio: ' + (result.record.folio || payload.folio) + '\\n' + '• Nombre: ' + name + '\\n' + '• Fecha: ' + this.formatReadableDate(this.state.selectedDate) + '\\n' + '• Turno: ' + (slot ? slot.label : this.state.selectedSlotId) + '\\n' + '• Experiencia: ' + (exp ? exp.title : this.state.selectedExperienceId) + '\\n' + '• Pasajeros: ' + this.state.pax + '\\n' + (notes ? '• Notas: ' + notes + '\\n' : '') + '\\nQuedo atento a la validación de disponibilidad y anticipo.');
+                    document.getElementById('whatsapp-confirm-link').href = 'https://wa.me/' + SITE_CONFIG.contact.whatsappNumber + '?text=' + waText;
+                } catch (error) {
+                    console.error('Error al registrar solicitud:', error);
+                    this.showFeedback('No pudimos registrar tu solicitud. Verifica tus datos o contáctanos por WhatsApp. ' + (error.message || ''));
+                } finally { submit.disabled = false; submit.textContent = 'SOLICITAR RESERVACIÓN'; }
             },
-
             setupContactAndFooter() {
                 document.getElementById('current-year').textContent = new Date().getFullYear();
 
@@ -1428,8 +1318,9 @@
         };
 
         // Inicialización al cargar el DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            UI_CONTROLLER.init();
+        document.addEventListener('DOMContentLoaded', async () => {
+            try { SUPABASE_SCHEMA_SERVICE.init(); await UI_CONTROLLER.init(); }
+            catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
         });
     </script>
 </body>
