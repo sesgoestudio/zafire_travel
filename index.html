@@ -866,7 +866,7 @@
                 if (el) el.src = item.public_url;
             });
             const gallery = items.filter(x => x.category === 'gallery' && x.public_url);
-            if (gallery.length) SITE_CONFIG.gallery = gallery.map((x,i) => ({
+            SITE_CONFIG.gallery = gallery.map((x,i) => ({
                 src:x.public_url, caption:x.alt_text || 'ZAFIRE · Mazatlán',
                 spanClass:i%2 ? 'md:col-span-7 h-[360px] md:h-[420px]' : 'md:col-span-5 h-[360px] md:h-[460px]'
             }));
