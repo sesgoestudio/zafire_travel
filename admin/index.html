@@ -63,8 +63,8 @@
 </main></div>
 <script>
 (()=>{
-const URL='https://mfgqbljtswvuqwluayfj.supabase.co',KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
-const db=window.supabase.createClient(URL,KEY),$=id=>document.getElementById(id);
+const SUPABASE_URL='https://mfgqbljtswvuqwluayfj.supabase.co',KEY='sb_publishable_P6p_BOD8gG1oKN2ggOAKpQ_gy5-Aqqr';
+const db=window.supabase.createClient(SUPABASE_URL,KEY),$=id=>document.getElementById(id);
 let session=null,role='seller',isAdmin=false,reservations=[],sellers=[],customers=[],blocked=[],media=[],calendarDate=new Date();
 const money=n=>Number(n||0).toLocaleString('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2});
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -200,11 +200,6 @@ async function loadSiteSettings(){
  const {data,error}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();if(error)throw error;
  $('site-json').value=JSON.stringify(data?.setting_value||{},null,2);
 }
-async function renderMedia(){
- $('media-list').innerHTML=media.map(x=>'<div class="media-item"><img src="'+esc(x.public_url)+'" alt="'+esc(x.alt_text||'')+'"><div class="media-meta"><b>'+esc(x.category)+'</b><div class="mini">'+esc(x.alt_text||'')+'</div><button class="danger small-btn" style="margin-top:8px" data-delete-media="'+x.id+'">Eliminar</button></div></div>').join('')||'<p class="empty">No hay imágenes cargadas.</p>';
- $('media-list').querySelectorAll('[data-delete-media]').forEach(b=>b.addEventListener('click',async()=>{const item=media.find(x=>x.id===b.dataset.deleteMedia);if(!item)return;const {error:se}=await db.storage.from('zafire-media').remove([item.storage_path]);if(se){msg(se.message);return}const {error}=await db.from('site_media').delete().eq('id',item.id);if(error){msg(error.message);return}await loadAll()}));
-}
-function renderMedia(){ $('media-list').innerHTML=media.map(x=>'<div class="media-item"><img src="'+esc(x.public_url)+'" alt="'+esc(x.alt_text||'')+'"><div class="media-meta"><b>'+esc(x.category)+'</b><div class="mini">'+esc(x.alt_text||'')+'</div><button class="danger small-btn" style="margin-top:8px" data-delete-media="'+x.id+'">Eliminar</button></div></div>').join('')||'<p class="empty">No hay imágenes cargadas.</p>'; $('media-list').querySelectorAll('[data-delete-media]').forEach(b=>b.addEventListener('click',async()=>{const item=media.find(x=>x.id===b.dataset.deleteMedia);if(!item)return;const {error:se}=await db.storage.from('zafire-media').remove([item.storage_path]);if(se){msg(se.message);return}const {error}=await db.from('site_media').delete().eq('id',item.id);if(error){msg(error.message);return}await loadAll()}));}
 function exportReservations(){csv('zafire-reservaciones.csv',reservations.map(r=>({folio:r.folio,cliente:r.customer_name,telefono:r.phone,fecha:r.reservation_date,turno:r.time_slot,experiencia:r.experience,personas:r.guests,estado:r.status,total:r.total_amount,anticipo:r.deposit_amount,saldo:r.balance_amount,vendedor:sellers.find(s=>s.user_id===r.seller_id)?.full_name||'',comision:r.commission_amount,comision_estado:r.commission_status})))}
 $('login-form').addEventListener('submit',async e=>{e.preventDefault();$('login-error').textContent='';const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('login-error').textContent=error.message;return}try{if(await access())await loadAll()}catch(err){msg(err.message)}});
 $('logout').addEventListener('click',async()=>{await db.auth.signOut();session=null;showLogin()});
