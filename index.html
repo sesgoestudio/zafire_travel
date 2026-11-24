@@ -1241,11 +1241,11 @@
                 document.getElementById('summary-date').textContent = this.state.selectedDate 
                     ? this.formatReadableDate(this.state.selectedDate) 
                     : 'Selecciona en el calendario';
-                document.getElementById('summary-slot').textContent = slot ? slot.label : '—';
+                document.getElementById('summary-experience').textContent = exp ? exp.title : '—';
                 document.getElementById('summary-pax').textContent = `${this.state.pax} ${this.state.pax === 1 ? 'persona' : 'personas'}`;
 
                 // Cálculo dinámico solo si se configuró precio en SITE_CONFIG
-                const activePrice = (slot && slot.price !== null) ? slot.price : (exp && exp.price !== null ? exp.price : null);
+                const activePrice = (exp && exp.price !== null) ? exp.price : null;
                 document.getElementById('summary-price').textContent = activePrice !== null
                     ? `$${Number(activePrice).toLocaleString('es-MX')} MXN`
                     : 'A definir según configuración';
