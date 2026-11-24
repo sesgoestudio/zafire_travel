@@ -122,9 +122,9 @@
 
         /* Efecto cinematográfico sutil en imagen Hero */
         @keyframes slowZoom {
-            0% { transform: scale(1.0); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1.0); }
+            0% { transform: scale(var(--admin-zoom, 1)); }
+            50% { transform: scale(calc(var(--admin-zoom, 1) * 1.05)); }
+            100% { transform: scale(var(--admin-zoom, 1)); }
         }
         .hero-zoom {
             animation: slowZoom 28s ease-in-out infinite;
@@ -900,10 +900,10 @@
             if (!Array.isArray(items)) return;
             items.filter(x=>x&&x.category&&x.public_url).forEach(item=>{
                 const el=document.querySelector('[data-editable="' + CSS.escape(item.category) + '"]');
-                if(el){el.src=item.public_url;if(item.alt_text)el.alt=item.alt_text;}
+                if(el){el.src=item.public_url;if(item.alt_text)el.alt=item.alt_text;el.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';el.style.setProperty('--admin-zoom',(Number(item.crop_zoom??100)/100).toString());el.style.transform='scale('+(Number(item.crop_zoom??100)/100)+')';}
             });
             const gallery=items.filter(x=>x.category==='gallery'&&x.public_url);
-            SITE_CONFIG.gallery=gallery.map((x,i)=>({src:x.public_url,caption:x.alt_text||'ZAFIRE · Mazatlán',spanClass:i%2?'md:col-span-7 h-[360px] md:h-[420px]':'md:col-span-5 h-[360px] md:h-[460px]'}));
+            SITE_CONFIG.gallery=gallery.map((x,i)=>({src:x.public_url,caption:x.alt_text||'ZAFIRE · Mazatlán',crop_x:x.crop_x??50,crop_y:x.crop_y??50,crop_zoom:x.crop_zoom??100,spanClass:i%2?'md:col-span-7 h-[360px] md:h-[420px]':'md:col-span-5 h-[360px] md:h-[460px]'}));
         }
 
         /**
@@ -1098,6 +1098,7 @@
                             alt="${escapeHTML(item.caption)}" 
                             loading="lazy"
                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                            style="object-position:${item.crop_x??50}% ${item.crop_y??50}%;transform:scale(${Number(item.crop_zoom??100)/100})"
                             onerror="this.src='https://placehold.co/1200x800/081523/EAE5DC?text=ZAFIRE+GALERIA'"
                         >
                         <figcaption class="absolute inset-0 bg-gradient-to-t from-navy-950/75 via-transparent to-transparent opacity-90 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 flex items-end justify-between p-6">

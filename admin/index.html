@@ -29,6 +29,14 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
 .section-content{padding:0 16px 16px;border-top:1px solid var(--line)}
 .image-card{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;padding:16px 0;border-bottom:1px solid #263b4e}
 .image-card:last-child{border-bottom:0}.preview{width:100%;height:116px;object-fit:cover;border-radius:7px;background:#172b3d;border:1px solid var(--line)}
+.crop-tools{display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;margin-top:13px;padding:12px;background:#071522;border:1px solid var(--line);border-radius:8px}
+.crop-control{display:block;margin:0!important;font-size:10px!important;color:#c1cbd4}
+.crop-control input{width:100%;accent-color:var(--gold);display:block;margin-top:7px}
+.crop-value{float:right;color:var(--gold);font-variant-numeric:tabular-nums}
+.crop-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px}
+.crop-reset{background:none;border:0;color:var(--gold);font-size:11px;cursor:pointer;padding:4px 0}
+.crop-tip{font-size:10px;color:var(--muted)}
+@media(max-width:600px){.crop-tools{grid-template-columns:1fr 1fr}.preview{height:190px}}
 .image-title{font-weight:700;margin:1px 0 4px}.image-note{font-size:11px;color:var(--muted)}
 .file-button{display:inline-flex;margin-top:12px;align-items:center;gap:8px;padding:9px 12px;border:1px solid #536477;border-radius:7px;cursor:pointer;font-size:12px}
 .file-button input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
@@ -52,7 +60,7 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   <div class="header-actions"><span id="status" class="status">Cargando…</span><button id="publish" class="btn primary">Publicar imágenes</button><button id="logout" class="btn">Salir</button></div>
  </header>
  <main>
-  <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Fotografías del sitio</h1><p class="muted">Abre cada sección para reemplazar sus imágenes. Los cambios se guardan como borrador y se reflejan en la página al publicarlos.</p></div>
+  <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Fotografías del sitio</h1><p class="muted">Abre cada sección para cambiar la foto y ajustar su encuadre: mueve horizontal/vertical y acerca o aleja con el control de zoom. Los ajustes se guardan automáticamente.</p></div>
   <div id="sections"></div>
   <div class="help">Al reemplazar una fotografía, primero se sube el archivo nuevo. La imagen anterior se conserva hasta que la publicación termine correctamente; después se elimina de Supabase Storage para no acumular archivos.</div>
  </main>
@@ -98,13 +106,43 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   render();setStatus('Borrador listo','ok');
  }
  function imageCard(item,index){
-  return '<article class="image-card"><img class="preview" src="'+escapeHtml(item.public_url)+'" alt="'+escapeHtml(item.alt_text||'')+'" loading="lazy"><div><div class="image-title">'+escapeHtml(labels[item.category]||'Fotografía')+'</div><div class="image-note">Selecciona una imagen nueva para reemplazar esta fotografía.</div><label class="file-button">Cambiar imagen<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-upload="'+index+'"></label></div></article>';
+  const x=Number(item.crop_x??50),y=Number(item.crop_y??50),z=Number(item.crop_zoom??100);
+  return `<article class="image-card">
+   <div style="overflow:hidden;border-radius:7px;height:116px;background:#172b3d">
+    <img class="preview" data-preview="${index}" src="${escapeHtml(item.public_url)}" alt="${escapeHtml(item.alt_text||'')}" loading="lazy" style="height:100%;object-position:${x}% ${y}%;transform:scale(${z/100});transform-origin:center">
+   </div>
+   <div>
+    <div class="image-title">${escapeHtml(labels[item.category]||'Fotografía')}</div>
+    <div class="image-note">Ajusta el encuadre con los controles. Puedes mover la foto y acercarla.</div>
+    <div class="crop-tools">
+     <label class="crop-control">Horizontal <span class="crop-value" data-value="x-${index}">${x}%</span><input type="range" min="0" max="100" value="${x}" data-crop="x" data-index="${index}"></label>
+     <label class="crop-control">Vertical <span class="crop-value" data-value="y-${index}">${y}%</span><input type="range" min="0" max="100" value="${y}" data-crop="y" data-index="${index}"></label>
+     <label class="crop-control" style="grid-column:1/-1">Tamaño / Zoom <span class="crop-value" data-value="z-${index}">${z}%</span><input type="range" min="100" max="180" step="1" value="${z}" data-crop="zoom" data-index="${index}"></label>
+    </div>
+    <div class="crop-actions"><span class="crop-tip">100% = tamaño original</span><button type="button" class="crop-reset" data-reset="${index}">Restablecer encuadre</button></div>
+    <label class="file-button">Cambiar imagen<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-upload="${index}"></label>
+   </div>
+  </article>`;
  }
  function render(){
   $('sections').innerHTML=groups.map((g,i)=>{
    const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
    return '<details '+(i===0?'open':'')+'><summary><span>'+g.title+'</span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+'</div></details>';
   }).join('');
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
+   const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
+   item[key==='zoom'?'crop_zoom':key==='x'?'crop_x':'crop_y']=value;
+   const img=$('sections').querySelector('[data-preview="'+index+'"]');
+   if(img){img.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';img.style.transform='scale('+(item.crop_zoom??100)/100+')';}
+   const valueEl=$('sections').querySelector('[data-value="'+(key==='zoom'?'z':key)+'-'+index+'"]');if(valueEl)valueEl.textContent=value+'%';
+  }));
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('change',async()=>{
+   try{await saveDraft();setStatus('Ajuste guardado','ok');}catch(e){setStatus('No se pudo guardar el ajuste: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-reset]').forEach(el=>el.addEventListener('click',async()=>{
+   const index=Number(el.dataset.reset),item=draft.media[index];item.crop_x=50;item.crop_y=50;item.crop_zoom=100;
+   try{await saveDraft();render();setStatus('Encuadre restablecido','ok');}catch(e){setStatus('No se pudo guardar: '+e.message,'bad');}
+  }));
   $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
    const file=el.files?.[0];if(!file)return;
    const index=Number(el.dataset.upload);el.disabled=true;
