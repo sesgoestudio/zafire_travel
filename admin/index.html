@@ -80,7 +80,6 @@ $('logout').addEventListener('click',async()=>{await db.auth.signOut();showLogin
 $('refresh').addEventListener('click',async()=>{try{await refresh()}catch(e){message('app-error',e.message)}});
 $('block-form').addEventListener('submit',async e=>{e.preventDefault();try{const {error}=await db.from('blocked_dates').insert({blocked_date:$('block-date').value,reason:$('block-reason').value.trim()||null,is_active:true});if(error)throw error;$('block-form').reset();await loadBlocked();message('app-error','')}catch(err){message('app-error','No se pudo bloquear la fecha: '+err.message)}});
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));$('reservations-panel').classList.toggle('hidden',btn.dataset.tab!=='reservations');$('availability-panel').classList.toggle('hidden',btn.dataset.tab!=='availability')}));
-db.auth.onAuthStateChange(async(_event,session)=>{if(session){try{if(await requireAdmin())await refresh()}catch(e){message('app-error',e.message)}}else showLogin()});
 requireAdmin().then(ok=>ok&&refresh()).catch(e=>message('app-error',e.message));
 })();
 </script>
