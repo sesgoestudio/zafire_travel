@@ -1092,6 +1092,12 @@
                         this.state.selectedExperienceId = expId;
                         const selectEl = document.getElementById('booking-experience');
                         if (selectEl) selectEl.value = expId;
+                        const requiredSlot=this.getRequiredSlot();
+                        if(requiredSlot){
+                            const available=this.state.availability.some(x=>x.reservation_date===this.state.selectedDate&&x.time_slot===requiredSlot&&x.is_available);
+                            this.state.selectedSlot=available?requiredSlot:null;
+                        }
+                        this.renderSlotChoices();
                         this.updateBookingSummary();
                         document.getElementById('reservaciones').scrollIntoView({ behavior: 'smooth' });
                     });
@@ -1191,6 +1197,15 @@
                 `).join('');
                 expSelect.addEventListener('change', (e) => {
                     this.state.selectedExperienceId = e.target.value;
+                    const requiredSlot=this.getRequiredSlot();
+                    if(requiredSlot){
+                        const available=this.state.availability.some(x=>x.reservation_date===this.state.selectedDate&&x.time_slot===requiredSlot&&x.is_available);
+                        this.state.selectedSlot=available?requiredSlot:null;
+                    }else if(this.state.selectedSlot){
+                        const available=this.state.availability.some(x=>x.reservation_date===this.state.selectedDate&&x.time_slot===this.state.selectedSlot&&x.is_available);
+                        if(!available)this.state.selectedSlot=null;
+                    }
+                    this.renderSlotChoices();
                     this.updateBookingSummary();
                 });
 
@@ -1296,6 +1311,12 @@
                 this.renderSlotChoices();
             },
 
+            getRequiredSlot(){
+                if(this.state.selectedExperienceId==='excursion-matutina')return 'morning';
+                if(this.state.selectedExperienceId==='excursion-vespertina')return 'afternoon';
+                return null;
+            },
+
             renderSlotChoices(){
                 const box=document.getElementById('calendar-slot-choices');
                 if(!box)return;
@@ -1306,14 +1327,18 @@
                     const row=slots.find(x=>x.time_slot===slot);
                     const btn=box.querySelector('[data-slot="'+slot+'"]');
                     const state=box.querySelector('[data-slot-state="'+slot+'"]');
+                    const requiredSlot=this.getRequiredSlot();
                     const available=!!row?.is_available,selected=this.state.selectedSlot===slot;
-                    btn.disabled=!available;
+                    const wrongExperienceSlot=!!requiredSlot&&requiredSlot!==slot;
+                    btn.disabled=!available||wrongExperienceSlot;
                     btn.className='slot-choice rounded-sm border p-4 text-left transition-colors '+(selected?'border-navy-900 bg-navy-900 text-warmwhite':available?'border-navy-900/20 hover:border-navy-900 text-navy-900':'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed');
                     state.textContent=available?(selected?'Seleccionado':'Disponible'):'No disponible';
                     state.className='block text-[10px] mt-2 '+(available?(selected?'text-champagne':'text-emerald-700'):'text-gray-400');
                 });
                 box.querySelectorAll('[data-slot]').forEach(btn=>btn.onclick=()=>{
                     if(btn.disabled)return;
+                    const requiredSlot=this.getRequiredSlot();
+                    if(requiredSlot&&btn.dataset.slot!==requiredSlot)return;
                     this.state.selectedSlot=btn.dataset.slot;
                     this.renderSlotChoices();this.updateBookingSummary();this.hideFeedback();
                 });
