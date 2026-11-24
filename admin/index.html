@@ -122,7 +122,7 @@ const contentFields=[
 {section:'ubicacion',key:'location_weather_note',label:'Aviso operativo',area:true},
 {section:'ubicacion',key:'footer_description',label:'Texto del pie de página',area:true}
 ];
-const tabs=[['portada','Portada'],['embarcacion','Embarcación'],['experiencias','Experiencias'],['galeria','Galería e imágenes'],['reservaciones','Reservaciones'],['ubicacion','Ubicación y contacto']];
+const tabs=[['portada','Portada'],['embarcacion','Embarcación'],['experiencias','Experiencias'],['galeria','Galería e imágenes'],['reservaciones','Reservaciones'],['ubicacion','Ubicación'],['contacto','Contacto y redes']];
 function status(message,kind){$('save-status').textContent=message;$('save-status').className='status '+(kind||'');}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function defaultMedia(){
@@ -138,7 +138,7 @@ return [
 function preview(){
 const frame=$('preview-frame');
 if(!frame.contentWindow)return;
-frame.contentWindow.postMessage({type:'zafire-admin-preview',content:draft.content||{},experiences:draft.experiences||[],media:draft.media||[]},location.origin);
+frame.contentWindow.postMessage({type:'zafire-admin-preview',content:draft.content||{},experiences:draft.experiences||[],media:draft.media||[],contact:draft.contact||{}},location.origin);
 }
 function queueSave(){
 status('Cambios sin guardar','bad');
@@ -160,9 +160,14 @@ finally{saving=false;}
 async function publish(){
 const b=$('publish-btn');b.disabled=true;
 try{
+if((draft.media||[]).some(x=>!x.public_url||!x.storage_path))throw new Error('Hay una fotografía nueva sin subir. Súbela antes de publicar.');
+const {data:oldPublic}=await supabase.from('site_settings').select('setting_value').eq('setting_key','public').single();
 await saveDraft(false);
 const {error}=await supabase.from('site_settings').update({setting_value:draft,is_public:true,updated_by:currentUser.id,updated_at:new Date().toISOString()}).eq('setting_key','public');
 if(error)throw error;
+const keep=new Set((draft.media||[]).map(x=>x.storage_path).filter(x=>x&&!x.startsWith('external:')));
+const oldPaths=(oldPublic?.setting_value?.media||[]).map(x=>x.storage_path).filter(x=>x&&!x.startsWith('external:')&&!keep.has(x));
+if(oldPaths.length){const {error:removeError}=await supabase.storage.from(BUCKET).remove(oldPaths);if(removeError)console.warn('No se pudieron limpiar algunos archivos anteriores:',removeError.message);}
 status('Cambios publicados','ok');
 }catch(e){status('Error al publicar: '+e.message,'bad');}
 finally{b.disabled=false;}
