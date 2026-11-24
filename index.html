@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ZAFIRE: solicitar siempre la versión actual del documento y no almacenar respuestas dinámicas -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <!-- SEO & Metadatos para Redes Sociales -->
     <title>ZAFIRE | Navega. Descubre. Vive el mar — Mazatlán, Sinaloa</title>
@@ -684,6 +688,7 @@
                 <p class="tracking-wider">
                     Arquitectura y diseño digital por <span class="text-sand/90 font-medium">SESGO Estudio</span>
                 </p>
+                <a href="admin/" class="tracking-wider hover:text-champagne transition-colors" aria-label="Acceso privado al administrador">Acceso privado</a>
             </div>
         </div>
     </footer>
@@ -915,7 +920,9 @@
             client: null,
             async init() {
                 if (!window.supabase?.createClient) throw new Error('No se pudo cargar Supabase.');
-                this.client = window.supabase.createClient(this.config.supabaseUrl,this.config.supabaseAnonKey);
+                this.client = window.supabase.createClient(this.config.supabaseUrl,this.config.supabaseAnonKey,{
+                    global:{fetch:(input,init={})=>fetch(input,{...init,cache:'no-store'})}
+                });
                 await this.loadPublicSettings();
                 await this.loadSiteMedia();
             },
