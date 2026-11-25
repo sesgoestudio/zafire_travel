@@ -1166,6 +1166,62 @@
         }
     </style>
 
+
+    <!-- ZAFIRE — logotipo protagonista y contenido unido -->
+    <style id="zafire-hero-logo-focus">
+        #inicio > div.relative.z-10 > .inline-flex {
+            margin-bottom: .2rem !important;
+        }
+        #inicio .zafire-hero-logo-heading {
+            display: block;
+            width: 100%;
+            margin: 0 auto .1rem !important;
+            line-height: 0;
+        }
+        #inicio .zafire-hero-logo {
+            display: block;
+            width: clamp(620px, 82vw, 1120px) !important;
+            max-width: 100%;
+            max-height: none !important;
+            height: auto;
+            margin-inline: auto;
+            object-fit: contain;
+        }
+        #inicio [data-cms-key="hero_tagline"] {
+            margin-top: 0 !important;
+            margin-bottom: .55rem !important;
+            line-height: 1.08;
+        }
+        #inicio [data-cms-key="hero_description"] {
+            margin-top: 0 !important;
+            margin-bottom: 1.1rem !important;
+            line-height: 1.48;
+        }
+        @media (min-width: 768px) {
+            #inicio > div.relative.z-10 {
+                max-width: 84rem;
+            }
+            #inicio .zafire-hero-logo-heading { margin-bottom: 0 !important; }
+            #inicio [data-cms-key="hero_tagline"] { font-size: clamp(1.55rem, 2.5vw, 2.25rem); }
+        }
+        @media (max-width: 767px) {
+            #inicio > div.relative.z-10 > .inline-flex { margin-bottom: .15rem !important; }
+            #inicio .zafire-hero-logo {
+                width: min(94vw, 520px) !important;
+                max-height: none !important;
+            }
+            #inicio .zafire-hero-logo-heading { margin-bottom: .05rem !important; }
+            #inicio [data-cms-key="hero_tagline"] {
+                margin-bottom: .5rem !important;
+                font-size: clamp(1.15rem, 5.3vw, 1.45rem);
+            }
+            #inicio [data-cms-key="hero_description"] {
+                margin-bottom: .9rem !important;
+                max-width: 23rem;
+            }
+        }
+    </style>
+
 </head>
 <body class="selection:bg-navy-900 selection:text-warmwhite">
 
