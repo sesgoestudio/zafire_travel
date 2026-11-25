@@ -247,7 +247,8 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  }
  function render(){
   const priceField=$('vessel-price');
-  if(priceField){priceField.value=String(draft.content?.vessel_price||'Desde $5,000').replace(/[^0-9]/g,'')||'5000';priceField.onchange=async()=>{draft.content=draft.content||{};const amount=Math.max(0,Number(priceField.value)||0);draft.content.vessel_price='Desde 
+  if(priceField){priceField.value=String(draft.content?.vessel_price||'Desde $5,000').replace(/[^0-9]/g,'')||'5000';priceField.onchange=async()=>{draft.content=draft.content||{};const amount=Math.max(0,Number(priceField.value)||0);draft.content.vessel_price='Desde '+String.fromCharCode(36)+amount.toLocaleString('en-US');try{await saveDraft();setStatus('Precio guardado en borrador','ok');}catch(e){setStatus('No se pudo guardar el precio: '+e.message,'bad');}};}
+  $('sections').innerHTML=groups.map((g,i)=>{
    const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
    const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
    return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
