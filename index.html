@@ -577,6 +577,108 @@
             .reveal,.reveal-child,.section-rule { opacity:1; transform:none; transition:none; }
             .scroll-image img,.btn-luxury::after { transition:none; }
         }
+
+        /* ZAFIRE — correcciones de contraste y estados accesibles (WCAG AA) */
+        :root {
+            --zafire-text-muted-light: #62586F;
+            --zafire-text-muted-dark: #D0C8DC;
+            --zafire-disabled-text: #625B6B;
+            --zafire-focus-ring: #087F8C;
+        }
+
+        /* Sección oscura de Experiencias: evitar morado sobre navy */
+        #experiencias h2,
+        #experiencias .type-section-title { color:#FFFFFF; }
+        #experiencias .text-champagne,
+        #experiencias .type-tech-label.text-champagne { color:#FDB813; }
+        #experiencias .text-silver { color:#D0C8DC; }
+
+        /* Ubicación: el turquesa claro no se usa como texto sobre blanco */
+        #ubicacion [data-cms-key="location_eyebrow"] { color:#FDB813; }
+        #ubicacion h2,#ubicacion h3,#ubicacion p,#ubicacion a { color:#FFFFFF; }
+        #ubicacion #direct-whatsapp-btn,
+        #ubicacion #direct-whatsapp-btn:hover { color:#1A1A1A; background:var(--zafire-sunset-gradient); }
+        #ubicacion #direct-whatsapp-btn svg { color:#350B75; }
+
+        /* Navbar: CTAs con contraste alto tanto antes como después del scroll */
+        #main-navbar a[data-cms-key="nav_cta"] {
+            color:#1A1A1A; background:var(--zafire-sunset-gradient); border:0;
+        }
+        #main-navbar a[data-cms-key="nav_cta"]:hover { color:#1A1A1A; filter:brightness(1.05); }
+        #main-navbar a:focus-visible,
+        #main-navbar button:focus-visible,
+        #reservaciones button:focus-visible,
+        #reservaciones a:focus-visible,
+        #booking-workspace input:focus-visible,
+        #booking-workspace select:focus-visible,
+        #booking-workspace textarea:focus-visible {
+            outline:3px solid #087F8C; outline-offset:3px;
+        }
+
+        /* Panel claro del calendario y selector: etiquetas secundarias legibles */
+        #booking-workspace > div:first-child .text-silver,
+        #booking-workspace > div:first-child .type-tech-label.text-silver,
+        #booking-workspace > div:first-child .type-tech-label.text-champagne {
+            color:#62586F;
+        }
+        #booking-workspace > div:first-child .text-champagne,
+        #booking-workspace > div:first-child [class*="text-champagne"] { color:#4A149C; }
+        #calendar-days-grid button:disabled {
+            color:#625B6B !important; background:#EEEAF2 !important;
+            opacity:1; text-decoration:line-through;
+        }
+        #calendar-days-grid .cal-day-btn { color:#1A1A1A; }
+        #calendar-days-grid .cal-day-btn:hover { border-color:#4A149C; }
+        #calendar-slot-choices .slot-choice:not(:disabled) { color:#1A1A1A; background:#FFFFFF; }
+        #calendar-slot-choices .slot-choice:disabled {
+            color:#625B6B; background:#EEEAF2; border-color:#D7D1DE;
+            opacity:1;
+        }
+        #calendar-slot-choices .slot-choice:disabled [data-slot-state] { color:#625B6B; }
+        #calendar-slot-choices .slot-choice[aria-pressed="true"],
+        #calendar-slot-choices .slot-choice.selected {
+            color:#FFFFFF; background:#350B75; border-color:#350B75;
+        }
+        #calendar-slot-choices .slot-choice[aria-pressed="true"] [data-slot-state],
+        #calendar-slot-choices .slot-choice.selected [data-slot-state] { color:#FDB813; }
+
+        /* Panel oscuro de datos: champagne claro sobre navy, nunca morado oscuro */
+        #booking-workspace > div:nth-child(2) { color:#F8F7F4; background-color:#081523; }
+        #booking-workspace > div:nth-child(2) .text-champagne,
+        #booking-workspace > div:nth-child(2) [class*="text-champagne"] { color:#FDB813; }
+        #booking-workspace > div:nth-child(2) .text-silver,
+        #booking-workspace > div:nth-child(2) [class*="text-silver"] { color:#D0C8DC; }
+        #booking-workspace > div:nth-child(2) .text-sand,
+        #booking-workspace > div:nth-child(2) [class*="text-sand"] { color:#F8F7F4; }
+        #booking-workspace > div:nth-child(2) input,
+        #booking-workspace > div:nth-child(2) select,
+        #booking-workspace > div:nth-child(2) textarea {
+            color:#FFFFFF; caret-color:#FDB813;
+        }
+        #booking-workspace > div:nth-child(2) input::placeholder,
+        #booking-workspace > div:nth-child(2) textarea::placeholder { color:#C6BED1; opacity:1; }
+        #booking-workspace > div:nth-child(2) .btn-luxury,
+        #booking-workspace > div:nth-child(2) button[type="submit"] {
+            color:#1A1A1A; background:var(--zafire-sunset-gradient);
+        }
+        #booking-workspace > div:nth-child(2) #reservation-submitted-panel .text-champagne,
+        #booking-workspace > div:nth-child(2) #reservation-submitted-panel [class*="text-champagne"] { color:#FDB813; }
+
+        /* Resumen de estado: morado sobre claro; dorado sobre oscuro */
+        #reservaciones > div > .max-w-2xl .text-silver { color:#62586F; }
+        #reservaciones #form-feedback { color:#1A1A1A; }
+        #reservaciones .text-emerald-700 { color:#067647; }
+        #reservaciones .text-gray-400 { color:#625B6B; }
+
+        /* Enlaces y textos del footer: secundarios con contraste AA sobre navy */
+        footer .text-silver,
+        footer .text-silver\/90 { color:#D0C8DC; }
+        footer a:hover { color:#FFFFFF; }
+
+        @media (max-width:767px) {
+            #calendar-days-grid button:disabled { color:#625B6B !important; }
+            #calendar-slot-choices .slot-choice { min-height:6rem; }
+        }
     </style>
 
 </head>
