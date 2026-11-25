@@ -72,7 +72,12 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  .reservation-actions .btn-confirm{background:#c5aa78;color:#101b24;border:0}.reservation-actions .btn-cancel{background:transparent;border:1px solid #754747;color:#efb6b6}.reservation-actions .btn-delete{background:#4a2529;border:1px solid #8a454b;color:#ffd6d6}
  .reservation-actions a{font-size:11px;color:var(--gold);text-decoration:underline}
  @media(max-width:600px){.reservations-panel{padding:15px}.reservation-data{grid-template-columns:1fr 1fr}.reservation-actions input{width:100%}}
-.manual-booking{margin:18px 0 20px;padding:17px;border:1px solid #3a5368;border-radius:10px;background:#0a1926}
+.manual-booking-disclosure{margin:18px 0 20px;border:1px solid #3a5368;border-radius:10px;background:#0a1926;overflow:hidden}
+.manual-booking-disclosure>summary{padding:15px 17px;min-height:58px}
+.manual-booking-disclosure>summary span:first-child{display:grid;gap:2px}
+.manual-booking-disclosure>summary small{font-size:11px;font-weight:400;color:var(--muted)}
+.manual-booking{margin:0;padding:0 17px 17px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+.manual-booking h3{padding-top:14px}
 .manual-booking h3{font:500 19px Georgia,serif;margin:3px 0 5px}
 .manual-booking-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}
 .manual-booking label{margin:10px 0 6px}
@@ -112,6 +117,8 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Panel de administración</h1><p class="muted">Gestiona las solicitudes de reservación, registra anticipos, confirma horarios y administra las fotografías del sitio.</p></div>
   <section class="reservations-panel">
    <div class="reservations-head"><div><div class="eyebrow">Operación diaria</div><h2>Reservaciones</h2><p class="muted">Solicitudes del sitio, anticipos y confirmación de horarios.</p></div><button id="refresh-reservations" class="btn">Actualizar</button></div>
+   <details class="manual-booking-disclosure">
+    <summary><span>Agregar reservación manual<small>Registro interno · Se valida disponibilidad antes de guardar</small></span></summary>
    <form id="manual-booking-form" class="manual-booking">
      <div class="eyebrow">Registro interno</div>
      <h3>Agregar reservación manual</h3>
@@ -120,7 +127,7 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
       <div><label for="manual-name">Nombre del titular *</label><input id="manual-name" required maxlength="120" autocomplete="name" placeholder="Nombre completo"></div>
       <div><label for="manual-phone">Teléfono *</label><input id="manual-phone" required maxlength="30" type="tel" inputmode="tel" autocomplete="tel" placeholder="Número de contacto"></div>
       <div><label for="manual-date">Fecha *</label><input id="manual-date" required type="date"></div>
-      <div><label for="manual-slot">Horario *</label><select id="manual-slot" required><option value="morning">Mañana</option><option value="afternoon">Tarde</option></select></div>
+      <div><label for="manual-slot">Horario *</label><select id="manual-slot" required><option value="morning">Mañana</option><option value="afternoon">Tarde</option></select><p id="manual-slot-feedback" class="manual-booking-hint" role="status" aria-live="polite">Selecciona una fecha para consultar disponibilidad.</p></div>
       <div><label for="manual-experience">Experiencia *</label><input id="manual-experience" required maxlength="160" placeholder="Ej. Paseo por la bahía"></div>
       <div><label for="manual-guests">Pasajeros *</label><input id="manual-guests" required type="number" min="1" max="15" step="1" value="2" inputmode="numeric"></div>
       <div><label for="manual-total">Total acordado (MXN)</label><input id="manual-total" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Opcional"></div>
@@ -129,6 +136,7 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
      <label for="manual-notes">Notas</label><textarea id="manual-notes" maxlength="1000" placeholder="Detalles del cliente o acuerdo"></textarea>
      <div class="manual-booking-actions"><button class="btn primary" id="manual-booking-submit" type="submit">Guardar y bloquear horario</button><span class="manual-booking-hint">Se registrará como confirmada. Si ya hay una reservación o bloqueo, el sistema no permitirá duplicarla.</span></div>
     </form>
+   </details>
     <div class="reservation-filters"><label for="reservation-filter">Mostrar</label><select id="reservation-filter"><option value="all">Todas</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></div>
    <div id="reservation-list" class="reservation-list"><p class="muted">Cargando solicitudes…</p></div>
   </section>
@@ -380,12 +388,38 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   finally{$('login-btn').disabled=false;}
  });
  $('manual-date').min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+ async function refreshManualSlotAvailability(){
+  const date=$('manual-date').value,select=$('manual-slot'),feedback=$('manual-slot-feedback'),submit=$('manual-booking-submit');
+  if(!date){select.querySelectorAll('option').forEach(o=>o.disabled=false);feedback.textContent='Selecciona una fecha para consultar disponibilidad.';return;}
+  select.disabled=true;submit.disabled=true;feedback.textContent='Consultando disponibilidad…';
+  try{
+   const {data,error}=await db.rpc('zafire_get_slot_availability',{p_start:date,p_end:date});
+   if(error)throw error;
+   const rows=Array.isArray(data)?data:[];
+   const available={morning:!!rows.find(x=>x.time_slot==='morning'&&x.is_available),afternoon:!!rows.find(x=>x.time_slot==='afternoon'&&x.is_available)};
+   for(const option of select.options)option.disabled=!available[option.value];
+   if(!available[select.value])select.value=available.morning?'morning':(available.afternoon?'afternoon':'');
+   if(!available.morning&&!available.afternoon){
+    feedback.textContent='Esta fecha ya no tiene horarios disponibles. Elige otro día.';
+    feedback.style.color='#ffb5a9';
+   }else{
+    feedback.textContent='Disponibilidad: '+(available.morning?'Mañana':'')+(available.morning&&available.afternoon?' y ':'')+(available.afternoon?'Tarde':'')+'. Los horarios ocupados están deshabilitados.';
+    feedback.style.color='var(--muted)';
+   }
+  }catch(err){
+   select.querySelectorAll('option').forEach(o=>o.disabled=true);
+   feedback.textContent='No se pudo comprobar la disponibilidad. Actualiza e intenta de nuevo.';
+   feedback.style.color='#ffb5a9';
+  }finally{select.disabled=false;submit.disabled=false;}
+ }
+ $('manual-date').addEventListener('change',refreshManualSlotAvailability);
  $('manual-booking-form').addEventListener('submit',async e=>{
   e.preventDefault();
   if(busy)return;
   const button=$('manual-booking-submit'),totalRaw=$('manual-total').value.trim(),depositRaw=$('manual-deposit').value.trim();
   const payload={p_customer_name:$('manual-name').value.trim(),p_phone:$('manual-phone').value.trim(),p_guests:Number($('manual-guests').value),p_experience:$('manual-experience').value.trim(),p_reservation_date:$('manual-date').value,p_time_slot:$('manual-slot').value,p_total_amount:totalRaw===''?null:Number(totalRaw),p_deposit_amount:depositRaw===''?0:Number(depositRaw),p_notes:$('manual-notes').value.trim()||null};
   if(!payload.p_reservation_date){alert('Selecciona la fecha de la reservación.');return;}
+  if($('manual-slot').selectedOptions[0]?.disabled){alert('Ese horario no está disponible. Elige una fecha u horario disponible.');return;}
   if(payload.p_total_amount!==null&&(!Number.isFinite(payload.p_total_amount)||payload.p_total_amount<0)){alert('Revisa el total acordado.');return;}
   if(!Number.isFinite(payload.p_deposit_amount)||payload.p_deposit_amount<0){alert('Revisa el anticipo recibido.');return;}
   if(payload.p_total_amount!==null&&payload.p_deposit_amount>payload.p_total_amount&&!confirm('El anticipo es mayor que el total acordado. ¿Deseas continuar?'))return;

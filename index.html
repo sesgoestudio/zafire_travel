@@ -1574,7 +1574,7 @@
                     const anyAvailable=rows.some(x=>x.is_available);
                     const isPast=dateObj<today, selected=this.state.selectedDate===isoDate;
                     if(isPast||!anyAvailable){
-                        html+=`<button type="button" disabled class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed">${day}</button>`;
+                        html+=`<button type="button" disabled aria-label="Día ${day}: no disponible" title="No disponible" class="h-11 w-full rounded-sm text-xs text-silver/40 bg-gray-100/70 cursor-not-allowed line-through">${day}</button>`;
                     }else{
                         html+=`<button type="button" data-date="${isoDate}" class="cal-day-btn h-11 w-full rounded-sm text-xs ${selected?'font-semibold bg-navy-900 text-warmwhite shadow-sm':'font-medium text-navy-900 bg-sand/50 hover:bg-champagne/40 border border-transparent hover:border-navy-900/20'} transition-all">${day}</button>`;
                     }
