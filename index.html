@@ -190,16 +190,37 @@
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .hero-brand-subtitle {
-            display: block;
-            margin: .15rem 0 1.35rem;
-            color: #c6a972;
-            font-family: inherit;
-            font-size: clamp(.72rem, 1.5vw, .95rem);
-            font-weight: 500;
-            letter-spacing: .48em;
-            line-height: 1.2;
-            text-indent: .48em;
+        .zafire-header-monogram {
+            display:block;
+            width:56px;
+            height:56px;
+            object-fit:contain;
+            flex:0 0 auto;
+        }
+        .zafire-hero-logo-heading {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            width:100%;
+            margin:0 auto 1.35rem;
+        }
+        .zafire-hero-logo {
+            display:block;
+            width:clamp(260px, 48vw, 620px);
+            max-width:100%;
+            max-height:clamp(110px, 20vw, 230px);
+            height:auto;
+            object-fit:contain;
+            object-position:center;
+            filter:drop-shadow(0 4px 24px rgba(0,0,0,.18));
+        }
+        @media (max-width: 767px) {
+            .zafire-header-monogram { width:44px; height:44px; }
+            .zafire-hero-logo-heading { margin-bottom:1.1rem; }
+            .zafire-hero-logo {
+                width:min(88vw, 440px);
+                max-height:clamp(105px, 31vw, 170px);
+            }
         }
         @media (max-width: 767px) {
             #inicio .hero-brand-subtitle {
@@ -397,8 +418,7 @@
 
             #embarcacion, #experiencias, #galeria, #reservaciones, #ubicacion {
                 scroll-margin-top: 5rem;
-                padding-top: 4.4rem;
-                padding-bottom: 4.4rem;
+                padding-top: 4.4rem;                padding-bottom: 4.4rem;
             }
             #embarcacion > div, #experiencias > div, #galeria > div,
             #reservaciones > div, #ubicacion > div { max-width: 100%; }
@@ -797,8 +817,7 @@
             gap:1rem;
         }
         #reservaciones #booking-workspace > div:first-child > div:first-child > div:first-child .type-tech-label {
-            display:inline-block;
-            color:#FFD27A !important;
+            display:inline-block;            color:#FFD27A !important;
             font-weight:700;
             letter-spacing:.14em;
         }
@@ -1056,13 +1075,18 @@
     ====================================================================== -->
     <header id="main-navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-5 px-6 md:px-12 text-warmwhite">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <!-- Marca / Monograma Náutico -->
-            <a href="#inicio" class="flex items-center gap-3 group focus:outline-none">
-                <span class="w-2 h-2 rounded-full bg-zafireblue transition-transform duration-500 group-hover:scale-125"></span>
-                <div class="flex flex-col">
-                    <span class="font-display text-xl md:text-2xl tracking-[0.14em] font-semibold leading-none">ZAFIRE</span>
-                    <span class="type-tech-label text-[9px] text-silver/90 mt-1 tracking-[0.28em]">TRAVEL</span>
-                </div>
+            <!-- Monograma oficial ZAFIRE -->
+            <a href="#inicio" class="zafire-header-brand flex items-center group focus:outline-none" aria-label="ZAFIRE Travel — Inicio">
+                <img
+                    src="https://mfgqbljtswvuqwluayfj.supabase.co/storage/v1/object/public/branding/zafire-monograma.png"
+                    alt="Monograma ZAFIRE"
+                    class="zafire-header-monogram"
+                    width="56"
+                    height="56"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                >
             </a>
 
             <!-- Navegación Desktop -->
@@ -1138,10 +1162,18 @@
                 <span class="h-[1px] w-8 bg-champagne/80"></span>
             </div>
 
-            <h1 data-cms-key="hero_title" class="type-hero-title text-warmwhite mb-0">
-                ZAFIRE
+            <h1 class="zafire-hero-logo-heading mb-0" aria-label="ZAFIRE Travel">
+                <img
+                    src="https://mfgqbljtswvuqwluayfj.supabase.co/storage/v1/object/public/branding/zafire-logo-completo.png"
+                    alt="ZAFIRE Travel"
+                    class="zafire-hero-logo"
+                    width="720"
+                    height="260"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                >
             </h1>
-            <span class="hero-brand-subtitle" aria-label="Travel">TRAVEL</span>
 
             <p data-cms-key="hero_tagline" class="font-display text-xl sm:text-2xl md:text-3xl text-sand font-medium tracking-tightdisplay mb-5">
                 Navega. Descubre. Vive el mar.
@@ -1198,7 +1230,6 @@
                             <div class="flex items-center gap-3 border-b border-navy-900/10 pb-3"><span class="text-champagne">—</span> 2 hieleras</div>
                         </div>
                     </div>
-
                     <div class="rounded-sm bg-sand/45 px-6 py-6 mb-8">
                         <span class="type-tech-label text-[10px] tracking-[.18em] text-silver">Renta de ZAFIRE</span>
                         <div class="mt-1 text-5xl sm:text-6xl md:text-7xl font-normal tracking-[-0.045em] text-navy-900" data-cms-key="vessel_price">Desde $5,000</div>
@@ -1597,7 +1628,6 @@
             </div>
         </div>
     </footer>
-
     <!-- =====================================================================
          VISOR LIGHTBOX A PANTALLA COMPLETA
     ====================================================================== -->
@@ -1997,8 +2027,7 @@
                     <figure 
                         data-gallery-idx="${idx}"
                         class="gallery-item relative min-w-[82vw] sm:min-w-[60vw] md:min-w-0 snap-center overflow-hidden rounded-sm bg-sand/40 cursor-pointer group ${escapeHTML(item.spanClass)}"
-                    >
-                        <img 
+                    >                        <img 
                             src="${escapeHTML(item.src)}" 
                             alt="${escapeHTML(item.caption)}" 
                             loading="lazy"
@@ -2397,30 +2426,3 @@
                 document.querySelectorAll('.reveal,.reveal-child,.section-rule').forEach(el => observer.observe(el));
             }
         };
-
-        window.addEventListener('message', event => {
-            if(event.source!==window.parent||event.origin!==window.location.origin)return;
-            const payload=event.data||{};
-            if(payload.type!=='zafire-admin-preview')return;
-            if(payload.content){Object.assign(SITE_CONFIG.content,payload.content);applySiteContent(SITE_CONFIG.content);}
-            if(payload.brand){Object.assign(SITE_CONFIG.brand,payload.brand);const label=document.getElementById('booking-capacity-label');if(label)label.textContent='Capacidad Máx. '+SITE_CONFIG.brand.maxCapacity;}
-            if(Array.isArray(payload.experiences)){
-                SITE_CONFIG.experiences=payload.experiences;
-                if(typeof UI_CONTROLLER!=='undefined'){
-                    UI_CONTROLLER.renderExperiences();
-                    const select=document.getElementById('booking-experience');
-                    if(select){const previous=select.value;select.innerHTML=SITE_CONFIG.experiences.map(exp=>'<option value="'+escapeHTML(exp.id)+'">'+escapeHTML(exp.title)+'</option>').join('');select.value=SITE_CONFIG.experiences.some(x=>x.id===previous)?previous:(SITE_CONFIG.experiences[0]?.id||'');UI_CONTROLLER.state.selectedExperienceId=select.value;UI_CONTROLLER.updateBookingSummary();}
-                }
-            }
-            if(Array.isArray(payload.media)){SITE_CONFIG.media=payload.media;applySiteMedia(payload.media);if(typeof UI_CONTROLLER!=='undefined')UI_CONTROLLER.renderGallery();}
-            if(payload.contact){Object.assign(SITE_CONFIG.contact,payload.contact);if(typeof UI_CONTROLLER!=='undefined')UI_CONTROLLER.setupContactAndFooter();}
-        });
-
-        // Inicialización al cargar el DOM
-        document.addEventListener('DOMContentLoaded', async () => {
-            try { await UI_CONTROLLER.init(); }
-            catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
-        });
-    </script>
-</body>
-</html>
