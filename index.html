@@ -65,6 +65,23 @@
     </script>
 
     <style>
+
+        :root {
+            --zafire-paper: #FFFFFF;
+            --zafire-soft: #F8F9FA;
+            --zafire-warm: #F8F7F4;
+            --zafire-ink: #1A1A1A;
+            --zafire-ink-alt: #1E0642;
+            --zafire-purple: #350B75;
+            --zafire-purple-bright: #4A149C;
+            --zafire-sunset-orange: #F37021;
+            --zafire-sunset-gold: #FDB813;
+            --zafire-turquoise: #22E4EC;
+            --zafire-turquoise-soft: #5CEBF1;
+            --zafire-sunset-gradient: linear-gradient(90deg, #F37021 0%, #FDB813 100%);
+            --zafire-purple-gradient: linear-gradient(135deg, #350B75 0%, #4A149C 100%);
+        }
+
         /* Estilos base y refinamientos tipográficos contemporáneos */
         body {
             background-color: #F8F7F4;
@@ -437,6 +454,76 @@
             .hero-zoom { animation: none !important; }
             .reveal { opacity: 1; transform: none; transition: none; }
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
+
+
+        /* ZAFIRE — paleta editorial morado, atardecer y turquesa */
+        body { background:var(--zafire-warm); color:var(--zafire-ink); }
+        #embarcacion,#experiencias,#galeria { color:var(--zafire-ink); }
+        #embarcacion,#galeria { background-color:var(--zafire-paper); }
+        #ubicacion { background:var(--zafire-purple-gradient); color:#fff; border-color:rgba(255,255,255,.14); }
+        #ubicacion h2,#ubicacion h3,#ubicacion p,#ubicacion a { color:#fff; }
+        #ubicacion [data-cms-key="location_eyebrow"] { color:var(--zafire-turquoise-soft); }
+        #ubicacion #direct-whatsapp-btn { background:var(--zafire-sunset-gradient); color:#1A1A1A; border:0; }
+        #ubicacion #direct-whatsapp-btn svg { color:#350B75; }
+        #main-navbar.nav-scrolled { background:rgba(53,11,117,.94); }
+        #main-navbar a:hover { color:var(--zafire-turquoise-soft); }
+        .type-section-title,#embarcacion h2,#experiencias h2,#galeria h2 { color:var(--zafire-purple); }
+        .type-tech-label.text-champagne,.type-tech-label.text-silver { color:var(--zafire-purple-bright); }
+        #booking-workspace .text-champagne,
+        #booking-workspace [class*="text-champagne"] { color:var(--zafire-purple-bright); }
+        #booking-workspace .border-champagne,
+        #booking-workspace [class*="border-champagne"] { border-color:var(--zafire-purple-bright); }
+        #booking-workspace [class*="bg-champagne"] { background-color:var(--zafire-purple); color:#fff; }
+        #booking-workspace .bg-warmwhite { background-color:var(--zafire-paper); }
+        #booking-workspace .text-navy-900,#booking-workspace .text-navy-800 { color:var(--zafire-ink); }
+        #booking-workspace .border-navy-900\/10,
+        #booking-workspace .border-navy-900\/15 { border-color:rgba(53,11,117,.18); }
+        #booking-workspace button:hover { border-color:var(--zafire-purple-bright); }
+        #booking-workspace [aria-pressed="true"],
+        #booking-workspace [aria-selected="true"],
+        #booking-workspace .selected,
+        #booking-workspace .active { background-color:var(--zafire-purple); color:#fff; border-color:var(--zafire-purple); }
+        #booking-workspace #form-feedback { border-color:rgba(53,11,117,.28); }
+        #booking-workspace .btn-luxury,
+        #inicio a[data-cms-key="hero_cta_primary"],
+        #reservaciones a[href*="wa.me"],
+        #reservaciones button[type="submit"],
+        #reservaciones a[id*="whatsapp"],
+        #reservaciones button[id*="whatsapp"] {
+            background:var(--zafire-sunset-gradient); color:#1A1A1A; border:0;
+            box-shadow:0 8px 22px rgba(243,112,33,.16);
+        }
+        #booking-workspace .btn-luxury:hover,
+        #inicio a[data-cms-key="hero_cta_primary"]:hover,
+        #reservaciones a[href*="wa.me"]:hover,
+        #reservaciones button[type="submit"]:hover,
+        #reservaciones a[id*="whatsapp"]:hover,
+        #reservaciones button[id*="whatsapp"]:hover {
+            filter:saturate(1.08) brightness(1.04); transform:translateY(-1px);
+            box-shadow:0 12px 28px rgba(243,112,33,.24);
+        }
+        #reservaciones [class*="text-champagne"],
+        #reservaciones [class*="border-champagne"] { color:var(--zafire-purple-bright); border-color:var(--zafire-purple-bright); }
+        #reservaciones [class*="bg-champagne"] { background-color:var(--zafire-purple); color:#fff; }
+        #reservaciones [class*="bg-navy-950"] { background-color:#25084E; }
+        #reservaciones [class*="border-white/"] { border-color:rgba(255,255,255,.2); }
+        #reservaciones [class*="text-sand"] { color:#F8F7F4; }
+        #reservaciones [class*="focus:border-champagne"]:focus { border-color:var(--zafire-turquoise); box-shadow:0 0 0 2px rgba(34,228,236,.14); }
+        #reservaciones [class*="bg-zafireblue"] { background-color:var(--zafire-turquoise); }
+        #reservaciones .btn-luxury,
+        #reservaciones a[data-cms-key*="whatsapp"],
+        #reservaciones button[data-cms-key*="whatsapp"] { background:var(--zafire-sunset-gradient); color:#1A1A1A; }
+        #inicio a[data-cms-key="hero_cta_primary"] { background:var(--zafire-sunset-gradient); color:#1A1A1A; }
+        #inicio a[data-cms-key="hero_cta_secondary"] { border-color:rgba(255,255,255,.72); }
+        #inicio a[data-cms-key="hero_cta_secondary"]:hover { background:rgba(92,235,241,.12); border-color:var(--zafire-turquoise-soft); }
+        #cal-month-label { color:var(--zafire-purple); }
+        #ubicacion a:hover { color:var(--zafire-turquoise-soft); }
+        ::-webkit-scrollbar-thumb { background:var(--zafire-purple-bright); }
+        ::-webkit-scrollbar-thumb:hover { background:var(--zafire-purple); }
+        @media(max-width:767px) {
+            #booking-workspace { gap:1.5rem; }
+            #booking-workspace .btn-luxury { min-height:48px; }
         }
 
         /* ZAFIRE — scroll experience refinada */
