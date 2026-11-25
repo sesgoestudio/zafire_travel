@@ -158,7 +158,14 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   draft=JSON.parse(JSON.stringify(saved||published||{}));
   if(!Array.isArray(draft.media)||!draft.media.length)draft.media=Array.isArray(published.media)&&published.media.length?JSON.parse(JSON.stringify(published.media)):JSON.parse(JSON.stringify(fallback));
   $('login-screen').classList.add('hidden');$('admin-screen').classList.remove('hidden');
-  render();await loadReservations();setStatus('Administrador listo','ok');
+  render();
+  try{
+   await loadReservations();
+   setStatus('Administrador listo','ok');
+  }catch(e){
+   $('reservation-list').innerHTML='<p class="muted">No se pudieron cargar las reservaciones. Puedes volver a intentarlo con Actualizar.</p>';
+   setStatus('Panel listo; error al cargar reservaciones: '+e.message,'bad');
+  }
  }
  let reservations=[];
  async function loadReservations(){
