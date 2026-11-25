@@ -206,9 +206,9 @@
         }
         .zafire-hero-logo {
             display:block;
-            width:clamp(260px, 48vw, 620px);
+            width:clamp(620px, 76vw, 1080px);
             max-width:100%;
-            max-height:clamp(110px, 20vw, 230px);
+            max-height:clamp(230px, 28vw, 390px);
             height:auto;
             object-fit:contain;
             object-position:center;
@@ -397,8 +397,7 @@
                 line-height: 1.18;
             }
             #inicio [data-cms-key="hero_description"] {
-                max-width: 21rem;
-                margin: 0 auto 1.8rem;
+                max-width: 21rem;                margin: 0 auto 1.8rem;
                 font-size: .9rem;
                 line-height: 1.8;
                 color: rgba(248,247,244,.88);
@@ -797,7 +796,6 @@
         footer .text-silver,
         footer .text-silver\/90 { color:#D0C8DC; }
         footer a:hover { color:#FFFFFF; }
-
         @media (max-width:767px) {
             #calendar-days-grid button:disabled { color:#625B6B !important; }
             #calendar-slot-choices .slot-choice { min-height:6rem; }
@@ -1155,7 +1153,7 @@
         </div>
 
         <!-- Contenido Central Hero -->
-        <div class="relative z-10 max-w-5xl mx-auto px-6 md:px-12 text-center pt-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 text-center pt-20">
             <div class="inline-flex items-center gap-3 mb-7 opacity-90">
                 <span class="h-[1px] w-8 bg-champagne/80"></span>
                 <span data-cms-key="hero_kicker" class="type-tech-label text-[10px] sm:text-[11px] text-sand font-medium">Mazatlán · Sinaloa · México</span>
@@ -1197,8 +1195,7 @@
         <!-- Indicador de Scroll Discreto -->
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-75">
             <span class="type-tech-label text-[9px] text-sand">Explorar</span>
-            <div class="w-[1px] h-8 bg-gradient-to-b from-champagne to-transparent"></div>
-        </div>
+            <div class="w-[1px] h-8 bg-gradient-to-b from-champagne to-transparent"></div>        </div>
     </section>
 
     <!-- =====================================================================
@@ -1597,8 +1594,7 @@
                     <div class="flex items-center gap-3">
                         <span class="w-2 h-2 rounded-full bg-zafireblue"></span>
                         <div class="flex flex-col">
-                            <span class="font-display text-2xl font-semibold tracking-[0.14em] leading-none">ZAFIRE</span>
-                            <span class="type-tech-label text-[9px] text-silver/90 mt-1 tracking-[0.28em]">TRAVEL</span>
+                            <span class="font-display text-2xl font-semibold tracking-[0.14em] leading-none">ZAFIRE</span>                            <span class="type-tech-label text-[9px] text-silver/90 mt-1 tracking-[0.28em]">TRAVEL</span>
                         </div>
                     </div>
                     <p data-cms-key="footer_description" class="text-xs text-silver mt-2 tracking-wide">Pesca, excursiones y avistamiento de ballenas · Mazatlán, Sinaloa.</p>
@@ -1997,8 +1993,7 @@
                             <button type="button" data-select-exp="${escapeHTML(exp.id)}" class="select-exp-btn px-6 py-3 border border-white/20 hover:border-champagne hover:bg-champagne hover:text-navy-950 text-warmwhite type-tech-label text-[11px] font-medium rounded-sm transition-all duration-300">
                                 Seleccionar salida
                             </button>
-                        </div>
-                    </article>
+                        </div>                    </article>
                 `).join('');
 
                 // Vincular botones para preseleccionar experiencia y hacer scroll suave a reservaciones
@@ -2397,7 +2392,6 @@
                 window.addEventListener('scroll', onScroll, { passive: true });
                 window.addEventListener('resize', onScroll, { passive: true });
                 updateScrollUI();
-
                 const groups = document.querySelectorAll('#embarcacion .grid, #experiences-container, #gallery-grid, #booking-workspace, #ubicacion .max-w-7xl');
                 groups.forEach(group => {
                     Array.from(group.children).forEach((child, index) => {
