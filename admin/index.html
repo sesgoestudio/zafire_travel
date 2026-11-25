@@ -72,6 +72,16 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  .reservation-actions .btn-confirm{background:#c5aa78;color:#101b24;border:0}.reservation-actions .btn-cancel{background:transparent;border:1px solid #754747;color:#efb6b6}.reservation-actions .btn-delete{background:#4a2529;border:1px solid #8a454b;color:#ffd6d6}
  .reservation-actions a{font-size:11px;color:var(--gold);text-decoration:underline}
  @media(max-width:600px){.reservations-panel{padding:15px}.reservation-data{grid-template-columns:1fr 1fr}.reservation-actions input{width:100%}}
+.manual-booking{margin:18px 0 20px;padding:17px;border:1px solid #3a5368;border-radius:10px;background:#0a1926}
+.manual-booking h3{font:500 19px Georgia,serif;margin:3px 0 5px}
+.manual-booking-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}
+.manual-booking label{margin:10px 0 6px}
+.manual-booking input,.manual-booking select,.manual-booking textarea{width:100%;min-width:0;padding:11px;border:1px solid var(--line);border-radius:7px;background:#071522;color:var(--text);font:inherit}
+.manual-booking input:focus,.manual-booking select:focus,.manual-booking textarea:focus{outline:1px solid var(--gold);border-color:var(--gold)}
+.manual-booking textarea{min-height:72px;resize:vertical}
+.manual-booking-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.manual-booking-hint{font-size:11px;color:var(--muted)}
+@media(max-width:600px){.manual-booking{padding:14px}.manual-booking-grid{grid-template-columns:1fr}.manual-booking-actions .btn{width:100%;min-height:44px}.manual-booking input,.manual-booking select,.manual-booking textarea{font-size:16px}}
 .add-photo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0 3px}
 .add-photo{background:#1a3449;border-color:var(--gold);color:var(--gold)}
 
@@ -102,7 +112,24 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Panel de administración</h1><p class="muted">Gestiona las solicitudes de reservación, registra anticipos, confirma horarios y administra las fotografías del sitio.</p></div>
   <section class="reservations-panel">
    <div class="reservations-head"><div><div class="eyebrow">Operación diaria</div><h2>Reservaciones</h2><p class="muted">Solicitudes del sitio, anticipos y confirmación de horarios.</p></div><button id="refresh-reservations" class="btn">Actualizar</button></div>
-   <div class="reservation-filters"><label for="reservation-filter">Mostrar</label><select id="reservation-filter"><option value="all">Todas</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></div>
+   <form id="manual-booking-form" class="manual-booking">
+     <div class="eyebrow">Registro interno</div>
+     <h3>Agregar reservación manual</h3>
+     <p class="muted" style="font-size:12px">Registra llamadas, WhatsApp o clientes que reservaron fuera de la página. Al guardar, la reservación queda confirmada y el horario se bloquea automáticamente.</p>
+     <div class="manual-booking-grid">
+      <div><label for="manual-name">Nombre del titular *</label><input id="manual-name" required maxlength="120" autocomplete="name" placeholder="Nombre completo"></div>
+      <div><label for="manual-phone">Teléfono *</label><input id="manual-phone" required maxlength="30" type="tel" inputmode="tel" autocomplete="tel" placeholder="Número de contacto"></div>
+      <div><label for="manual-date">Fecha *</label><input id="manual-date" required type="date"></div>
+      <div><label for="manual-slot">Horario *</label><select id="manual-slot" required><option value="morning">Mañana</option><option value="afternoon">Tarde</option></select></div>
+      <div><label for="manual-experience">Experiencia *</label><input id="manual-experience" required maxlength="160" placeholder="Ej. Paseo por la bahía"></div>
+      <div><label for="manual-guests">Pasajeros *</label><input id="manual-guests" required type="number" min="1" max="15" step="1" value="2" inputmode="numeric"></div>
+      <div><label for="manual-total">Total acordado (MXN)</label><input id="manual-total" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Opcional"></div>
+      <div><label for="manual-deposit">Anticipo recibido (MXN)</label><input id="manual-deposit" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div>
+     </div>
+     <label for="manual-notes">Notas</label><textarea id="manual-notes" maxlength="1000" placeholder="Detalles del cliente o acuerdo"></textarea>
+     <div class="manual-booking-actions"><button class="btn primary" id="manual-booking-submit" type="submit">Guardar y bloquear horario</button><span class="manual-booking-hint">Se registrará como confirmada. Si ya hay una reservación o bloqueo, el sistema no permitirá duplicarla.</span></div>
+    </form>
+    <div class="reservation-filters"><label for="reservation-filter">Mostrar</label><select id="reservation-filter"><option value="all">Todas</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></div>
    <div id="reservation-list" class="reservation-list"><p class="muted">Cargando solicitudes…</p></div>
   </section>
   <details>
@@ -351,6 +378,27 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
   try{const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;if(!(await isAdmin(data.user))){await db.auth.signOut();throw new Error('Esta cuenta no está autorizada como administradora.');}await load();}
   catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
   finally{$('login-btn').disabled=false;}
+ });
+ $('manual-date').min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+ $('manual-booking-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(busy)return;
+  const button=$('manual-booking-submit'),totalRaw=$('manual-total').value.trim(),depositRaw=$('manual-deposit').value.trim();
+  const payload={p_customer_name:$('manual-name').value.trim(),p_phone:$('manual-phone').value.trim(),p_guests:Number($('manual-guests').value),p_experience:$('manual-experience').value.trim(),p_reservation_date:$('manual-date').value,p_time_slot:$('manual-slot').value,p_total_amount:totalRaw===''?null:Number(totalRaw),p_deposit_amount:depositRaw===''?0:Number(depositRaw),p_notes:$('manual-notes').value.trim()||null};
+  if(!payload.p_reservation_date){alert('Selecciona la fecha de la reservación.');return;}
+  if(payload.p_total_amount!==null&&(!Number.isFinite(payload.p_total_amount)||payload.p_total_amount<0)){alert('Revisa el total acordado.');return;}
+  if(!Number.isFinite(payload.p_deposit_amount)||payload.p_deposit_amount<0){alert('Revisa el anticipo recibido.');return;}
+  if(payload.p_total_amount!==null&&payload.p_deposit_amount>payload.p_total_amount&&!confirm('El anticipo es mayor que el total acordado. ¿Deseas continuar?'))return;
+  busy=true;button.disabled=true;button.textContent='Guardando reservación…';setStatus('Registrando reservación manual…');
+  try{
+   const {data,error}=await db.rpc('zafire_admin_create_manual_reservation',payload);
+   if(error)throw error;
+   $('manual-booking-form').reset();$('manual-guests').value='2';$('manual-deposit').value='0';
+   await loadReservations();$('reservation-filter').value='all';renderReservations();
+   setStatus('Reservación '+(data?.folio||'')+' registrada y horario bloqueado','ok');
+   alert('Reservación registrada correctamente. Folio: '+(data?.folio||'—')+'. El horario quedó bloqueado en el calendario.');
+  }catch(err){setStatus('No se pudo registrar la reservación','bad');alert('No se pudo registrar la reservación: '+err.message);}
+  finally{busy=false;button.disabled=false;button.textContent='Guardar y bloquear horario';}
  });
  $('reservation-filter').addEventListener('change',()=>renderReservations());
  $('refresh-reservations').addEventListener('click',()=>loadReservations().catch(e=>{alert('No se pudieron actualizar las reservaciones: '+e.message);}));
