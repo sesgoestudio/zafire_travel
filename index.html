@@ -1065,6 +1065,107 @@
 
     </style>
 
+
+    <!-- ZAFIRE — portada compacta: jerarquía clara y menos espacio vacío -->
+    <style id="zafire-compact-hero">
+        #inicio {
+            min-height: 88svh;
+            min-height: 88dvh;
+            padding: 6.5rem 1.5rem 4rem;
+        }
+        #inicio > div.relative.z-10 {
+            width: 100%;
+            max-width: 76rem;
+            padding: 0;
+            margin-inline: auto;
+        }
+        #inicio > div.relative.z-10 > .inline-flex {
+            margin-bottom: .85rem;
+        }
+        .zafire-hero-logo-heading {
+            margin-bottom: .55rem;
+        }
+        .zafire-hero-logo {
+            width: clamp(520px, 66vw, 900px);
+            max-height: clamp(190px, 22vw, 290px);
+        }
+        #inicio [data-cms-key="hero_tagline"] {
+            margin-bottom: .75rem;
+            line-height: 1.12;
+        }
+        #inicio [data-cms-key="hero_description"] {
+            max-width: 39rem;
+            margin: 0 auto 1.45rem;
+            line-height: 1.55;
+        }
+        #inicio > div.relative.z-10 > .flex.flex-col {
+            gap: .8rem 1rem;
+        }
+        #inicio .btn-luxury {
+            padding-top: .9rem;
+            padding-bottom: .9rem;
+        }
+        #inicio > div.absolute.bottom-8 {
+            bottom: 1.15rem;
+        }
+
+        @media (max-width: 767px) {
+            #inicio {
+                min-height: 100svh;
+                min-height: 100dvh;
+                padding: calc(4.7rem + env(safe-area-inset-top)) 1.15rem 3.5rem;
+            }
+            #inicio > div.relative.z-10 {
+                padding: .2rem 0 .65rem;
+            }
+            #inicio > div.relative.z-10 > .inline-flex {
+                margin-bottom: .45rem;
+            }
+            .zafire-hero-logo-heading {
+                margin-bottom: .4rem;
+            }
+            .zafire-hero-logo {
+                width: min(84vw, 390px);
+                max-height: clamp(100px, 27vw, 138px);
+            }
+            #inicio .hero-brand-subtitle {
+                margin: .2rem 0 .6rem;
+            }
+            #inicio [data-cms-key="hero_tagline"] {
+                max-width: 22rem;
+                margin: 0 auto .65rem;
+                font-size: clamp(1.12rem, 5.2vw, 1.4rem);
+                line-height: 1.12;
+            }
+            #inicio [data-cms-key="hero_description"] {
+                max-width: 22rem;
+                margin: 0 auto 1.15rem;
+                font-size: .82rem;
+                line-height: 1.55;
+            }
+            #inicio > div.relative.z-10 > .flex.flex-col {
+                gap: .6rem;
+            }
+            #inicio .btn-luxury {
+                min-height: 2.9rem;
+                padding: .75rem 1rem;
+            }
+            #inicio > div.absolute.bottom-8 {
+                bottom: max(.65rem, env(safe-area-inset-bottom));
+                gap: .35rem;
+            }
+            #inicio > div.absolute.bottom-8 > div {
+                height: 1.25rem;
+            }
+        }
+
+        @media (max-height: 720px) and (min-width: 768px) {
+            #inicio { min-height: 650px; padding-top: 5.5rem; padding-bottom: 3rem; }
+            .zafire-hero-logo { max-height: 205px; }
+            #inicio [data-cms-key="hero_description"] { margin-bottom: 1rem; }
+        }
+    </style>
+
 </head>
 <body class="selection:bg-navy-900 selection:text-warmwhite">
 
