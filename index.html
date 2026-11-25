@@ -369,11 +369,6 @@
     </section>
 
     
-            </div>
-            <div id="vessel-gallery" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-        </div>
-    </section>
-
     <!-- =====================================================================
          4. EXPERIENCIAS (LAYOUT EDITORIAL INTERACTIVO)
     ====================================================================== -->
@@ -1041,6 +1036,13 @@
 
                 btn.addEventListener('click', () => toggleMenu());
                 links.forEach(link => link.addEventListener('click', () => toggleMenu(true)));
+                // Cerrar al tocar el fondo del menú o pulsar Escape.
+                menu.addEventListener('click', event => {
+                    if (event.target === menu) toggleMenu(true);
+                });
+                document.addEventListener('keydown', event => {
+                    if (event.key === 'Escape' && !menu.classList.contains('hidden')) toggleMenu(true);
+                });
             },
 
             /* --- Renderizado Editorial de Experiencias --- */
@@ -1422,7 +1424,14 @@
                     document.getElementById('whatsapp-confirm-link').href=whatsappUrl;
                     if(whatsappWindow&&!whatsappWindow.closed){whatsappWindow.location.href=whatsappUrl;}
                     else{this.showFeedback('La solicitud se registró. Tu navegador bloqueó la apertura automática de WhatsApp; usa el botón Continuar en WhatsApp.');}
-                    await this.loadAvailabilityForCurrentMonth();this.renderCalendar();
+                    // La solicitud ya quedó registrada; un fallo al refrescar el calendario
+                    // no debe presentarse como si el registro hubiera fallado.
+                    try{
+                        await this.loadAvailabilityForCurrentMonth();
+                        this.renderCalendar();
+                    }catch(refreshError){
+                        console.warn('La solicitud se registró, pero no se pudo actualizar el calendario:',refreshError);
+                    }
                 }catch(error){if(whatsappWindow&&!whatsappWindow.closed)whatsappWindow.close();console.error('Error al registrar solicitud:',error);this.showFeedback(error.message||'No pudimos registrar tu solicitud. Inténtalo nuevamente o contáctanos por WhatsApp.');}
                 finally{submit.disabled=false;submit.textContent='ENVIAR SOLICITUD POR WHATSAPP';}
             },
