@@ -56,6 +56,10 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  .reservation-chevron{font-size:18px;color:var(--gold);transition:transform .2s}
  .reservation-collapsible[open] .reservation-chevron{transform:rotate(180deg)}
  .reservation-summary:hover{background:#193248}
+ .reservation-summary:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+ .reservation-summary::after{content:'Ver detalles';font-size:10px;color:var(--muted);grid-column:1/-2;grid-row:2;justify-self:start;margin-top:-5px}
+ .reservation-collapsible[open] .reservation-summary::after{content:'Ocultar detalles'}
+ @media(max-width:600px){.reservation-summary::after{grid-column:1/-1;grid-row:3;margin-top:0}}
  .reservation-expanded{padding:0 16px 16px;display:grid;gap:12px}
  .reservation-expanded .reservation-card-top{padding-top:12px;border-top:1px solid var(--line)}
  @media(max-width:600px){.reservation-summary{grid-template-columns:minmax(0,1fr) auto 16px;gap:7px;padding:14px}.reservation-date{grid-column:1;grid-row:2}.reservation-slot{grid-column:2;grid-row:1/3}.reservation-chevron{grid-column:3;grid-row:1/3}.reservation-expanded{padding:0 12px 12px}}
@@ -234,6 +238,10 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
    return '<details class="reservation-card reservation-collapsible"><summary class="reservation-summary"><strong class="reservation-name">'+escapeHtml(r.customer_name||'Sin nombre')+'</strong><span class="reservation-date">'+escapeHtml(date)+'</span><span class="reservation-slot">'+slot+'</span><span class="reservation-chevron" aria-hidden="true">⌄</span></summary><div class="reservation-expanded"><div class="reservation-card-top"><div><div class="reservation-folio">'+escapeHtml(r.folio||'')+'</div></div><span class="reservation-status '+escapeHtml(r.status)+'">'+escapeHtml(statusLabel)+'</span></div><div class="reservation-data"><div><span class="reservation-label">Experiencia</span><strong>'+escapeHtml(r.experience||'—')+'</strong></div><div><span class="reservation-label">Pasajeros</span><strong>'+Number(r.guests||0)+'</strong></div><div><span class="reservation-label">Contacto</span><strong>'+escapeHtml(r.phone||'—')+(r.customer_email?'<br>'+escapeHtml(r.customer_email):'')+'</strong></div><div><span class="reservation-label">Total estimado</span><strong>'+(r.total_amount===null||r.total_amount===undefined?'Por definir':'$'+Number(r.total_amount).toLocaleString('es-MX'))+'</strong></div><div><span class="reservation-label">Notas</span><strong>'+escapeHtml(r.notes||'—')+'</strong></div></div>'+actions+'</div></details>';
   }).join('');
   $('reservation-list').innerHTML=html;
+  $('reservation-list').querySelectorAll('.reservation-collapsible').forEach(card=>card.addEventListener('toggle',()=>{
+   if(!card.open)return;
+   $('reservation-list').querySelectorAll('.reservation-collapsible[open]').forEach(other=>{if(other!==card)other.open=false;});
+  }));
   $('reservation-list').querySelectorAll('[data-confirm]').forEach(btn=>btn.addEventListener('click',async()=>{
    const id=btn.dataset.confirm;
    const field=$('reservation-list').querySelector('[data-deposit="'+id+'"]');
