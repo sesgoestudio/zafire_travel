@@ -247,7 +247,223 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  }
  function render(){
   const priceField=$('vessel-price');
-  if(priceField){priceField.value=String(draft.content?.vessel_price||'Desde $5,000').replace(/[^0-9]/g,'')||'5000';priceField.onchange=async()=>{draft.content=draft.content||{};const amount=Math.max(0,Number(priceField.value)||0);draft.content.vessel_price='Desde ((g,i)=>{
+  if(priceField){priceField.value=String(draft.content?.vessel_price||'Desde $5,000').replace(/[^0-9]/g,'')||'5000';priceField.onchange=async()=>{draft.content=draft.content||{};const amount=Math.max(0,Number(priceField.value)||0);draft.content.vessel_price='Desde 
+   const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
+   const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
+   return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
+  }).join('');
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
+   const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
+   item[key==='zoom'?'crop_zoom':key==='x'?'crop_x':'crop_y']=value;
+   const img=$('sections').querySelector('[data-preview="'+index+'"]');
+   if(img){img.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';img.style.transform='scale('+(item.crop_zoom??100)/100+')';}
+   const valueEl=$('sections').querySelector('[data-value="'+(key==='zoom'?'z':key)+'-'+index+'"]');if(valueEl)valueEl.textContent=value+'%';
+  }));
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('change',async()=>{
+   try{await saveDraft();setStatus('Ajuste guardado','ok');}catch(e){setStatus('No se pudo guardar el ajuste: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-reset]').forEach(el=>el.addEventListener('click',async()=>{
+   const index=Number(el.dataset.reset),item=draft.media[index];item.crop_x=50;item.crop_y=50;item.crop_zoom=100;
+   try{await saveDraft();render();setStatus('Encuadre restablecido','ok');}catch(e){setStatus('No se pudo guardar: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-add-file]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const category=el.dataset.addFile;el.disabled=true;
+   try{await addImage(category,file);}catch(e){setStatus('No se pudo agregar la foto: '+e.message,'bad');alert('No se pudo agregar la foto: '+e.message);}finally{el.disabled=false;}
+  }));
+  $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const index=Number(el.dataset.upload);el.disabled=true;
+   try{await replaceImage(index,file);}catch(e){setStatus('Error: '+e.message,'bad');alert('No se pudo reemplazar la imagen: '+e.message);}finally{el.disabled=false;}
+  }));
+ }
+ async function saveDraft(){
+  const {error}=await db.from('site_settings').upsert({setting_key:'draft',setting_value:draft,is_public:false,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+  if(error)throw error;
+ }
+ async function replaceImage(index,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Subiendo imagen…');
+  let uploadedPath=null;
+  try{
+   const item=draft.media[index];
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+item.category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const previous={...item};
+   item.public_url=data.publicUrl;item.storage_path=uploadedPath;item.id='upload-'+Date.now();item.alt_text=item.alt_text||file.name.replace(/\.[^.]+$/,'');
+   try{await saveDraft();}catch(e){Object.assign(item,previous);await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Imagen subida y borrador guardado','ok');
+  }finally{busy=false;}
+ }
+ async function addImage(category,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Agregando fotografía…');
+  let uploadedPath=null;
+  try{
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const item={id:'upload-'+Date.now(),category,public_url:data.publicUrl,storage_path:uploadedPath,alt_text:file.name.replace(/\.[^.]+$/,''),sort_order:draft.media.length,is_active:true,crop_x:50,crop_y:50,crop_zoom:100};
+   draft.media.push(item);
+   try{await saveDraft();}catch(e){draft.media.pop();await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Fotografía agregada al borrador','ok');
+  }finally{busy=false;}
+ }
+ async function publish(){
+  if(busy)return;busy=true;$('publish').disabled=true;setStatus('Publicando imágenes…');
+  try{
+   await saveDraft();
+   const {data:oldRow,error:readError}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();
+   if(readError)throw readError;
+   const oldMedia=oldRow?.setting_value?.media||[];
+   const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:draft,is_public:true,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+   if(error)throw error;
+   const keep=new Set((draft.media||[]).map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')));
+   const obsolete=[...new Set(oldMedia.map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')&&!keep.has(p)))];
+   if(obsolete.length){
+    const {error:removeError}=await db.storage.from(BUCKET).remove(obsolete);
+    if(removeError)setStatus('Publicado; no se pudieron borrar todos los archivos anteriores','bad');
+    else setStatus('Publicado. Imágenes anteriores eliminadas','ok');
+   }else setStatus('Imágenes publicadas correctamente','ok');
+   published=JSON.parse(JSON.stringify(draft));
+  }catch(e){setStatus('No se pudo publicar: '+e.message,'bad');}
+  finally{busy=false;$('publish').disabled=false;}
+ }
+ $('login-form').addEventListener('submit',async e=>{
+  e.preventDefault();$('login-btn').disabled=true;$('login-error').textContent='';
+  try{const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;if(!(await isAdmin(data.user))){await db.auth.signOut();throw new Error('Esta cuenta no está autorizada como administradora.');}await load();}
+  catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
+  finally{$('login-btn').disabled=false;}
+ });
+ $('reservation-filter').addEventListener('change',()=>renderReservations());
+ $('refresh-reservations').addEventListener('click',()=>loadReservations().catch(e=>{alert('No se pudieron actualizar las reservaciones: '+e.message);}));
+ $('publish').addEventListener('click',publish);
+ $('logout').addEventListener('click',async()=>{await db.auth.signOut();user=null;$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');});
+ db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');}});
+ load().catch(e=>{$('login-error').textContent=e.message;});
+})();
+</script>
+</body>
+</html>
++amount.toLocaleString('en-US');try{await saveDraft();setStatus('Precio guardado en borrador','ok');}catch(e){setStatus('No se pudo guardar el precio: '+e.message,'bad');}};}
+  $('sections').innerHTML=groups.map((g,i)=>{
+   const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
+   const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
+   return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
+  }).join('');
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('input',()=>{
+   const index=Number(el.dataset.index),key=el.dataset.crop,value=Number(el.value),item=draft.media[index];
+   item[key==='zoom'?'crop_zoom':key==='x'?'crop_x':'crop_y']=value;
+   const img=$('sections').querySelector('[data-preview="'+index+'"]');
+   if(img){img.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';img.style.transform='scale('+(item.crop_zoom??100)/100+')';}
+   const valueEl=$('sections').querySelector('[data-value="'+(key==='zoom'?'z':key)+'-'+index+'"]');if(valueEl)valueEl.textContent=value+'%';
+  }));
+  $('sections').querySelectorAll('[data-crop]').forEach(el=>el.addEventListener('change',async()=>{
+   try{await saveDraft();setStatus('Ajuste guardado','ok');}catch(e){setStatus('No se pudo guardar el ajuste: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-reset]').forEach(el=>el.addEventListener('click',async()=>{
+   const index=Number(el.dataset.reset),item=draft.media[index];item.crop_x=50;item.crop_y=50;item.crop_zoom=100;
+   try{await saveDraft();render();setStatus('Encuadre restablecido','ok');}catch(e){setStatus('No se pudo guardar: '+e.message,'bad');}
+  }));
+  $('sections').querySelectorAll('[data-add-file]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const category=el.dataset.addFile;el.disabled=true;
+   try{await addImage(category,file);}catch(e){setStatus('No se pudo agregar la foto: '+e.message,'bad');alert('No se pudo agregar la foto: '+e.message);}finally{el.disabled=false;}
+  }));
+  $('sections').querySelectorAll('[data-upload]').forEach(el=>el.addEventListener('change',async()=>{
+   const file=el.files?.[0];if(!file)return;
+   const index=Number(el.dataset.upload);el.disabled=true;
+   try{await replaceImage(index,file);}catch(e){setStatus('Error: '+e.message,'bad');alert('No se pudo reemplazar la imagen: '+e.message);}finally{el.disabled=false;}
+  }));
+ }
+ async function saveDraft(){
+  const {error}=await db.from('site_settings').upsert({setting_key:'draft',setting_value:draft,is_public:false,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+  if(error)throw error;
+ }
+ async function replaceImage(index,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Subiendo imagen…');
+  let uploadedPath=null;
+  try{
+   const item=draft.media[index];
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+item.category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const previous={...item};
+   item.public_url=data.publicUrl;item.storage_path=uploadedPath;item.id='upload-'+Date.now();item.alt_text=item.alt_text||file.name.replace(/\.[^.]+$/,'');
+   try{await saveDraft();}catch(e){Object.assign(item,previous);await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Imagen subida y borrador guardado','ok');
+  }finally{busy=false;}
+ }
+ async function addImage(category,file){
+  if(!file.type.startsWith('image/'))throw new Error('El archivo debe ser una imagen.');
+  if(file.size>12*1024*1024)throw new Error('El tamaño máximo permitido es 12 MB.');
+  if(busy)throw new Error('Espera a que termine la operación anterior.');
+  busy=true;setStatus('Agregando fotografía…');
+  let uploadedPath=null;
+  try{
+   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+   uploadedPath='site/'+category+'/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;
+   const {error}=await db.storage.from(BUCKET).upload(uploadedPath,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   const {data}=db.storage.from(BUCKET).getPublicUrl(uploadedPath);
+   const item={id:'upload-'+Date.now(),category,public_url:data.publicUrl,storage_path:uploadedPath,alt_text:file.name.replace(/\.[^.]+$/,''),sort_order:draft.media.length,is_active:true,crop_x:50,crop_y:50,crop_zoom:100};
+   draft.media.push(item);
+   try{await saveDraft();}catch(e){draft.media.pop();await db.storage.from(BUCKET).remove([uploadedPath]);throw e;}
+   render();setStatus('Fotografía agregada al borrador','ok');
+  }finally{busy=false;}
+ }
+ async function publish(){
+  if(busy)return;busy=true;$('publish').disabled=true;setStatus('Publicando imágenes…');
+  try{
+   await saveDraft();
+   const {data:oldRow,error:readError}=await db.from('site_settings').select('setting_value').eq('setting_key','public').maybeSingle();
+   if(readError)throw readError;
+   const oldMedia=oldRow?.setting_value?.media||[];
+   const {error}=await db.from('site_settings').upsert({setting_key:'public',setting_value:draft,is_public:true,updated_by:user.id,updated_at:new Date().toISOString()},{onConflict:'setting_key'});
+   if(error)throw error;
+   const keep=new Set((draft.media||[]).map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')));
+   const obsolete=[...new Set(oldMedia.map(x=>x.storage_path).filter(p=>p&&!p.startsWith('external:')&&!keep.has(p)))];
+   if(obsolete.length){
+    const {error:removeError}=await db.storage.from(BUCKET).remove(obsolete);
+    if(removeError)setStatus('Publicado; no se pudieron borrar todos los archivos anteriores','bad');
+    else setStatus('Publicado. Imágenes anteriores eliminadas','ok');
+   }else setStatus('Imágenes publicadas correctamente','ok');
+   published=JSON.parse(JSON.stringify(draft));
+  }catch(e){setStatus('No se pudo publicar: '+e.message,'bad');}
+  finally{busy=false;$('publish').disabled=false;}
+ }
+ $('login-form').addEventListener('submit',async e=>{
+  e.preventDefault();$('login-btn').disabled=true;$('login-error').textContent='';
+  try{const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;if(!(await isAdmin(data.user))){await db.auth.signOut();throw new Error('Esta cuenta no está autorizada como administradora.');}await load();}
+  catch(e){$('login-error').textContent=e.message||'No fue posible iniciar sesión.';}
+  finally{$('login-btn').disabled=false;}
+ });
+ $('reservation-filter').addEventListener('change',()=>renderReservations());
+ $('refresh-reservations').addEventListener('click',()=>loadReservations().catch(e=>{alert('No se pudieron actualizar las reservaciones: '+e.message);}));
+ $('publish').addEventListener('click',publish);
+ $('logout').addEventListener('click',async()=>{await db.auth.signOut();user=null;$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');});
+ db.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){$('admin-screen').classList.add('hidden');$('login-screen').classList.remove('hidden');}});
+ load().catch(e=>{$('login-error').textContent=e.message;});
+})();
+</script>
+</body>
+</html>
++amount.toLocaleString('en-US');try{await saveDraft();setStatus('Precio guardado en borrador','ok');}catch(e){setStatus('No se pudo guardar el precio: '+e.message,'bad');}};}
+  $('sections').innerHTML=groups.map((g,i)=>{
    const items=draft.media.map((x,index)=>({x,index})).filter(v=>g.categories.includes(v.x.category));
    const addButton=g.addCategory?'<div class="add-photo-row"><label class="file-button add-photo">＋ Agregar foto<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-add-file="'+g.addCategory+'"></label><span class="image-note">Puedes agregar varias fotografías.</span></div>':'';
    return '<details><summary><span>'+g.title+' <span class="muted" style="font-size:11px;font-weight:400">('+items.length+')</span></span></summary><div class="section-content"><p class="muted" style="font-size:12px;padding-top:12px">'+g.description+'</p>'+items.map(v=>imageCard(v.x,v.index)).join('')+addButton+'</div></details>';
