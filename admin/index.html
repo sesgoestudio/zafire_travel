@@ -39,7 +39,17 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
 .crop-reset{background:none;border:0;color:var(--gold);font-size:11px;cursor:pointer;padding:4px 0}
 .crop-tip{font-size:10px;color:var(--muted)}
 
- .reservations-panel{margin:0 0 30px;padding:22px;background:#0b1c2a;border:1px solid var(--line);border-radius:12px}
+ .reservations-panel{margin:0 0 30px;padding:0;background:#0b1c2a;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+ .reservations-disclosure>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;cursor:pointer}
+ .reservations-disclosure>summary::-webkit-details-marker{display:none}
+ .reservations-disclosure>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+ .reservations-disclosure>summary .reservations-summary-title{display:grid;gap:4px}
+ .reservations-disclosure>summary strong{font:500 22px Georgia,serif;color:#f4f1e9}
+ .reservations-disclosure>summary small{font-size:11px;color:var(--muted)}
+ .reservations-disclosure>summary .reservations-section-chevron{font-size:20px;color:var(--gold);transition:transform .2s}
+ .reservations-disclosure[open]>summary .reservations-section-chevron{transform:rotate(180deg)}
+ .reservations-disclosure-content{padding:0 22px 22px;border-top:1px solid var(--line)}
+ @media(max-width:600px){.reservations-disclosure>summary{padding:15px}.reservations-disclosure-content{padding:0 12px 15px}.reservations-panel{margin-bottom:20px}}
  .reservations-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
  .reservations-head h2{font:500 25px Georgia,serif;margin:5px 0}
  .eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
@@ -119,7 +129,9 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
  </header>
  <main>
   <div class="intro"><div class="eyebrow">Biblioteca visual</div><h1>Panel de administración</h1><p class="muted">Gestiona las solicitudes de reservación, registra anticipos, confirma horarios y administra las fotografías del sitio.</p></div>
-  <section class="reservations-panel">
+  <details class="reservations-panel reservations-disclosure">
+   <summary><span class="reservations-summary-title"><strong>Reservaciones</strong><small>Solicitudes, confirmaciones y bloqueos de horarios</small></span><span class="reservations-section-chevron" aria-hidden="true">⌄</span></summary>
+   <div class="reservations-disclosure-content">
    <div class="reservations-head"><div><div class="eyebrow">Operación diaria</div><h2>Reservaciones</h2><p class="muted">Solicitudes del sitio, anticipos y confirmación de horarios.</p></div><button id="refresh-reservations" class="btn">Actualizar</button></div>
    <details class="manual-booking-disclosure">
     <summary><span>Agregar reservación manual<small>Registro interno · Se valida disponibilidad antes de guardar</small></span></summary>
@@ -143,7 +155,8 @@ summary::-webkit-details-marker{display:none}summary:after{content:"＋";font-si
    </details>
     <div class="reservation-filters"><label for="reservation-filter">Mostrar</label><select id="reservation-filter"><option value="all">Todas</option><option value="pending">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></div>
    <div id="reservation-list" class="reservation-list"><p class="muted">Cargando solicitudes…</p></div>
-  </section>
+   </div>
+  </details>
   <details>
    <summary><span>Precio de renta <span class="muted" style="font-size:11px;font-weight:400">(visible en la página)</span></span></summary>
    <div class="section-content" style="padding-top:14px">
