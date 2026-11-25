@@ -1438,18 +1438,18 @@
     </style>
 
 
-    <!-- ZAFIRE — recorte real del margen transparente interno del PNG -->
+    <!-- ZAFIRE — conservar el logotipo completo y ajustar solo su espacio exterior -->
     <style id="zafire-logo-transparent-crop">
-        /* La ventana recorta el lienzo transparente del archivo, no el logotipo.
-           El ancho de la imagen permanece igual; solo se ocultan bandas vacías. */
         #inicio .zafire-hero-logo-heading {
             box-sizing: border-box;
-            display: block !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             width: clamp(500px, 56vw, 780px) !important;
             max-width: 100%;
-            aspect-ratio: 4.1 / 1;
             height: auto !important;
-            overflow: hidden;
+            aspect-ratio: auto !important;
+            overflow: visible !important;
             margin: 0 auto .02rem !important;
             padding: 0 !important;
             line-height: 0 !important;
@@ -1457,11 +1457,11 @@
         #inicio .zafire-hero-logo {
             display: block !important;
             width: 100% !important;
-            max-width: none !important;
-            height: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
             max-height: none !important;
-            object-fit: cover !important;
-            object-position: center center !important;
+            object-fit: contain !important;
+            object-position: center !important;
             margin: 0 !important;
             padding: 0 !important;
             transform: none !important;
@@ -1475,12 +1475,15 @@
         @media (max-width: 767px) {
             #inicio .zafire-hero-logo-heading {
                 width: min(84vw, 360px) !important;
-                aspect-ratio: 3.8 / 1;
+                height: auto !important;
+                aspect-ratio: auto !important;
+                overflow: visible !important;
                 margin-bottom: .02rem !important;
             }
             #inicio .zafire-hero-logo {
                 width: 100% !important;
-                height: 100% !important;
+                height: auto !important;
+                object-fit: contain !important;
             }
             #inicio [data-cms-key="hero_tagline"] {
                 margin-top: .02rem !important;
