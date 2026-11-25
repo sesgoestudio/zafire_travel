@@ -2420,3 +2420,30 @@
                 document.querySelectorAll('.reveal,.reveal-child,.section-rule').forEach(el => observer.observe(el));
             }
         };
+
+        window.addEventListener('message', event => {
+            if(event.source!==window.parent||event.origin!==window.location.origin)return;
+            const payload=event.data||{};
+            if(payload.type!=='zafire-admin-preview')return;
+            if(payload.content){Object.assign(SITE_CONFIG.content,payload.content);applySiteContent(SITE_CONFIG.content);}
+            if(payload.brand){Object.assign(SITE_CONFIG.brand,payload.brand);const label=document.getElementById('booking-capacity-label');if(label)label.textContent='Capacidad Máx. '+SITE_CONFIG.brand.maxCapacity;}
+            if(Array.isArray(payload.experiences)){
+                SITE_CONFIG.experiences=payload.experiences;
+                if(typeof UI_CONTROLLER!=='undefined'){
+                    UI_CONTROLLER.renderExperiences();
+                    const select=document.getElementById('booking-experience');
+                    if(select){const previous=select.value;select.innerHTML=SITE_CONFIG.experiences.map(exp=>'<option value="'+escapeHTML(exp.id)+'">'+escapeHTML(exp.title)+'</option>').join('');select.value=SITE_CONFIG.experiences.some(x=>x.id===previous)?previous:(SITE_CONFIG.experiences[0]?.id||'');UI_CONTROLLER.state.selectedExperienceId=select.value;UI_CONTROLLER.updateBookingSummary();}
+                }
+            }
+            if(Array.isArray(payload.media)){SITE_CONFIG.media=payload.media;applySiteMedia(payload.media);if(typeof UI_CONTROLLER!=='undefined')UI_CONTROLLER.renderGallery();}
+            if(payload.contact){Object.assign(SITE_CONFIG.contact,payload.contact);if(typeof UI_CONTROLLER!=='undefined')UI_CONTROLLER.setupContactAndFooter();}
+        });
+
+        // Inicialización al cargar el DOM
+        document.addEventListener('DOMContentLoaded', async () => {
+            try { await UI_CONTROLLER.init(); }
+            catch (error) { console.error('ZAFIRE:', error); const feedback = document.getElementById('form-feedback'); if (feedback) { feedback.textContent = 'El sistema de reservaciones no está disponible. Contáctanos por WhatsApp.'; feedback.classList.remove('hidden'); } }
+        });
+    </script>
+</body>
+</html>
