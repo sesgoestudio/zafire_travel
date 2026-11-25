@@ -1394,6 +1394,49 @@
         }
     </style>
 
+
+    <!-- ZAFIRE — distancias reales entre textos y logotipo -->
+    <style id="zafire-logo-adjacency">
+        /* Mantiene el diseño completo y ajusta solo los espacios de contacto */
+        #inicio > div.relative.z-10 {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        #inicio > div.relative.z-10 > .inline-flex {
+            margin-top: 0 !important;
+            margin-bottom: .02rem !important;
+            line-height: 1 !important;
+        }
+        #inicio .zafire-hero-logo-heading {
+            margin-top: 0 !important;
+            margin-bottom: .02rem !important;
+            padding: 0 !important;
+            line-height: 0 !important;
+        }
+        #inicio .zafire-hero-logo {
+            display: block !important;
+            margin: 0 auto !important;
+        }
+        #inicio [data-cms-key="hero_tagline"] {
+            margin-top: .02rem !important;
+            margin-bottom: .4rem !important;
+            padding: 0 !important;
+            line-height: 1.12 !important;
+        }
+        @media (max-width: 767px) {
+            #inicio > div.relative.z-10 > .inline-flex {
+                margin-bottom: .02rem !important;
+            }
+            #inicio .zafire-hero-logo-heading {
+                margin-bottom: .02rem !important;
+            }
+            #inicio [data-cms-key="hero_tagline"] {
+                margin-top: .02rem !important;
+                margin-bottom: .35rem !important;
+            }
+        }
+    </style>
+
 </head>
 <body class="selection:bg-navy-900 selection:text-warmwhite">
 
