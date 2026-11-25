@@ -209,6 +209,105 @@
                 text-indent: .48em;
             }
         }
+
+        /* Paso 02 — alineación y sistema de color unificado */
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) {
+            align-items:stretch;
+            row-gap:1.25rem;
+        }
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) > div {
+            display:flex;
+            flex-direction:column;
+            align-items:stretch;
+            min-width:0;
+        }
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) .type-tech-label,
+        #reservaciones #booking-workspace > div:first-child #booking-capacity-label {
+            display:flex;
+            align-items:center;
+            width:max-content;
+            min-height:27px;
+            margin:0 0 7px;
+            padding:4px 9px;
+            border-radius:4px;
+            color:#FFFFFF !important;
+            background:#350B75 !important;
+            font-size:10px;
+            font-weight:700;
+            line-height:1.2;
+            letter-spacing:.08em;
+        }
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) label[data-cms-key="booking_experience_label"],
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) [data-cms-key="booking_pax_label"] {
+            display:flex;
+            align-items:center;
+            min-height:34px;
+            margin:0 0 10px !important;
+            padding:0;
+            color:#1A1A1A !important;
+            background:transparent !important;
+            font-size:20px;
+            font-weight:600;
+            line-height:1.25;
+        }
+        #reservaciones #booking-experience {
+            width:100%;
+            min-height:48px;
+            color:#FFFFFF !important;
+            -webkit-text-fill-color:#FFFFFF !important;
+            background-color:#081523 !important;
+            border:1px solid #52657A !important;
+            border-radius:5px;
+            font-size:14px;
+            font-weight:500;
+            line-height:1.4;
+            color-scheme:dark;
+        }
+        #reservaciones #booking-experience option {
+            color:#FFFFFF !important;
+            background:#081523 !important;
+        }
+        #reservaciones #booking-experience:focus-visible {
+            outline:3px solid #087F8C;
+            outline-offset:2px;
+            border-color:#087F8C !important;
+        }
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) > div:nth-child(2) > div {
+            min-height:48px;
+            height:48px;
+            margin-top:0;
+            color:#FFFFFF !important;
+            background:#081523 !important;
+            border:1px solid #52657A !important;
+            border-radius:5px;
+        }
+        #reservaciones #pax-decrease,
+        #reservaciones #pax-increase {
+            color:#FFFFFF !important;
+            background:transparent !important;
+            border-radius:4px;
+        }
+        #reservaciones #pax-decrease:hover,
+        #reservaciones #pax-increase:hover {
+            color:#FFFFFF !important;
+            background:#350B75 !important;
+        }
+        #reservaciones #pax-count {
+            color:#FFFFFF !important;
+            font-weight:700;
+        }
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) > div:nth-child(2) > div .text-xs {
+            color:#E4DDEE !important;
+        }
+        @media(max-width:639px) {
+            #reservaciones #booking-workspace > div:first-child > div:nth-child(2) > div {
+                width:100%;
+            }
+            #reservaciones #booking-experience {
+                font-size:13px;
+            }
+        }
+
     </style>
 
     <!-- Refinamiento de experiencia móvil ZAFIRE -->
