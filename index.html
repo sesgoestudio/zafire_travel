@@ -161,6 +161,25 @@
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
+        .hero-brand-subtitle {
+            display: block;
+            margin: .15rem 0 1.35rem;
+            color: #c6a972;
+            font-family: inherit;
+            font-size: clamp(.72rem, 1.5vw, .95rem);
+            font-weight: 500;
+            letter-spacing: .48em;
+            line-height: 1.2;
+            text-indent: .48em;
+        }
+        @media (max-width: 767px) {
+            #inicio .hero-brand-subtitle {
+                margin: .35rem 0 1.25rem;
+                font-size: .78rem;
+                letter-spacing: .48em;
+                text-indent: .48em;
+            }
+        }
     </style>
 
     <!-- Refinamiento de experiencia móvil ZAFIRE -->
@@ -496,9 +515,10 @@
                 <span class="h-[1px] w-8 bg-champagne/80"></span>
             </div>
 
-            <h1 data-cms-key="hero_title" class="type-hero-title text-warmwhite mb-5">
+            <h1 data-cms-key="hero_title" class="type-hero-title text-warmwhite mb-0">
                 ZAFIRE
             </h1>
+            <span class="hero-brand-subtitle" aria-label="Travel">TRAVEL</span>
 
             <p data-cms-key="hero_tagline" class="font-display text-xl sm:text-2xl md:text-3xl text-sand font-medium tracking-tightdisplay mb-5">
                 Navega. Descubre. Vive el mar.
