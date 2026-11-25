@@ -1283,6 +1283,69 @@
         }
     </style>
 
+
+    <!-- ZAFIRE — ajuste fino de compacidad sin alterar la escala del logotipo -->
+    <style id="zafire-hero-tight-layout">
+        #inicio {
+            min-height: 82svh;
+            min-height: 82dvh;
+            padding-top: 6.1rem;
+            padding-bottom: 3.2rem;
+        }
+        #inicio > div.relative.z-10 > .inline-flex {
+            margin-bottom: .22rem !important;
+        }
+        #inicio .zafire-hero-logo-heading {
+            margin-bottom: .28rem !important;
+        }
+        #inicio [data-cms-key="hero_tagline"] {
+            margin-bottom: .58rem !important;
+            line-height: 1.16;
+        }
+        #inicio [data-cms-key="hero_description"] {
+            margin-bottom: 1.05rem !important;
+            line-height: 1.55;
+        }
+        #inicio > div.relative.z-10 > .flex.flex-col {
+            gap: .62rem 1rem;
+        }
+        #inicio .btn-luxury {
+            padding-top: .82rem;
+            padding-bottom: .82rem;
+        }
+        @media (max-width: 767px) {
+            #inicio {
+                min-height: 100svh;
+                min-height: 100dvh;
+                padding: calc(4.65rem + env(safe-area-inset-top)) 1.15rem 3rem;
+            }
+            #inicio > div.relative.z-10 {
+                padding: 0;
+            }
+            #inicio > div.relative.z-10 > .inline-flex {
+                margin-bottom: .2rem !important;
+            }
+            #inicio .zafire-hero-logo-heading {
+                margin-bottom: .28rem !important;
+            }
+            #inicio [data-cms-key="hero_tagline"] {
+                margin-bottom: .48rem !important;
+                line-height: 1.16;
+            }
+            #inicio [data-cms-key="hero_description"] {
+                margin-bottom: .88rem !important;
+                line-height: 1.5;
+            }
+            #inicio > div.relative.z-10 > .flex.flex-col {
+                gap: .48rem;
+            }
+            #inicio .btn-luxury {
+                padding-top: .72rem;
+                padding-bottom: .72rem;
+            }
+        }
+    </style>
+
 </head>
 <body class="selection:bg-navy-900 selection:text-warmwhite">
 
