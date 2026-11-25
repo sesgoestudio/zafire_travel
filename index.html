@@ -19,6 +19,9 @@
     <meta property="og:title" content="ZAFIRE — Pesca, Excursiones y Avistamiento de Ballenas | Mazatlán">
     <meta property="og:description" content="Pesca, excursiones y avistamiento de ballenas en el Pacífico mexicano a bordo de ZAFIRE.">
     <meta property="og:image" content="https://mfgqbljtswvuqwluayfj.supabase.co/storage/v1/object/public/zafire-media/site/hero-background/1795557917487-9sed90g.jpg">
+    <link rel="preconnect" href="https://mfgqbljtswvuqwluayfj.supabase.co" crossorigin>
+    <link rel="preload" as="image" href="https://mfgqbljtswvuqwluayfj.supabase.co/storage/v1/object/public/zafire-media/site/hero-background/1795557917487-9sed90g.jpg" fetchpriority="high">
+
     <meta property="og:locale" content="es_MX">
 
     <!-- Google Fonts: Sistema Tipográfico Arquitectónico Contemporáneo (Syne + Instrument Serif + Plus Jakarta Sans + Space Grotesk) -->
@@ -118,6 +121,15 @@
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* La portada tiene prioridad de descarga y fondo estable durante la carga */
+        #inicio { background-color: #050E18; }
+        #hero-bg-img {
+            display: block;
+            background-color: #081523;
+            will-change: transform;
+            backface-visibility: hidden;
         }
 
         /* Efecto cinematográfico sutil en imagen Hero */
@@ -499,7 +511,7 @@
             <img 
                 id="hero-bg-img"
                 data-editable="hero-background"
-                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
+                src="https://mfgqbljtswvuqwluayfj.supabase.co/storage/v1/object/public/zafire-media/site/hero-background/1795557917487-9sed90g.jpg"\n                loading="eager"\n                fetchpriority="high"\n                decoding="async" 
                 alt="ZAFIRE navegando en aguas abiertas del Pacífico"
                 class="w-full h-full object-cover object-center hero-zoom opacity-80"
             >
@@ -1161,7 +1173,7 @@
             if (!Array.isArray(items)) return;
             items.filter(x=>x&&x.category&&x.public_url).forEach(item=>{
                 const el=document.querySelector('[data-editable="' + CSS.escape(item.category) + '"]');
-                if(el){el.src=item.public_url;if(item.alt_text)el.alt=item.alt_text;el.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';el.style.setProperty('--admin-zoom',(Number(item.crop_zoom??100)/100).toString());el.style.transform='scale('+(Number(item.crop_zoom??100)/100)+')';}
+                if(el){if(el.getAttribute('src')!==item.public_url)el.src=item.public_url;if(item.alt_text)el.alt=item.alt_text;el.style.objectPosition=(item.crop_x??50)+'% '+(item.crop_y??50)+'%';el.style.setProperty('--admin-zoom',(Number(item.crop_zoom??100)/100).toString());el.style.transform='scale('+(Number(item.crop_zoom??100)/100)+')';}
             });
             const vesselExtras=items.filter(x=>x.category==='vessel-photo-extra'&&x.public_url);
             const vesselGrid=document.getElementById('vessel-gallery');
