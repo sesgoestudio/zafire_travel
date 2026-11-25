@@ -793,6 +793,52 @@
             }
         }
 
+
+        /* Etiquetas solicitadas en blanco: fondos morados profundos para conservar contraste */
+        #reservaciones [data-cms-key="booking_date_label"],
+        #reservaciones .flex.items-center.justify-between.mb-6 > div:first-child h3 {
+            display:inline-block;
+            color:#FFFFFF !important;
+            background:#350B75;
+            padding:.28rem .55rem;
+            border-radius:2px;
+        }
+        #reservaciones .flex.items-center.gap-6.mt-4 {
+            background:#350B75;
+            border:1px solid #4A149C;
+            border-radius:3px;
+            padding:.65rem .75rem;
+        }
+        #reservaciones .flex.items-center.gap-6.mt-4 > span {
+            color:#FFFFFF !important;
+            font-weight:600;
+        }
+        #reservaciones .flex.items-center.gap-6.mt-4 > span > span {
+            flex-shrink:0;
+        }
+        #reservaciones #booking-workspace > div:first-child > div:nth-child(2) .type-tech-label,
+        #reservaciones #booking-workspace > div:first-child #booking-capacity-label {
+            display:inline-block;
+            color:#FFFFFF !important;
+            background:#350B75;
+            padding:.25rem .5rem;
+            border-radius:2px;
+            font-weight:700;
+        }
+        #reservaciones #booking-workspace > div:first-child [data-cms-key="booking_pax_label"] {
+            color:#FFFFFF !important;
+            background:#350B75;
+            display:inline-block;
+            padding:.28rem .55rem;
+            border-radius:2px;
+        }
+        @media(max-width:767px) {
+            #reservaciones .flex.items-center.gap-6.mt-4 {
+                gap:.55rem .75rem;
+                flex-wrap:wrap;
+            }
+        }
+
     </style>
 
 </head>
